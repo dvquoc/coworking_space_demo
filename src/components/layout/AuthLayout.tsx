@@ -1,8 +1,11 @@
 import { Outlet } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from '../LanguageSwitcher'
 
 export default function AuthLayout() {
+const { t } = useTranslation('auth')
+
   return (
     <div className="min-h-screen flex">
       {/* Left side - Branding */}
@@ -16,15 +19,15 @@ export default function AuthLayout() {
 
         <div className="text-white">
           <h1 className="text-4xl font-bold mb-4">
-            Quản lý không gian làm việc chuyên nghiệp
+            {t('layout_headline')}
           </h1>
           <p className="text-lg text-white/90">
-            Giải pháp toàn diện cho việc quản lý bất động sản và dịch vụ coworking space
+            {t('layout_subheadline')}
           </p>
         </div>
 
         <div className="text-white/70 text-sm">
-          © 2026 COBI TOWER. All rights reserved.
+          {t('layout_copyright')}
         </div>
       </div>
 

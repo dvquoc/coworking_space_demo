@@ -182,7 +182,7 @@ export function BookingCalendarPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header title="Lịch Đặt Chỗ" />
+      <Header title="Đặt Chỗ theo lịch" subtitle='Kiểm tra lịch trùng trước khi đặt chỗ' />
       <div className="flex-1 overflow-auto p-6">
         <div className="max-w-5xl mx-auto space-y-4">
 

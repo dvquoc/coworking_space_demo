@@ -1,4 +1,5 @@
 import { Users, Target, TrendingUp, UserPlus, Phone, Mail, Plus, Calendar, ArrowRight, Briefcase } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { 
   LineChart, 
   Line, 
@@ -52,28 +53,29 @@ const getLeadStatusColor = (status: string) => {
   }
 }
 
-const getLeadStatusLabel = (status: string) => {
+const getLeadStatusLabel = (status: string, t: (key: string) => string) => {
   switch (status) {
-    case 'new': return 'Mới'
-    case 'contacted': return 'Đã liên hệ'
-    case 'tour_scheduled': return 'Tour đã đặt'
-    case 'proposal_sent': return 'Gửi báo giá'
-    case 'closed_won': return 'Chốt đơn'
+    case 'new': return t('lead_status_new')
+    case 'contacted': return t('lead_status_contacted')
+    case 'tour_scheduled': return t('lead_status_tour_scheduled')
+    case 'proposal_sent': return t('lead_status_proposal_sent')
+    case 'closed_won': return t('lead_status_closed_won')
     case 'closed_lost': return 'Lost'
     default: return status
   }
 }
 
-const getActivityTypeLabel = (type: string) => {
+const getActivityTypeLabel = (type: string, t: (key: string) => string) => {
   switch (type) {
     case 'tour': return '🏢 Tour'
     case 'meeting': return '👥 Meeting'
-    case 'call': return '📞 Cuộc gọi'
+    case 'call': return t('activity_type_call')
     default: return type
   }
 }
 
 export default function SalesDashboard() {
+  const { t } = useTranslation('dashboard')
   const { data, isLoading, error } = useSalesDashboard()
   const user = useAuthStore(state => state.user)
 
@@ -84,7 +86,7 @@ export default function SalesDashboard() {
   if (isLoading) {
     return (
       <>
-        <Header title="Sales Dashboard" subtitle={`Chào ${user?.name || 'bạn'} — ${getTodayString()}`} />
+        <Header title="Sales Dashboard" subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -104,16 +106,16 @@ export default function SalesDashboard() {
   if (error || !data) {
     return (
       <>
-        <Header title="Sales Dashboard" subtitle={`Chào ${user?.name || 'bạn'} — ${getTodayString()}`} />
+        <Header title="Sales Dashboard" subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
-              <p className="text-rose-700 mb-4">Không thể tải dữ liệu dashboard</p>
+              <p className="text-rose-700 mb-4">{t('error_load')}</p>
               <button 
                 onClick={() => window.location.reload()}
                 className="px-4 py-2 bg-rose-600 text-white rounded-xl hover:bg-rose-700"
               >
-                Thử lại
+                {t('retry')}
               </button>
             </div>
           </div>
@@ -126,7 +128,7 @@ export default function SalesDashboard() {
     <>
       <Header 
         title="Sales Dashboard" 
-        subtitle={`Chào ${user?.name || 'bạn'} — ${getTodayString()}`} 
+        subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} 
       />
       
       <main className="flex-1 overflow-y-auto p-6">
@@ -134,7 +136,7 @@ export default function SalesDashboard() {
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard
-              title="Khách hàng Mới"
+              title={t('kpi_new_customers')}
               value={data.kpis.newCustomers}
               icon={UserPlus}
               iconBgColor="bg-blue-100"
@@ -152,7 +154,7 @@ export default function SalesDashboard() {
             />
             
             <KPICard
-              title="Leads đang xử lý"
+              title={t('kpi_active_leads')}
               value={data.kpis.activeLeads}
               icon={Users}
               iconBgColor="bg-purple-100"
@@ -160,7 +162,7 @@ export default function SalesDashboard() {
             />
             
             <KPICardWithProgress
-              title="Target Tháng này"
+              title={t('kpi_monthly_target')}
               value={`${data.kpis.targetPercent}%`}
               target={data.kpis.monthlyTarget}
               current={data.kpis.monthlyAchieved}
@@ -184,7 +186,7 @@ export default function SalesDashboard() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" />
                   <YAxis type="category" dataKey="label" width={80} />
-                  <Tooltip formatter={(value) => [`${value} leads`, '']} />
+                  <Tooltip formatter={(value) => [`${value} ${t('leads_unit')}`, '']} />
                   <Bar dataKey="count" radius={[0, 4, 4, 0]}>
                     {data.charts.leadFunnel.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={FUNNEL_COLORS[index % FUNNEL_COLORS.length]} />
@@ -210,7 +212,7 @@ export default function SalesDashboard() {
 
             {/* Conversion Trend */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Conversion Rate Trend (6 tháng)</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('section_conversion_trend')}</h3>
               <ResponsiveContainer width="100%" height={280}>
                 <LineChart data={data.charts.conversionByMonth}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -234,9 +236,9 @@ export default function SalesDashboard() {
             {/* My Leads */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">Leads của tôi</h3>
+                <h3 className="text-lg font-semibold text-slate-900">{t('section_my_leads')}</h3>
                 <a href="/leads" className="text-sm text-[#b11e29] hover:underline flex items-center gap-1">
-                  Xem tất cả <ArrowRight className="w-4 h-4" />
+                  {t('view_all')} <ArrowRight className="w-4 h-4" />
                 </a>
               </div>
               
@@ -259,12 +261,12 @@ export default function SalesDashboard() {
                             <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-xs rounded">Stale</span>
                           )}
                         </div>
-                        <p className="text-sm text-slate-500">{lead.company || 'Cá nhân'}</p>
+                        <p className="text-sm text-slate-500">{lead.company || t('individual_customer')}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className={`px-2 py-1 text-xs font-medium rounded-full ${getLeadStatusColor(lead.status)}`}>
-                        {getLeadStatusLabel(lead.status)}
+                        {getLeadStatusLabel(lead.status, t)}
                       </span>
                       <div className="flex items-center gap-1">
                         <button className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg">
@@ -285,14 +287,14 @@ export default function SalesDashboard() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-slate-600" />
-                  Hoạt động Sắp tới
+                  {t('section_upcoming_activities')}
                 </h3>
               </div>
               
               {data.upcomingActivities.length === 0 ? (
                 <div className="text-center py-8 text-slate-500">
                   <Calendar className="w-12 h-12 mx-auto mb-3 text-slate-300" />
-                  <p>Không có hoạt động nào sắp tới</p>
+                  <p>{t('no_upcoming_activities')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -304,7 +306,7 @@ export default function SalesDashboard() {
                       <div className="flex items-start justify-between">
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="text-lg">{getActivityTypeLabel(activity.type)}</span>
+                            <span className="text-lg">{getActivityTypeLabel(activity.type, t)}</span>
                             <p className="font-medium text-slate-900">{activity.leadName}</p>
                           </div>
                           <p className="text-sm text-slate-500 mt-1">
@@ -319,8 +321,8 @@ export default function SalesDashboard() {
                           activity.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
                           'bg-slate-100 text-slate-700'
                         }`}>
-                          {activity.status === 'scheduled' ? 'Đã lên lịch' : 
-                           activity.status === 'completed' ? 'Hoàn thành' : 'Đã hủy'}
+                          activity.status === 'scheduled' ? t('activity_status_scheduled') : 
+                           activity.status === 'completed' ? t('activity_status_completed') : t('activity_status_cancelled')
                         </span>
                       </div>
                     </div>
@@ -335,13 +337,13 @@ export default function SalesDashboard() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                 <Briefcase className="w-5 h-5 text-emerald-500" />
-                Deals Gần đây
+                {t('section_recent_deals')}
               </h3>
             </div>
             
             {data.recentDeals.length === 0 ? (
               <div className="text-center py-6 text-slate-500">
-                <p>Chưa có deals nào gần đây</p>
+                <p>{t('no_recent_deals')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -371,28 +373,28 @@ export default function SalesDashboard() {
 
           {/* Quick Actions */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
             <div className="flex flex-wrap gap-3">
               <button 
                 className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
                 onClick={() => window.location.href = '/leads/create'}
               >
                 <Plus className="w-4 h-4" />
-                Thêm Lead mới
+                {t('btn_add_lead')}
               </button>
               <button 
                 className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700"
                 onClick={() => window.location.href = '/tours/schedule'}
               >
                 <Calendar className="w-4 h-4" />
-                Đặt lịch Tour
+                {t('btn_schedule_tour')}
               </button>
               <button 
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
                 onClick={() => window.location.href = '/leads'}
               >
                 <Users className="w-4 h-4" />
-                Quản lý Leads
+                {t('btn_manage_leads')}
               </button>
             </div>
           </div>

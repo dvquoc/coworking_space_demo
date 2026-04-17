@@ -1,4 +1,5 @@
 import { DollarSign, Users, TrendingUp, Percent, FileText, Download } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { 
   LineChart, 
   Line, 
@@ -36,12 +37,13 @@ const formatMonth = (month: string) => {
 }
 
 export default function InvestorDashboard() {
+  const { t } = useTranslation('dashboard')
   const { data, isLoading, error } = useInvestorDashboard()
 
   const getOccupancyBadge = (rate: number) => {
-    if (rate >= 70) return { text: 'Tốt', color: 'green' as const }
-    if (rate >= 50) return { text: 'Trung bình', color: 'yellow' as const }
-    return { text: 'Thấp', color: 'red' as const }
+    if (rate >= 70) return { text: t('badge_good'), color: 'green' as const }
+    if (rate >= 50) return { text: t('badge_average'), color: 'yellow' as const }
+    return { text: t('badge_low'), color: 'red' as const }
   }
 
   const getOccupancyBarColor = (rate: number) => {
@@ -53,7 +55,7 @@ export default function InvestorDashboard() {
   if (isLoading) {
     return (
       <>
-        <Header title="Investor Dashboard" subtitle="Tổng quan kinh doanh" />
+        <Header title="Investor Dashboard" subtitle={t('investor_subtitle')} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -73,16 +75,16 @@ export default function InvestorDashboard() {
   if (error || !data) {
     return (
       <>
-        <Header title="Investor Dashboard" subtitle="Tổng quan kinh doanh" />
+        <Header title="Investor Dashboard" subtitle={t('investor_subtitle')} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
-              <p className="text-rose-700 mb-4">Không thể tải dữ liệu dashboard</p>
+              <p className="text-rose-700 mb-4">{t('error_load')}</p>
               <button 
                 onClick={() => window.location.reload()}
                 className="px-4 py-2 bg-rose-600 text-white rounded-xl hover:bg-rose-700"
               >
-                Thử lại
+                {t('retry')}
               </button>
             </div>
           </div>
@@ -95,7 +97,7 @@ export default function InvestorDashboard() {
     <>
       <Header 
         title="Investor Dashboard" 
-        subtitle={`Tổng quan kinh doanh — Tháng ${data.period.month}/${data.period.year}`} 
+        subtitle={t('investor_subtitle_month', { month: data.period.month, year: data.period.year })} 
       />
       
       <main className="flex-1 overflow-y-auto p-6">
@@ -103,39 +105,39 @@ export default function InvestorDashboard() {
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard
-              title="Tổng Doanh thu"
+              title={t('kpi_total_revenue')}
               value={`${formatCurrency(data.kpis.totalRevenue)} ₫`}
               icon={DollarSign}
               iconBgColor="bg-emerald-100"
               iconColor="text-emerald-600"
               change={data.kpis.revenueChangePercent}
-              tooltip="Tổng doanh thu từ các invoice đã thanh toán trong tháng"
+              tooltip={t('tooltip_total_revenue')}
             />
             
             <KPICard
-              title="Tỷ lệ lấp đầy"
+              title={t('kpi_occupancy_rate')}
               value={`${data.kpis.occupancyRate}%`}
               icon={Percent}
               iconBgColor="bg-blue-100"
               iconColor="text-blue-600"
               change={data.kpis.occupancyChange}
               badge={getOccupancyBadge(data.kpis.occupancyRate)}
-              tooltip="Tỷ lệ = Số spaces đang cho thuê / Tổng spaces"
+              tooltip={t('tooltip_occupancy_rate')}
             />
             
             <KPICard
-              title="Khách hàng Active"
+              title={t('kpi_active_customers')}
               value={data.kpis.activeCustomers}
               icon={Users}
               iconBgColor="bg-purple-100"
               iconColor="text-purple-600"
               change={data.kpis.customersChange}
-              changeLabel="khách mới"
-              tooltip="Khách hàng đang có hợp đồng hoặc booking active"
+              changeLabel={t('new_customers_label')}
+              tooltip={t('tooltip_active_customers')}
             />
             
             <KPICard
-              title="Biên lợi nhuận"
+              title={t('kpi_profit_margin')}
               value={`${data.kpis.profitMargin}%`}
               icon={TrendingUp}
               iconBgColor="bg-amber-100"
@@ -149,7 +151,7 @@ export default function InvestorDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Revenue Trend Chart */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Xu hướng Doanh thu (12 tháng)</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('section_revenue_trend')}</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={data.charts.revenueByMonth}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -163,8 +165,8 @@ export default function InvestorDashboard() {
                     tick={{ fontSize: 12, fill: '#64748b' }}
                   />
                   <Tooltip 
-                    formatter={(value) => [`${Number(value).toLocaleString('vi-VN')} ₫`, 'Doanh thu']}
-                    labelFormatter={(label) => `Tháng ${formatMonth(label)}`}
+                    formatter={(value) => [`${Number(value).toLocaleString('vi-VN')} ₫`, t('revenue_label')]}
+                    labelFormatter={(label) => `${formatMonth(label)}`}
                   />
                   <Line 
                     type="monotone" 
@@ -180,7 +182,7 @@ export default function InvestorDashboard() {
 
             {/* Occupancy by Building */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Tỷ lệ lấp đầy theo Tòa nhà</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('section_occupancy_by_building')}</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={data.charts.occupancyByBuilding} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -197,7 +199,7 @@ export default function InvestorDashboard() {
                     tick={{ fontSize: 12, fill: '#64748b' }}
                   />
                   <Tooltip 
-                    formatter={(value) => [`${Number(value)}%`, 'Tỷ lệ lấp đầy']}
+                    formatter={(value) => [`${Number(value)}%`, t('occupancy_rate_label')]}
                   />
                   <Bar 
                     dataKey="rate" 
@@ -215,7 +217,7 @@ export default function InvestorDashboard() {
           {/* Revenue by Space Type */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Doanh thu theo Loại không gian</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('section_revenue_by_space_type')}</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -244,14 +246,14 @@ export default function InvestorDashboard() {
 
             {/* Quick Links */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Truy cập nhanh</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('section_quick_links')}</h3>
               <div className="space-y-3">
                 <button 
                   className="w-full flex items-center gap-3 px-4 py-3 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors text-left"
                   onClick={() => window.location.href = '/reports/financial'}
                 >
                   <FileText className="w-5 h-5 text-slate-600" />
-                  <span className="text-slate-700 font-medium">Xem Báo cáo Tài chính</span>
+                  <span className="text-slate-700 font-medium">{t('btn_financial_report')}</span>
                 </button>
                 
                 <button 
@@ -262,22 +264,22 @@ export default function InvestorDashboard() {
                   }}
                 >
                   <Download className="w-5 h-5" />
-                  <span className="font-medium">Xuất Báo cáo Doanh thu (PDF)</span>
+                  <span className="font-medium">{t('btn_export_revenue_pdf')}</span>
                 </button>
               </div>
 
               {/* Summary Stats */}
               <div className="mt-6 pt-6 border-t border-slate-200">
-                <h4 className="text-sm font-medium text-slate-600 mb-3">Tóm tắt tháng {data.period.month}/{data.period.year}</h4>
+                <h4 className="text-sm font-medium text-slate-600 mb-3">{t('summary_month', { month: data.period.month, year: data.period.year })}</h4>
                 <ul className="space-y-2 text-sm">
                   <li className="flex justify-between">
-                    <span className="text-slate-500">Spaces đang thuê</span>
+                    <span className="text-slate-500">{t('spaces_rented')}</span>
                     <span className="font-medium text-slate-900">
                       {Math.round(data.kpis.activeCustomers * 0.85)}/109
                     </span>
                   </li>
                   <li className="flex justify-between">
-                    <span className="text-slate-500">Doanh thu trung bình/khách</span>
+                    <span className="text-slate-500">{t('avg_revenue_per_customer')}</span>
                     <span className="font-medium text-slate-900">
                       {formatCurrency(Math.round(data.kpis.totalRevenue / data.kpis.activeCustomers))} ₫
                     </span>

@@ -1,4 +1,5 @@
 import { Users, Activity, Server, ClipboardCheck, Shield, Settings, FileText, AlertTriangle, Info, XCircle, CheckCircle, Clock } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { 
   BarChart, 
   Bar, 
@@ -27,6 +28,7 @@ const formatShortDate = (date: string) => {
 }
 
 export default function AdminDashboard() {
+  const { t } = useTranslation('dashboard')
   const { data, isLoading, error } = useAdminDashboard()
 
   const getUptimeBadge = (uptime: number) => {
@@ -54,7 +56,7 @@ export default function AdminDashboard() {
   if (isLoading) {
     return (
       <>
-        <Header title="Admin Dashboard" subtitle="Quản trị hệ thống" />
+        <Header title="Admin Dashboard" subtitle={t('admin_subtitle')} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -74,16 +76,16 @@ export default function AdminDashboard() {
   if (error || !data) {
     return (
       <>
-        <Header title="Admin Dashboard" subtitle="Quản trị hệ thống" />
+        <Header title="Admin Dashboard" subtitle={t('admin_subtitle')} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
-              <p className="text-rose-700 mb-4">Không thể tải dữ liệu dashboard</p>
+              <p className="text-rose-700 mb-4">{t('error_load')}</p>
               <button 
                 onClick={() => window.location.reload()}
                 className="px-4 py-2 bg-rose-600 text-white rounded-xl hover:bg-rose-700"
               >
-                Thử lại
+                {t('retry')}
               </button>
             </div>
           </div>
@@ -94,14 +96,14 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <Header title="Admin Dashboard" subtitle="Quản trị hệ thống" />
+      <Header title="Admin Dashboard" subtitle={t('admin_subtitle')} />
       
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard
-              title="Tổng Users"
+              title={t('kpi_total_users')}
               value={data.kpis.totalUsers}
               icon={Users}
               iconBgColor="bg-blue-100"
@@ -109,31 +111,31 @@ export default function AdminDashboard() {
             />
             
             <KPICard
-              title="Sessions đang hoạt động"
+              title={t('kpi_active_sessions')}
               value={data.kpis.activeSessions}
               icon={Activity}
               iconBgColor="bg-emerald-100"
               iconColor="text-emerald-600"
-              tooltip="Số phiên đăng nhập đang active"
+              tooltip={t('tooltip_sessions')}
             />
             
             <KPICard
-              title="System Uptime"
+              title={t('kpi_system_uptime')}
               value={`${data.kpis.systemUptime}%`}
               icon={Server}
               iconBgColor="bg-purple-100"
               iconColor="text-purple-600"
               badge={getUptimeBadge(data.kpis.systemUptime)}
-              tooltip="Uptime 30 ngày gần nhất"
+              tooltip={t('tooltip_uptime')}
             />
             
             <KPICard
-              title="Chờ phê duyệt"
+              title={t('kpi_pending_approvals')}
               value={data.kpis.pendingApprovals}
               icon={ClipboardCheck}
               iconBgColor={data.kpis.pendingApprovals > 0 ? 'bg-rose-100' : 'bg-slate-100'}
               iconColor={data.kpis.pendingApprovals > 0 ? 'text-rose-600' : 'text-slate-600'}
-              badge={data.kpis.pendingApprovals > 0 ? { text: 'Cần xử lý', color: 'red' as const } : undefined}
+              badge={data.kpis.pendingApprovals > 0 ? { text: t('badge_needs_action'), color: 'red' as const } : undefined}
               onClick={() => document.getElementById('pending-approvals')?.scrollIntoView({ behavior: 'smooth' })}
             />
           </div>
@@ -142,13 +144,13 @@ export default function AdminDashboard() {
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
               <Shield className="w-5 h-5 text-slate-600" />
-              System Alerts
+              {t('section_system_alerts')}
             </h3>
             
             {data.systemAlerts.length === 0 ? (
               <div className="flex items-center gap-3 text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-xl p-4">
                 <CheckCircle className="w-5 h-5" />
-                <span>Không có alerts — hệ thống hoạt động bình thường</span>
+                <span>{t('no_alerts')}</span>
               </div>
             ) : (
               <div className="space-y-3">
@@ -163,7 +165,7 @@ export default function AdminDashboard() {
                       <p className="text-sm text-slate-500 mt-1">{formatDate(alert.timestamp)}</p>
                     </div>
                     <button className="text-sm text-slate-500 hover:text-slate-700 px-2 py-1 rounded hover:bg-white/50">
-                      Dismiss
+                      {t('dismiss')}
                     </button>
                   </div>
                 ))}
@@ -176,9 +178,9 @@ export default function AdminDashboard() {
             {/* Recent Activities */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">Hoạt động gần đây</h3>
+                <h3 className="text-lg font-semibold text-slate-900">{t('section_recent_activities')}</h3>
                 <a href="/admin/audit-logs" className="text-sm text-[#b11e29] hover:underline">
-                  Xem tất cả
+                  {t('view_all')}
                 </a>
               </div>
               
@@ -186,10 +188,10 @@ export default function AdminDashboard() {
                 <table className="w-full">
                   <thead className="bg-slate-50">
                     <tr>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">Thời gian</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">User</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">Hành động</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">Kết quả</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">{t('col_time')}</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">{t('col_user')}</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">{t('col_action')}</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">{t('col_result')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -222,7 +224,7 @@ export default function AdminDashboard() {
 
             {/* Login Statistics */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Thống kê Đăng nhập (7 ngày)</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('section_login_stats')}</h3>
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={data.loginStats}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -236,8 +238,8 @@ export default function AdminDashboard() {
                     labelFormatter={(label) => `Ngày ${formatShortDate(label)}`}
                   />
                   <Legend />
-                  <Bar dataKey="success" name="Thành công" fill="#10b981" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="failed" name="Thất bại" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="success" name={t('login_success')} fill="#10b981" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="failed" name={t('login_failed')} fill="#ef4444" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -247,13 +249,13 @@ export default function AdminDashboard() {
           <div id="pending-approvals" className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
               <ClipboardCheck className="w-5 h-5 text-slate-600" />
-              Yêu cầu chờ Phê duyệt
+              {t('section_pending_approvals')}
             </h3>
             
             {data.pendingItems.length === 0 ? (
               <div className="flex items-center gap-3 text-slate-500 bg-slate-50 border border-slate-200 rounded-xl p-4">
                 <CheckCircle className="w-5 h-5 text-emerald-500" />
-                <span>Không có yêu cầu nào đang chờ xử lý</span>
+                <span>{t('no_pending_items')}</span>
               </div>
             ) : (
               <div className="space-y-3">
@@ -269,9 +271,9 @@ export default function AdminDashboard() {
                       <div>
                         <p className="font-medium text-slate-900">{item.requesterName}</p>
                         <p className="text-sm text-slate-500">
-                          {item.type === 'new_user' && `Tạo tài khoản mới — Role: ${item.requestedRole}`}
-                          {item.type === 'role_change' && `Thay đổi role → ${item.requestedRole}`}
-                          {item.type === 'delete_account' && 'Yêu cầu xóa tài khoản'}
+                          {item.type === 'new_user' && t('pending_type_new_user', { role: item.requestedRole })}
+                          {item.type === 'role_change' && t('pending_type_role_change', { role: item.requestedRole })}
+                          {item.type === 'delete_account' && t('pending_type_delete')}
                         </p>
                         <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
                           <Clock className="w-3 h-3" />
@@ -281,10 +283,10 @@ export default function AdminDashboard() {
                     </div>
                     <div className="flex gap-2">
                       <button className="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 text-sm font-medium">
-                        Approve
+                        {t('approve')}
                       </button>
                       <button className="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 text-sm font-medium">
-                        Reject
+                        {t('reject')}
                       </button>
                     </div>
                   </div>
@@ -295,28 +297,28 @@ export default function AdminDashboard() {
 
           {/* Quick Actions */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
             <div className="flex flex-wrap gap-3">
               <button 
                 className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
                 onClick={() => window.location.href = '/admin/users'}
               >
                 <Users className="w-4 h-4" />
-                Manage Users
+                {t('btn_manage_users')}
               </button>
               <button 
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
                 onClick={() => window.location.href = '/admin/audit-logs'}
               >
                 <FileText className="w-4 h-4" />
-                View Audit Logs
+                {t('btn_audit_logs')}
               </button>
               <button 
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
                 onClick={() => window.location.href = '/admin/settings'}
               >
                 <Settings className="w-4 h-4" />
-                System Settings
+                {t('btn_system_settings')}
               </button>
             </div>
           </div>

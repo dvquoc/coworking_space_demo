@@ -1,4 +1,5 @@
 import { Calendar, LogIn, LogOut, Clock, Plus, Users, CalendarDays, AlertCircle, CheckCircle, MessageSquare, Trophy } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { 
   LineChart, 
   Line, 
@@ -41,6 +42,7 @@ const getTodayString = () => {
 }
 
 export default function ManagerDashboard() {
+  const { t } = useTranslation('dashboard')
   const { data, isLoading, error } = useManagerDashboard()
 
   if (isLoading) {
@@ -70,12 +72,12 @@ export default function ManagerDashboard() {
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
-              <p className="text-rose-700 mb-4">Không thể tải dữ liệu dashboard</p>
+              <p className="text-rose-700 mb-4">{t('error_load')}</p>
               <button 
                 onClick={() => window.location.reload()}
                 className="px-4 py-2 bg-rose-600 text-white rounded-xl hover:bg-rose-700"
               >
-                Thử lại
+                {t('retry')}
               </button>
             </div>
           </div>
@@ -87,13 +89,39 @@ export default function ManagerDashboard() {
   return (
     <>
       <Header title="Manager Dashboard" subtitle={getTodayString()} />
-      
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-7xl mx-auto space-y-6">
+          {/* Quick Actions */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
+            <div className="flex flex-wrap gap-3">
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
+                onClick={() => window.location.href = '/bookings/new'}
+              >
+                <Plus className="w-4 h-4" />
+                {t('btn_create_booking')}
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
+                onClick={() => window.location.href = '/customers'}
+              >
+                <Users className="w-4 h-4" />
+                {t('btn_add_customer')}
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
+                onClick={() => window.location.href = '/bookings/calendar'}
+              >
+                <CalendarDays className="w-4 h-4" />
+                {t('btn_view_calendar')}
+              </button>
+            </div>
+        </div>  
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard
-              title="Bookings hôm nay"
+              title={t('kpi_bookings_today')}
               value={data.kpis.todayBookings}
               icon={Calendar}
               iconBgColor="bg-blue-100"
@@ -101,7 +129,7 @@ export default function ManagerDashboard() {
             />
             
             <KPICard
-              title="Check-ins hôm nay"
+              title={t('kpi_checkins_today')}
               value={data.kpis.checkInsToday}
               icon={LogIn}
               iconBgColor="bg-emerald-100"
@@ -109,7 +137,7 @@ export default function ManagerDashboard() {
             />
             
             <KPICard
-              title="Check-outs hôm nay"
+              title={t('kpi_checkouts_today')}
               value={data.kpis.checkOutsToday}
               icon={LogOut}
               iconBgColor="bg-amber-100"
@@ -117,12 +145,12 @@ export default function ManagerDashboard() {
             />
             
             <KPICard
-              title="Yêu cầu đang chờ"
+              title={t('kpi_pending_requests')}
               value={data.kpis.pendingRequests}
               icon={Clock}
               iconBgColor={data.kpis.pendingRequests > 0 ? 'bg-rose-100' : 'bg-slate-100'}
               iconColor={data.kpis.pendingRequests > 0 ? 'text-rose-600' : 'text-slate-600'}
-              badge={data.kpis.pendingRequests > 0 ? { text: 'Cần xử lý', color: 'red' as const } : undefined}
+              badge={data.kpis.pendingRequests > 0 ? { text: t('badge_needs_action'), color: 'red' as const } : undefined}
             />
           </div>
 
@@ -130,7 +158,7 @@ export default function ManagerDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Weekly Booking Trend */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Xu hướng Booking (7 ngày)</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('section_booking_trend')}</h3>
               <ResponsiveContainer width="100%" height={280}>
                 <LineChart data={data.charts.bookingByDay}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -158,7 +186,7 @@ export default function ManagerDashboard() {
 
             {/* Space Utilization by Floor */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Tỷ lệ sử dụng theo Tầng</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('section_utilization_by_floor')}</h3>
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={data.charts.utilizationByFloor} layout="vertical">
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -175,7 +203,7 @@ export default function ManagerDashboard() {
                     tick={{ fontSize: 11, fill: '#64748b' }}
                   />
                   <Tooltip 
-                    formatter={(value) => [`${Number(value)}%`, 'Tỷ lệ sử dụng']}
+                    formatter={(value) => [`${Number(value)}%`, t('utilization_rate')]}
                     labelFormatter={(label) => `${label}`}
                   />
                   <Bar dataKey="rate" radius={[0, 8, 8, 0]}>
@@ -195,10 +223,10 @@ export default function ManagerDashboard() {
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                   <CalendarDays className="w-5 h-5 text-slate-600" />
-                  Bookings sắp tới
+                  {t('section_upcoming_bookings')}
                 </h3>
                 <a href="/bookings" className="text-sm text-[#b11e29] hover:underline">
-                  Xem tất cả
+                  {t('view_all')}
                 </a>
               </div>
               
@@ -206,10 +234,10 @@ export default function ManagerDashboard() {
                 <table className="w-full">
                   <thead className="bg-slate-50">
                     <tr>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">Thời gian</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">Khách hàng</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">{t('col_time')}</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">{t('col_customer')}</th>
                       <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">Space</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">Trạng thái</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">{t('col_status')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -231,7 +259,7 @@ export default function ManagerDashboard() {
                               ? 'bg-emerald-100 text-emerald-700' 
                               : 'bg-amber-100 text-amber-700'
                           }`}>
-                            {booking.status === 'confirmed' ? 'Đã xác nhận' : 'Đang chờ'}
+                            {booking.status === 'confirmed' ? t('status_confirmed') : t('status_pending')}
                           </span>
                         </td>
                       </tr>
@@ -245,7 +273,7 @@ export default function ManagerDashboard() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
               <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
                 <Trophy className="w-5 h-5 text-amber-500" />
-                Top 5 Khách hàng
+                {t('section_top_customers')}
               </h3>
               
               <div className="space-y-3">
@@ -282,13 +310,13 @@ export default function ManagerDashboard() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
               <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-amber-500" />
-                Hợp đồng sắp hết hạn
+                {t('section_expiring_contracts')}
               </h3>
               
               {data.expiringContracts.length === 0 ? (
                 <div className="flex items-center gap-3 text-slate-500 bg-slate-50 border border-slate-200 rounded-xl p-4">
                   <CheckCircle className="w-5 h-5 text-emerald-500" />
-                  <span>Không có hợp đồng hết hạn trong 30 ngày tới</span>
+                  <span>{t('no_expiring_contracts')}</span>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -307,10 +335,10 @@ export default function ManagerDashboard() {
                       </div>
                       <div className="text-right">
                         <p className={`font-medium ${contract.daysRemaining <= 7 ? 'text-rose-600' : 'text-amber-600'}`}>
-                          {contract.daysRemaining <= 7 ? '⚠️' : '⏰'} Còn {contract.daysRemaining} ngày
+                          {contract.daysRemaining <= 7 ? '⚠️' : '⏰'} {t('days_remaining', { count: contract.daysRemaining })}
                         </p>
                         <button className="text-sm text-[#b11e29] hover:underline mt-1">
-                          Liên hệ
+                          {t('contact')}
                         </button>
                       </div>
                     </div>
@@ -323,13 +351,13 @@ export default function ManagerDashboard() {
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
               <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-slate-600" />
-                Yêu cầu gần đây
+                {t('section_recent_inquiries')}
               </h3>
               
               {data.recentInquiries.length === 0 ? (
                 <div className="flex items-center gap-3 text-slate-500 bg-slate-50 border border-slate-200 rounded-xl p-4">
                   <CheckCircle className="w-5 h-5 text-emerald-500" />
-                  <span>Không có yêu cầu mới</span>
+                  <span>{t('no_new_inquiries')}</span>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -347,41 +375,13 @@ export default function ManagerDashboard() {
                         inquiry.status === 'in_progress' ? 'bg-blue-100 text-blue-700' :
                         'bg-emerald-100 text-emerald-700'
                       }`}>
-                        {inquiry.status === 'pending' ? 'Đang chờ' :
-                         inquiry.status === 'in_progress' ? 'Đang xử lý' : 'Đã xong'}
+                        {inquiry.status === 'pending' ? t('status_waiting') :
+                         inquiry.status === 'in_progress' ? t('status_in_progress') : t('status_done')}
                       </span>
                     </div>
                   ))}
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
-            <div className="flex flex-wrap gap-3">
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
-                onClick={() => window.location.href = '/bookings/create'}
-              >
-                <Plus className="w-4 h-4" />
-                Tạo Booking
-              </button>
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
-                onClick={() => window.location.href = '/customers/create'}
-              >
-                <Users className="w-4 h-4" />
-                Thêm Khách hàng
-              </button>
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
-                onClick={() => window.location.href = '/bookings/calendar'}
-              >
-                <CalendarDays className="w-4 h-4" />
-                Xem Lịch
-              </button>
             </div>
           </div>
         </div>

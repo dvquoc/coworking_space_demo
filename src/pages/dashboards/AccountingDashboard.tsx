@@ -1,4 +1,5 @@
 import { DollarSign, FileText, AlertCircle, TrendingUp, Download, Eye, CheckCircle, Clock, CreditCard } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { 
   BarChart, 
   Bar, 
@@ -47,12 +48,13 @@ const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
-const getDaysInfo = (daysOverdue: number) => {
-  if (daysOverdue > 0) return `Quá hạn ${daysOverdue} ngày`
-  return 'Chưa đến hạn'
+const getDaysInfo = (daysOverdue: number, t: (key: string, opts?: Record<string, unknown>) => string) => {
+  if (daysOverdue > 0) return t('days_overdue', { count: daysOverdue })
+  return t('not_yet_due')
 }
 
 export default function AccountingDashboard() {
+  const { t } = useTranslation('dashboard')
   const { data, isLoading, error } = useAccountingDashboard()
   const user = useAuthStore(state => state.user)
 
@@ -63,7 +65,7 @@ export default function AccountingDashboard() {
   if (isLoading) {
     return (
       <>
-        <Header title="Accounting Dashboard" subtitle={`Chào ${user?.name || 'bạn'} — ${getTodayString()}`} />
+        <Header title="Accounting Dashboard" subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -83,16 +85,16 @@ export default function AccountingDashboard() {
   if (error || !data) {
     return (
       <>
-        <Header title="Accounting Dashboard" subtitle={`Chào ${user?.name || 'bạn'} — ${getTodayString()}`} />
+        <Header title="Accounting Dashboard" subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
-              <p className="text-rose-700 mb-4">Không thể tải dữ liệu dashboard</p>
+              <p className="text-rose-700 mb-4">{t('error_load')}</p>
               <button 
                 onClick={() => window.location.reload()}
                 className="px-4 py-2 bg-rose-600 text-white rounded-xl hover:bg-rose-700"
               >
-                Thử lại
+                {t('retry')}
               </button>
             </div>
           </div>
@@ -105,7 +107,7 @@ export default function AccountingDashboard() {
     <>
       <Header 
         title="Accounting Dashboard" 
-        subtitle={`Chào ${user?.name || 'bạn'} — ${getTodayString()}`} 
+        subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} 
       />
       
       <main className="flex-1 overflow-y-auto p-6">
@@ -113,7 +115,7 @@ export default function AccountingDashboard() {
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard
-              title="Hóa đơn Phát hành"
+              title={t('kpi_invoices_issued')}
               value={data.kpis.invoicesIssuedCount}
               icon={FileText}
               iconBgColor="bg-blue-100"
@@ -122,16 +124,16 @@ export default function AccountingDashboard() {
             />
             
             <KPICard
-              title="Công nợ Phải thu"
+              title={t('kpi_receivable')}
               value={formatCurrency(data.kpis.totalReceivable)}
               icon={DollarSign}
               iconBgColor="bg-emerald-100"
               iconColor="text-emerald-600"
-              tooltip="Tổng giá trị các hóa đơn chưa thanh toán"
+              tooltip={t('tooltip_receivable')}
             />
             
             <KPICard
-              title="Hóa đơn Quá hạn"
+              title={t('kpi_overdue_invoices')}
               value={data.kpis.overdueCount}
               icon={AlertCircle}
               iconBgColor={data.kpis.overdueCount > 0 ? 'bg-rose-100' : 'bg-slate-100'}
@@ -141,7 +143,7 @@ export default function AccountingDashboard() {
             />
             
             <KPICard
-              title="Tỷ lệ Thu hồi"
+              title={t('kpi_collection_rate')}
               value={`${data.kpis.collectionRate}%`}
               icon={TrendingUp}
               iconBgColor={data.kpis.collectionRate >= 80 ? 'bg-emerald-100' : 'bg-amber-100'}
@@ -154,7 +156,7 @@ export default function AccountingDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* AR Aging Chart */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Tuổi Công nợ (AR Aging)</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('section_ar_aging')}</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart 
                   data={data.charts.arAging} 
@@ -172,8 +174,8 @@ export default function AccountingDashboard() {
                     width={80}
                   />
                   <Tooltip 
-                    formatter={(value) => [formatFullCurrency(Number(value)), 'Giá trị']}
-                    labelFormatter={(label) => `Tuổi nợ: ${label}`}
+                    formatter={(value) => [formatFullCurrency(Number(value)), t('value_label')]}
+                    labelFormatter={(label) => `${t('debt_age_label')} ${label}`}
                   />
                   <Bar dataKey="amount" radius={[0, 4, 4, 0]}>
                     {data.charts.arAging.map((_, index) => (
@@ -185,7 +187,7 @@ export default function AccountingDashboard() {
               
               {/* Summary */}
               <div className="mt-4 flex items-center justify-between text-sm">
-                <span className="text-slate-500">Tổng công nợ:</span>
+                <span className="text-slate-500">{t('total_receivable_label')}</span>
                 <span className="font-semibold text-slate-900">
                   {formatFullCurrency(data.charts.arAging.reduce((sum, item) => sum + item.amount, 0))}
                 </span>
@@ -194,7 +196,7 @@ export default function AccountingDashboard() {
 
             {/* Invoice Status Pie Chart */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Trạng thái Hóa đơn</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('section_invoice_status')}</h3>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
@@ -242,7 +244,7 @@ export default function AccountingDashboard() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-rose-500" />
-                Hóa đơn Quá hạn
+                {t('kpi_overdue_invoices')}
               </h3>
               <div className="flex gap-2">
                 <button className="flex items-center gap-2 px-3 py-1.5 text-sm bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200">
@@ -255,18 +257,18 @@ export default function AccountingDashboard() {
             {data.overdueInvoices.length === 0 ? (
               <div className="flex items-center gap-3 text-emerald-600 bg-emerald-50 border border-emerald-200 rounded-xl p-4">
                 <CheckCircle className="w-5 h-5" />
-                <span>Không có hóa đơn quá hạn — tuyệt vời!</span>
+                <span>{t('no_overdue')}</span>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-slate-50">
                     <tr>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Mã HĐ</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Khách hàng</th>
-                      <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3">Số tiền</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Hạn thanh toán</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Trạng thái</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_invoice_code')}</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_customer')}</th>
+                      <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_amount')}</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_due_date')}</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_status')}</th>
                       <th className="text-center text-xs font-medium text-slate-500 uppercase px-4 py-3">Actions</th>
                     </tr>
                   </thead>
@@ -285,13 +287,13 @@ export default function AccountingDashboard() {
                         <td className="px-4 py-3 text-sm">
                           <div className="text-slate-900">{formatDate(invoice.dueDate)}</div>
                           <div className="text-xs text-rose-600 font-medium">
-                            {getDaysInfo(invoice.daysOverdue)}
+                            {getDaysInfo(invoice.daysOverdue, t)}
                           </div>
                         </td>
                         <td className="px-4 py-3">
                           <span className="inline-flex items-center gap-1 px-2 py-1 bg-rose-100 text-rose-700 text-xs font-medium rounded-full">
                             <Clock className="w-3 h-3" />
-                            Quá hạn
+                            {t('status_overdue')}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-center">
@@ -300,7 +302,7 @@ export default function AccountingDashboard() {
                               <Eye className="w-4 h-4" />
                             </button>
                             <button className="px-3 py-1 text-xs bg-[#b11e29] text-white rounded-lg hover:bg-[#8f1821]">
-                              Nhắc nhở
+                              {t('btn_remind')}
                             </button>
                           </div>
                         </td>
@@ -317,7 +319,7 @@ export default function AccountingDashboard() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-emerald-500" />
-                Thanh toán Gần đây
+                {t('section_recent_payments')}
               </h3>
             </div>
             
@@ -325,11 +327,11 @@ export default function AccountingDashboard() {
               <table className="w-full">
                 <thead className="bg-slate-50">
                   <tr>
-                    <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Thời gian</th>
-                    <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Mã HĐ</th>
-                    <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">Khách hàng</th>
-                    <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3">Số tiền</th>
-                    <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">PT thanh toán</th>
+                    <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_time')}</th>
+                    <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_invoice_code')}</th>
+                    <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_customer')}</th>
+                    <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_amount')}</th>
+                    <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_payment_method')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -348,7 +350,7 @@ export default function AccountingDashboard() {
                         +{formatFullCurrency(payment.amount)}
                       </td>
                       <td className="px-4 py-3 text-sm text-slate-600 capitalize">
-                        {payment.method === 'bank_transfer' ? 'Chuyển khoản' : payment.method === 'cash' ? 'Tiền mặt' : 'Thẻ'}
+                        {payment.method === 'bank_transfer' ? t('method_bank_transfer') : payment.method === 'cash' ? t('method_cash') : t('method_card')}
                       </td>
                     </tr>
                   ))}
@@ -359,28 +361,28 @@ export default function AccountingDashboard() {
 
           {/* Quick Actions */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h3>
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
             <div className="flex flex-wrap gap-3">
               <button 
                 className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
                 onClick={() => window.location.href = '/invoices/create'}
               >
                 <FileText className="w-4 h-4" />
-                Tạo Hóa đơn mới
+                {t('btn_create_invoice')}
               </button>
               <button 
                 className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700"
                 onClick={() => window.location.href = '/payments/record'}
               >
                 <DollarSign className="w-4 h-4" />
-                Ghi nhận Thanh toán
+                {t('btn_record_payment')}
               </button>
               <button 
                 className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
                 onClick={() => window.location.href = '/reports/financial'}
               >
                 <Download className="w-4 h-4" />
-                Xuất Báo cáo Tài chính
+                {t('btn_export_financial_report')}
               </button>
             </div>
           </div>

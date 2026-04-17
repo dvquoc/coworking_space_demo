@@ -24,6 +24,7 @@ import {
   Ticket,
   Calculator,
   Wallet,
+  Package,
 } from 'lucide-react'
 import { useAuthStore } from '../../stores/authStore'
 
@@ -180,10 +181,16 @@ const navItems: NavItem[] = [
     roles: ['admin', 'maintenance'],
   },
   {
+    path: '/inventory',
+    labelKey: 'inventory',
+    icon: <Package className="w-5 h-5" />,
+    roles: ['admin', 'manager', 'maintenance'],
+  },
+  {
     path: '/reports',
     labelKey: 'reports',
     icon: <BarChart3 className="w-5 h-5" />,
-    roles: ['admin', 'investor'],
+    roles: ['admin', 'investor', 'manager', 'accountant'],
   },
 ]
 

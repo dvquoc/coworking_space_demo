@@ -19,6 +19,7 @@ import { CustomerDetailsPage } from './pages/customers/CustomerDetailsPage'
 import InvoicesPage from './pages/InvoicesPage'
 import CreditPage from './pages/credits/CreditPage'
 import MaintenancePage from './pages/MaintenancePage'
+import InventoryPage from './pages/inventory/InventoryPage'
 import ReportsPage from './pages/ReportsPage'
 
 // Role-based dashboards
@@ -87,6 +88,7 @@ function App() {
           <Route path="/invoices" element={<InvoicesPage />} />
           <Route path="/credits" element={<CreditPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
+          <Route path="/inventory" element={<InventoryPage />} />
           <Route path="/reports" element={<ReportsPage />} />
         </Route>
       </Route>
