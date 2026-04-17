@@ -43,7 +43,7 @@ export const investorDashboardMock: InvestorDashboardData = {
       { type: 'hot_desk', label: 'Hot Desk', amount: 67500000, percent: 15.0 },
       { type: 'fixed_desk', label: 'Fixed Desk', amount: 90000000, percent: 20.0 },
       { type: 'private_office', label: 'Văn phòng riêng', amount: 180000000, percent: 40.0 },
-      { type: 'meeting_room', label: 'Phòng họp', amount: 45000000, percent: 10.0 },
+      { type: 'meeting_room', label: 'Meeting Room', amount: 45000000, percent: 10.0 },
       { type: 'event_space', label: 'Event Space', amount: 36000000, percent: 8.0 },
       { type: 'virtual_office', label: 'Virtual Office', amount: 31500000, percent: 7.0 },
     ],

@@ -5,7 +5,7 @@ export enum SpaceType {
   DEDICATED_DESK = 'dedicated_desk',   // Bàn cố định riêng
   PRIVATE_OFFICE = 'private_office',   // Phòng riêng cho team/công ty
   OPEN_SPACE = 'open_space',           // Khu làm việc chung lớn
-  MEETING_ROOM = 'meeting_room',       // Phòng họp nhỏ
+  MEETING_ROOM = 'meeting_room',       // Meeting Room nhỏ
   CONFERENCE_ROOM = 'conference_room', // Phòng hội nghị lớn
   TRAINING_ROOM = 'training_room',     // Phòng đào tạo
   EVENT_SPACE = 'event_space'          // Không gian sự kiện

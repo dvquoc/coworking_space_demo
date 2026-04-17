@@ -457,7 +457,7 @@ export const mockTermsAndConditions: TermsAndConditions[] = [
   {
     id: 'tc-002',
     termsCode: 'TC-MEETING-001',
-    title: 'Điều khoản sử dụng Phòng họp',
+    title: 'Điều khoản sử dụng Meeting Room',
     version: '1.3',
     usageRulesContent: `
       <h3>1. QUY ĐỊNH SỬ DỤNG</h3>
@@ -471,7 +471,7 @@ export const mockTermsAndConditions: TermsAndConditions[] = [
     liabilityContent: `
       <h3>2. TRÁCH NHIỆM</h3>
       <ul>
-        <li>Bảo quản thiết bị trong phòng họp.</li>
+        <li>Bảo quản thiết bị trong Meeting Room.</li>
         <li>Báo cáo ngay nếu thiết bị hư hỏng.</li>
         <li>Bồi thường thiệt hại do lỗi của khách hàng.</li>
       </ul>
@@ -548,7 +548,7 @@ export const mockAcceptanceLogs: AcceptanceLog[] = [
     customerName: 'Trần Thị Bình',
     termsId: 'tc-002',
     termsVersion: '1.3',
-    termsTitle: 'Điều khoản sử dụng Phòng họp',
+    termsTitle: 'Điều khoản sử dụng Meeting Room',
     termsContent: '...snapshot...',
     acceptedAt: '2026-04-16T14:00:00Z',
     ipAddress: '10.0.0.50',

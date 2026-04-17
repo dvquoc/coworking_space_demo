@@ -25,7 +25,7 @@ const SPACE_TYPE_LABELS: Record<string, string> = {
   hot_desk: 'Hot Desk',
   dedicated_desk: 'Dedicated Desk',
   private_office: 'Văn phòng riêng',
-  meeting_room: 'Phòng họp',
+  meeting_room: 'Meeting Room',
   conference_room: 'Phòng hội nghị',
   open_space: 'Khu làm việc mở',
   training_room: 'Phòng đào tạo',

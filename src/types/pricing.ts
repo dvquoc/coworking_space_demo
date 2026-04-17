@@ -155,7 +155,7 @@ export const SPACE_TYPE_LABELS: Record<SpaceType, string> = {
   hot_desk: 'Hot Desk',
   dedicated_desk: 'Dedicated Desk',
   private_office: 'Private Office',
-  meeting_room: 'Phòng họp',
+  meeting_room: 'Meeting Room',
   event_space: 'Không gian sự kiện',
   training_room: 'Phòng đào tạo',
   phone_booth: 'Phone Booth',
@@ -213,7 +213,7 @@ export const ADDON_CATEGORY_LABELS: Record<AddOnServiceCategory, string> = {
   food_drink: 'Đồ ăn & uống',
   parking: 'Giữ xe',
   reception: 'Lễ tân',
-  meeting: 'Phòng họp (thiết bị)',
+  meeting: 'Meeting Room (thiết bị)',
   other: 'Khác',
 }
 

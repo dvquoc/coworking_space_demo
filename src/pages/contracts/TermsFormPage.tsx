@@ -18,7 +18,7 @@ const SPACE_TYPE_LABELS: Record<SpaceType, string> = {
   hot_desk: 'Hot Desk',
   dedicated_desk: 'Dedicated Desk',
   private_office: 'Private Office',
-  meeting_room: 'Phòng họp',
+  meeting_room: 'Meeting Room',
   event_space: 'Event Space',
 }
 

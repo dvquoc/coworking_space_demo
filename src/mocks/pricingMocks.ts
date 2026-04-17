@@ -589,7 +589,7 @@ export const mockSpacePricingRules: SpacePricingRule[] = [
   },
   {
     id: 'spr-004',
-    name: 'Phòng họp – Theo giờ',
+    name: 'Meeting Room – Theo giờ',
     spaceType: 'meeting_room',
     pricePerHour: 200000,
     pricePerDay: 1500000,
@@ -800,7 +800,7 @@ export let mockPricingHistory: PricingHistoryEntry[] = [
     id: 'hist-005',
     entityType: 'space_pricing',
     entityId: 'spr-004',
-    entityName: 'Phòng họp – Theo giờ',
+    entityName: 'Meeting Room – Theo giờ',
     action: 'updated',
     changedFields: [
       { field: 'pricePerHour', label: 'Giá/giờ', oldValue: 180000, newValue: 200000 },
@@ -808,7 +808,7 @@ export let mockPricingHistory: PricingHistoryEntry[] = [
     ],
     changedBy: 'manager',
     changedAt: '2026-03-20T14:00:00Z',
-    notes: 'Cập nhật giá phòng họp sau review Q1',
+    notes: 'Cập nhật giá Meeting Room sau review Q1',
   },
   {
     id: 'hist-004',

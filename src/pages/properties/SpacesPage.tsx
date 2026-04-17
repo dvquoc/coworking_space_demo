@@ -119,7 +119,7 @@ export function SpacesPage() {
     <>
       <Header 
         title="Spaces Management" 
-        subtitle="Quản lý không gian làm việc và phòng họp"
+        subtitle="Quản lý không gian làm việc và Meeting Room"
       />
       
       <main className="flex-1 overflow-y-auto p-6">

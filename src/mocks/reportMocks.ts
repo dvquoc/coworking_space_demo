@@ -43,7 +43,7 @@ export const mockRevenueReport: RevenueReport = {
     { type: 'private_office', label: 'Văn phòng riêng', amount: 686000000,  percent: 40 },
     { type: 'fixed_desk',     label: 'Fixed Desk',       amount: 343000000,  percent: 20 },
     { type: 'hot_desk',       label: 'Hot Desk',         amount: 257250000,  percent: 15 },
-    { type: 'meeting_room',   label: 'Phòng họp',        amount: 171500000,  percent: 10 },
+    { type: 'meeting_room',   label: 'Meeting Room',        amount: 171500000,  percent: 10 },
     { type: 'event_space',    label: 'Event Space',      amount: 137200000,  percent: 8  },
     { type: 'virtual_office', label: 'Virtual Office',   amount: 120050000,  percent: 7  },
   ],
@@ -105,7 +105,7 @@ export const mockOccupancyReport: OccupancyReport = {
   })(),
   bySpaceType: [
     { type: 'private_office', label: 'Văn phòng riêng', occupancyRate: 88.0, totalHoursBooked: 14256 },
-    { type: 'meeting_room',   label: 'Phòng họp',        occupancyRate: 72.5, totalHoursBooked: 4320  },
+    { type: 'meeting_room',   label: 'Meeting Room',        occupancyRate: 72.5, totalHoursBooked: 4320  },
     { type: 'fixed_desk',     label: 'Fixed Desk',        occupancyRate: 81.2, totalHoursBooked: 9744  },
     { type: 'hot_desk',       label: 'Hot Desk',          occupancyRate: 65.4, totalHoursBooked: 7848  },
     { type: 'event_space',    label: 'Event Space',       occupancyRate: 42.0, totalHoursBooked: 1008  },
@@ -119,7 +119,7 @@ export const mockOccupancyReport: OccupancyReport = {
     { spaceId: 's1', spaceName: 'Private Office Suite A', buildingName: 'Cobi Building 1', type: 'private_office', typeLabel: 'VP riêng', occupancyRate: 95.0, totalHoursBooked: 1710, revenue: 128250000 },
     { spaceId: 's2', spaceName: 'Executive Suite B',       buildingName: 'Cobi Building 1', type: 'private_office', typeLabel: 'VP riêng', occupancyRate: 91.2, totalHoursBooked: 1642, revenue: 246300000 },
     { spaceId: 's3', spaceName: 'Fixed Desk Zone A',       buildingName: 'Cobi Building 1', type: 'fixed_desk',     typeLabel: 'Fixed Desk', occupancyRate: 87.5, totalHoursBooked: 1575, revenue: 63000000 },
-    { spaceId: 's4', spaceName: 'Meeting Room Alpha',      buildingName: 'Cobi Building 1', type: 'meeting_room',   typeLabel: 'Phòng họp', occupancyRate: 78.3, totalHoursBooked: 1409, revenue: 42270000 },
+    { spaceId: 's4', spaceName: 'Meeting Room Alpha',      buildingName: 'Cobi Building 1', type: 'meeting_room',   typeLabel: 'Meeting Room', occupancyRate: 78.3, totalHoursBooked: 1409, revenue: 42270000 },
     { spaceId: 's5', spaceName: 'Hot Desk Zone A',         buildingName: 'Cobi Building 1', type: 'hot_desk',       typeLabel: 'Hot Desk', occupancyRate: 72.1, totalHoursBooked: 1298, revenue: 38940000 },
     { spaceId: 's6', spaceName: 'Private Office C',        buildingName: 'Cobi Building 2', type: 'private_office', typeLabel: 'VP riêng', occupancyRate: 68.4, totalHoursBooked: 1231, revenue: 92325000 },
     { spaceId: 's7', spaceName: 'Event Hall',              buildingName: 'Cobi Building 2', type: 'event_space',    typeLabel: 'Event', occupancyRate: 42.0, totalHoursBooked: 756,  revenue: 75600000 },
@@ -191,7 +191,7 @@ export const mockServiceReport: ServiceUsageReport = {
   services: [
     { serviceId: 'sv1', serviceName: 'Cà phê & Đồ uống',   usageCount: 620, revenue: 37200000,  revenuePercent: 26.2, change: 15.3 },
     { serviceId: 'sv2', serviceName: 'In ấn & Photocopy',   usageCount: 480, revenue: 19200000,  revenuePercent: 13.5, change: 8.7  },
-    { serviceId: 'sv3', serviceName: 'Phòng họp theo giờ',  usageCount: 310, revenue: 46500000,  revenuePercent: 32.7, change: 22.1 },
+    { serviceId: 'sv3', serviceName: 'Meeting Room theo giờ',  usageCount: 310, revenue: 46500000,  revenuePercent: 32.7, change: 22.1 },
     { serviceId: 'sv4', serviceName: 'Gửi xe (tháng)',      usageCount: 145, revenue: 14500000,  revenuePercent: 10.2, change: 5.0  },
     { serviceId: 'sv5', serviceName: 'Tủ khóa có khóa',    usageCount: 120, revenue: 6000000,   revenuePercent: 4.2,  change: -3.2 },
     { serviceId: 'sv6', serviceName: 'Nhận & Gửi bưu kiện', usageCount: 98,  revenue: 4900000,   revenuePercent: 3.5,  change: 12.0 },
@@ -200,10 +200,10 @@ export const mockServiceReport: ServiceUsageReport = {
   ],
   top5: [],         // populated below
   trendTop3: [
-    { period: '2026-01', label: 'T1/2026', services: [{ name: 'Phòng họp', count: 68 }, { name: 'Cà phê', count: 140 }, { name: 'In ấn', count: 108 }] },
-    { period: '2026-02', label: 'T2/2026', services: [{ name: 'Phòng họp', count: 75 }, { name: 'Cà phê', count: 148 }, { name: 'In ấn', count: 115 }] },
-    { period: '2026-03', label: 'T3/2026', services: [{ name: 'Phòng họp', count: 88 }, { name: 'Cà phê', count: 162 }, { name: 'In ấn', count: 128 }] },
-    { period: '2026-04', label: 'T4/2026', services: [{ name: 'Phòng họp', count: 79 }, { name: 'Cà phê', count: 170 }, { name: 'In ấn', count: 129 }] },
+    { period: '2026-01', label: 'T1/2026', services: [{ name: 'Meeting Room', count: 68 }, { name: 'Cà phê', count: 140 }, { name: 'In ấn', count: 108 }] },
+    { period: '2026-02', label: 'T2/2026', services: [{ name: 'Meeting Room', count: 75 }, { name: 'Cà phê', count: 148 }, { name: 'In ấn', count: 115 }] },
+    { period: '2026-03', label: 'T3/2026', services: [{ name: 'Meeting Room', count: 88 }, { name: 'Cà phê', count: 162 }, { name: 'In ấn', count: 128 }] },
+    { period: '2026-04', label: 'T4/2026', services: [{ name: 'Meeting Room', count: 79 }, { name: 'Cà phê', count: 170 }, { name: 'In ấn', count: 129 }] },
   ],
 }
 // Sort by revenue and take top 5
