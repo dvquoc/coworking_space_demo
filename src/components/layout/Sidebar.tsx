@@ -49,22 +49,27 @@ const navItems: NavItem[] = [
     roles: ['admin', 'manager'],
   },
   {
-    path: '/properties/buildings',
-    labelKey: 'buildings',
-    icon: <Building2 className="w-5 h-5" />,
+    path: '/management',
+    labelKey: 'management',
+    icon: <Tag className="w-5 h-5" />,
     roles: ['admin', 'manager'],
-  },
-  {
-    path: '/properties/floors',
-    labelKey: 'floors',
-    icon: <Layers className="w-5 h-5" />,
-    roles: ['admin', 'manager'],
-  },
-  {
-    path: '/properties/spaces',
-    labelKey: 'spaces',
-    icon: <LayoutGrid className="w-5 h-5" />,
-    roles: ['admin', 'manager'],
+    subItems: [
+      {
+            path: '/properties/buildings',
+            labelKey: 'buildings',
+            icon: <Building2 className="w-5 h-5" />,
+        },
+        {
+            path: '/properties/floors',
+            labelKey: 'floors',
+            icon: <Layers className="w-5 h-5" />,
+        },
+        {
+            path: '/properties/spaces',
+            labelKey: 'spaces',
+            icon: <LayoutGrid className="w-5 h-5" />,
+        }
+    ]
   },
   {
     path: '/customers',
