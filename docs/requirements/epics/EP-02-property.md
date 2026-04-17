@@ -13,9 +13,11 @@
 
 ## Mô tả
 
-Quản lý tài sản vật lý của Coworking Space: 2 tòa nhà Cobi(Và Sau có thể thêm nhiều tòa khác), các tầng, không gian làm việc (Hot desk, Dedicated desk, Private office, Open space), và phòng họp (Meeting rooms, Conference rooms, Training rooms, Event spaces). Bao gồm cấu hình giá thuê theo giờ/ngày/tuần/tháng/năm cho từng loại space.
+Quản lý tài sản vật lý của Coworking Space: 2 tòa nhà Cobi(À Sau có thể thêm nhiều tòa khác), các tầng, không gian làm việc (Hot desk, Dedicated desk, Private office, Open space), và phòng họữ (Meeting rooms, Conference rooms, Training rooms, Event spaces).
 
 **Foundation Epic**: EP-02 là nền tảng cho toàn bộ hệ thống - tất cả features khác (Booking, Contract, Cusotmer, Payment...) đều phụ thuộc vào Property data.
+
+**Pricing tách sang EP-17**: Cấu hình giá thuê, giá dịch vụ, chương trình khuyến mãi được quản lý tại **EP-17 – Pricing & Promotions Management**.
 
 ## Features thuộc Epic này
 
@@ -27,7 +29,7 @@ Quản lý tài sản vật lý của Coworking Space: 2 tòa nhà Cobi(Và Sau 
 | F-08 | Quản lý tầng (Floors) | CRUD các tầng thuộc building, floor number, diện tích | Draft |
 | F-09 | Quản lý không gian làm việc (Workspaces) | Hot desk, Dedicated desk, Private office, Open space với capacity | Draft |
 | F-10 | Quản lý phòng họp (Meeting Rooms) | Meeting/Conference/Training/Event rooms với equipment list | Draft |
-| F-11 | Cấu hình giá thuê (Pricing) | Pricing rules theo loại space, thời gian (giờ/ngày/tuần/tháng) | Draft |
+| ~~F-11~~ | ~~Cấu hình giá thuê~~ | **→ Chuyển sang EP-17** – Pricing & Promotions Management | Moved |
 
 ### Phase 2 - Advanced Features (Not in scope Phase 1)
 - F-12: Floor plan upload & visual mapping
@@ -230,6 +232,7 @@ And Existing bookings (nếu có) được notify
 - EP-05: Contract Management (contract link to spaces)
 - EP-08: Inventory & Asset Management (assets gắn với spaces)
 - EP-11: Role-based Dashboards (hiển thị occupancy rate)
+- EP-17: Pricing & Promotions (cần space types/IDs để cấu hình giá)
 
 ## Out of Scope (Phase 1)
 

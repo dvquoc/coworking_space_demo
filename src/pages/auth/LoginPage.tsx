@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { LogIn, Mail, Lock, AlertCircle } from 'lucide-react'
 import { useLogin, getErrorMessage } from '../../hooks/useAuth'
 import type { LoginRequest } from '../../types/auth'
@@ -12,6 +13,7 @@ interface LoginFormData {
 }
 
 export default function LoginPage() {
+  const { t } = useTranslation('auth')
   const {
     register,
     handleSubmit,
@@ -51,8 +53,8 @@ export default function LoginPage() {
         <div className="inline-flex items-center justify-center w-16 h-16 bg-[#b11e29] rounded-full mb-4">
           <LogIn className="w-8 h-8 text-white" />
         </div>
-        <h1 className="text-3xl font-bold text-slate-900">Đăng nhập</h1>
-        <p className="text-slate-600 mt-2">Coworking Space Admin Dashboard</p>
+        <h1 className="text-3xl font-bold text-slate-900">{t('login_title')}</h1>
+        <p className="text-slate-600 mt-2">{t('login_subtitle')}</p>
       </div>
 
       {/* Login Form */}
@@ -63,7 +65,7 @@ export default function LoginPage() {
             <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm text-rose-800 font-medium">Đăng nhập thất bại</p>
+                <p className="text-sm text-rose-800 font-medium">{t('login_error_title')}</p>
                 <p className="text-sm text-rose-700 mt-1">
                   {getErrorMessage(loginMutation.error)}
                 </p>
@@ -74,7 +76,7 @@ export default function LoginPage() {
           {/* Email Field */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
-              Email
+              {t('email_label')}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -82,10 +84,10 @@ export default function LoginPage() {
               </div>
               <input
                 {...register('email', {
-                  required: 'Email là bắt buộc',
+                  required: t('email_required'),
                   pattern: {
                     value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Email không hợp lệ',
+                    message: t('email_invalid'),
                   },
                 })}
                 type="email"
@@ -105,7 +107,7 @@ export default function LoginPage() {
           {/* Password Field */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
-              Mật khẩu
+              {t('password_label')}
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -113,10 +115,10 @@ export default function LoginPage() {
               </div>
               <input
                 {...register('password', {
-                  required: 'Mật khẩu là bắt buộc',
+                  required: t('password_required'),
                   minLength: {
                     value: 6,
-                    message: 'Mật khẩu phải có ít nhất 6 ký tự',
+                    message: t('password_min_length'),
                   },
                 })}
                 type="password"
@@ -141,13 +143,13 @@ export default function LoginPage() {
                 type="checkbox"
                 className="w-4 h-4 text-[#b11e29] border-slate-300 rounded focus:ring-[#b11e29]"
               />
-              <span className="ml-2 text-sm text-slate-700">Ghi nhớ đăng nhập</span>
+              <span className="ml-2 text-sm text-slate-700">{t('remember_me')}</span>
             </label>
             <Link
               to="/auth/forgot-password"
               className="text-sm text-[#b11e29] hover:text-[#8f1821] font-medium"
             >
-              Quên mật khẩu?
+              {t('forgot_password_link')}
             </Link>
           </div>
 
@@ -163,12 +165,12 @@ export default function LoginPage() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span>Đang xử lý...</span>
+                <span>{t('processing')}</span>
               </>
             ) : (
               <>
                 <LogIn className="w-5 h-5" />
-                <span>Đăng nhập</span>
+                <span>{t('login_btn')}</span>
               </>
             )}
           </button>

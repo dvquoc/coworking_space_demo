@@ -41,9 +41,9 @@ export interface Customer {
   // Segmentation
   tags: string[]
   
-  // Credit Wallet (F-19B) - Đơn vị: Cobi (1 Cobi = 1.000 VND)
-  creditBalance: number         // Credit đã nạp (không hết hạn) - Cobi
-  rewardBalance: number         // Credit thưởng (có hạn sử dụng) - Cobi
+  // Credit Wallet (F-19B) - Đơn vị: Credit (1 Credit = 1.000 VND)
+  creditBalance: number         // Credit đã nạp (không hết hạn) - Credit
+  rewardBalance: number         // Credit thưởng (có hạn sử dụng) - Credit
   
   // Status
   status: CustomerStatus

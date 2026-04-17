@@ -28,7 +28,7 @@ const TEMPLATE_SECTIONS = [
   { id: 'partyLessor', label: 'Bên cho thuê', icon: Building2, placeholder: '{{companyName}}, {{companyTaxCode}}' },
   { id: 'partyLessee', label: 'Bên thuê', icon: Users, placeholder: '{{customerName}}, {{customerId}}' },
   { id: 'service', label: 'Dịch vụ', icon: Layers, placeholder: '{{spaceType}}, {{buildingName}}, {{duration}}' },
-  { id: 'pricing', label: 'Giá & thanh toán', icon: DollarSign, placeholder: '{{monthlyFee}}, {{deposit}}' },
+  { id: 'pricing', label: 'Giá trị hợp đồng', icon: DollarSign, placeholder: '{{monthlyFee}}, {{deposit}}' },
   { id: 'usageRules', label: 'Quy định sử dụng', icon: ScrollText, placeholder: '{{operatingHours}}' },
   { id: 'liability', label: 'Trách nhiệm', icon: Shield, placeholder: '' },
   { id: 'termination', label: 'Chấm dứt', icon: XCircle, placeholder: '' },

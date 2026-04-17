@@ -4,8 +4,8 @@ Thư mục này lưu trữ tất cả tài liệu yêu cầu nghiệp vụ (Busi
 
 ## Tổng quan
 
-- **Tổng số Epics**: 16 Epics
-- **Phase 1 (Core)**: 9 Epics (+ EP-15 partial) - **4.5-5 tháng**
+- **Tổng số Epics**: 17 Epics
+- **Phase 1 (Core)**: 10 Epics (+ EP-15 partial) - **4.5-5 tháng**
 - **Phase 2 (Growth)**: 4 Epics - 3 tháng  
 - **Phase 3 (Advanced)**: 3 Epics - 2 tháng
 - **Tổng số NFRs**: 5 Non-Functional Requirements

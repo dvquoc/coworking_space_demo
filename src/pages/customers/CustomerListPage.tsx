@@ -218,9 +218,9 @@ export function CustomerListPage() {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600">Tổng số dư Cobi</p>
+                  <p className="text-sm text-slate-600">Tổng số dư Credit</p>
                   <p className="text-2xl font-semibold text-slate-900 mt-1">
-                    {new Intl.NumberFormat('vi-VN').format(stats.totalCredit)} Cobi
+                    {new Intl.NumberFormat('vi-VN').format(stats.totalCredit)} Credit
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
@@ -318,7 +318,7 @@ export function CustomerListPage() {
                         Tags
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">
-                        Số dư Cobi
+                        Số dư Credit
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
                         Trạng thái
@@ -383,7 +383,7 @@ export function CustomerListPage() {
                         <td className="px-6 py-4 whitespace-nowrap text-right">
                           <div>
                             <p className="text-sm font-medium text-slate-900">
-                              {new Intl.NumberFormat('vi-VN').format(customer.creditBalance + customer.rewardBalance)} Cobi
+                              {new Intl.NumberFormat('vi-VN').format(customer.creditBalance + customer.rewardBalance)} Credit
                             </p>
                             {customer.rewardBalance > 0 && (
                               <p className="text-xs text-amber-600">
@@ -430,13 +430,13 @@ export function CustomerListPage() {
                                   onClick={(e) => {
                                     e.stopPropagation()
                                     // TODO: Open top-up modal
-                                    alert(`Nạp Cobi cho ${customer.fullName} - Coming soon`)
+                                    alert(`Nạp Credit cho ${customer.fullName} - Coming soon`)
                                     setOpenMenuId(null)
                                   }}
                                   className="w-full px-4 py-2 text-left text-sm text-amber-600 hover:bg-amber-50 flex items-center gap-2"
                                 >
                                   <CirclePlus className="w-4 h-4" />
-                                  Nạp Cobi
+                                  Nạp Credit
                                 </button>
                                 <hr className="my-1 border-slate-200" />
                                 {customer.status === 'suspended' ? (

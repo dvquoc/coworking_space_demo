@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { LogOut, User as UserIcon } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../stores/authStore'
 import { useLogout } from '../hooks/useAuth'
 
 export function UserMenu() {
+  const { t } = useTranslation('common')
   const [showMenu, setShowMenu] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const user = useAuthStore((state) => state.user)
@@ -75,10 +77,10 @@ export function UserMenu() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-2">
-              Xác nhận đăng xuất
+              {t('logout_confirm_title')}
             </h3>
             <p className="text-slate-600 mb-6">
-              Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?
+              {t('logout_confirm_message')}
             </p>
             <div className="flex gap-3">
               <button
@@ -86,7 +88,7 @@ export function UserMenu() {
                 className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition"
                 disabled={logoutMutation.isPending}
               >
-                Hủy
+                {t('cancel')}
               </button>
               <button
                 onClick={handleConfirmLogout}
@@ -101,7 +103,7 @@ export function UserMenu() {
                 ) : (
                   <LogOut className="w-4 h-4" />
                 )}
-                Đăng xuất
+                {t('logout')}
               </button>
             </div>
           </div>

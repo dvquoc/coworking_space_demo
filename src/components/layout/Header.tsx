@@ -1,4 +1,5 @@
 import { UserMenu } from '../UserMenu'
+import { LanguageSwitcher } from '../LanguageSwitcher'
 
 interface HeaderProps {
   title: string
@@ -15,7 +16,10 @@ export default function Header({ title, subtitle }: HeaderProps) {
             <p className="text-sm text-slate-600 mt-1">{subtitle}</p>
           )}
         </div>
-        <UserMenu />
+        <div className="flex items-center gap-2">
+          <LanguageSwitcher />
+          <UserMenu />
+        </div>
       </div>
     </header>
   )

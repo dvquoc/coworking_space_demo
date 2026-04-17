@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSearchParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Lock, CheckCircle, AlertCircle } from 'lucide-react'
 import { useResetPassword, getErrorMessage } from '../../hooks/useAuth'
 import type { ResetPasswordRequest } from '../../types/auth'
@@ -24,6 +25,7 @@ interface PasswordStrength {
 }
 
 export default function ResetPasswordPage() {
+  const { t } = useTranslation('auth')
   const [searchParams] = useSearchParams()
   const resetToken = searchParams.get('token') || ''
   const [showSuccess, setShowSuccess] = useState(false)
@@ -50,13 +52,13 @@ export default function ResetPasswordPage() {
 
     const score = Object.values(criteria).filter(Boolean).length
 
-    let label = 'Yếu'
+    let label = 'strength_weak'
     let color = 'red'
     if (score >= 5) {
-      label = 'Mạnh'
+      label = 'strength_strong'
       color = 'green'
     } else if (score >= 3) {
-      label = 'Trung bình'
+      label = 'strength_medium'
       color = 'yellow'
     }
 
@@ -85,16 +87,16 @@ export default function ResetPasswordPage() {
             <CheckCircle className="w-8 h-8 text-emerald-600" />
           </div>
           <h2 className="text-2xl font-bold text-slate-900 mb-2">
-            Đặt lại mật khẩu thành công!
+            {t('reset_success_title')}
           </h2>
           <p className="text-slate-600 mb-6">
-            Mật khẩu của bạn đã được cập nhật. Bạn sẽ được chuyển đến trang đăng nhập trong giây lát.
+            {t('reset_success_message')}
           </p>
           <Link
             to="/auth/login"
             className="inline-block bg-[#b11e29] hover:bg-[#8f1821] text-white font-medium py-3 px-6 rounded-xl transition"
           >
-            Đăng nhập ngay
+            {t('login_now')}
           </Link>
         </div>
       </div>
@@ -108,9 +110,9 @@ export default function ResetPasswordPage() {
         <div className="inline-flex items-center justify-center w-16 h-16 bg-[#b11e29] rounded-full mb-4">
           <Lock className="w-8 h-8 text-white" />
         </div>
-        <h1 className="text-3xl font-bold text-slate-900">Đặt lại mật khẩu</h1>
+        <h1 className="text-3xl font-bold text-slate-900">{t('reset_password_title')}</h1>
         <p className="text-slate-600 mt-2">
-          Tạo mật khẩu mới cho tài khoản của bạn
+          {t('reset_password_subtitle')}
         </p>
       </div>
 
@@ -122,7 +124,7 @@ export default function ResetPasswordPage() {
             <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-sm text-rose-800 font-medium">Có lỗi xảy ra</p>
+                <p className="text-sm text-rose-800 font-medium">{t('error_title')}</p>
                 <p className="text-sm text-rose-700 mt-1">
                     {getErrorMessage(resetPasswordMutation.error)}
                   </p>
@@ -133,14 +135,14 @@ export default function ResetPasswordPage() {
             {/* New Password Field */}
             <div>
               <label htmlFor="newPassword" className="block text-sm font-medium text-slate-700 mb-2">
-                Mật khẩu mới
+                {t('new_password_label')}
               </label>
               <input
                 {...register('newPassword', {
-                  required: 'Mật khẩu là bắt buộc',
+                  required: t('password_required'),
                   pattern: {
                     value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$%^&*!])[A-Za-z\d@#$%^&*!]{8,}$/,
-                    message: 'Mật khẩu không đủ mạnh',
+                    message: t('password_weak'),
                   },
                 })}
                 type="password"
@@ -157,9 +159,9 @@ export default function ResetPasswordPage() {
               {password && (
                 <div className="mt-3">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-slate-700">Độ mạnh mật khẩu:</span>
+                    <span className="text-sm text-slate-700">{t('password_strength_label')}</span>
                     <span className={`text-sm font-medium text-${passwordStrength.color}-600`}>
-                      {passwordStrength.label}
+                      {t(passwordStrength.label)}
                     </span>
                   </div>
                   <div className="w-full bg-slate-200 rounded-full h-2">
@@ -172,12 +174,12 @@ export default function ResetPasswordPage() {
                   {/* Criteria Checklist */}
                   <div className="mt-3 space-y-1">
                     {[
-                      { key: 'minLength', label: 'Ít nhất 8 ký tự' },
-                      { key: 'hasUppercase', label: 'Có chữ hoa (A-Z)' },
-                      { key: 'hasLowercase', label: 'Có chữ thường (a-z)' },
-                      { key: 'hasNumber', label: 'Có số (0-9)' },
-                      { key: 'hasSpecial', label: 'Có ký tự đặc biệt (@#$%^&*!)' },
-                    ].map(({ key, label }) => {
+                      { key: 'minLength', labelKey: 'criteria_min_length' },
+                      { key: 'hasUppercase', labelKey: 'criteria_uppercase' },
+                      { key: 'hasLowercase', labelKey: 'criteria_lowercase' },
+                      { key: 'hasNumber', labelKey: 'criteria_number' },
+                      { key: 'hasSpecial', labelKey: 'criteria_special' },
+                    ].map(({ key, labelKey }) => {
                       const met = passwordStrength.criteria[key as keyof typeof passwordStrength.criteria]
                       return (
                         <div key={key} className="flex items-center gap-2">
@@ -187,7 +189,7 @@ export default function ResetPasswordPage() {
                             <div className="w-4 h-4 rounded-full border-2 border-slate-300" />
                           )}
                           <span className={`text-sm ${met ? 'text-emerald-600' : 'text-slate-500'}`}>
-                            {label}
+                            {t(labelKey)}
                           </span>
                         </div>
                       )
@@ -200,13 +202,13 @@ export default function ResetPasswordPage() {
             {/* Confirm Password Field */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-2">
-                Xác nhận mật khẩu
+                {t('confirm_password_label')}
               </label>
               <input
                 {...register('confirmPassword', {
-                  required: 'Vui lòng xác nhận mật khẩu',
+                  required: t('confirm_password_required'),
                   validate: (value) =>
-                    value === watch('newPassword') || 'Mật khẩu không khớp',
+                    value === watch('newPassword') || t('passwords_not_match'),
                 })}
                 type="password"
                 id="confirmPassword"
@@ -231,12 +233,12 @@ export default function ResetPasswordPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span>Đang xử lý...</span>
+                  <span>{t('processing')}</span>
                 </>
               ) : (
                 <>
                   <Lock className="w-5 h-5" />
-                  <span>Đặt lại mật khẩu</span>
+                  <span>{t('reset_password_btn')}</span>
                 </>
               )}
             </button>

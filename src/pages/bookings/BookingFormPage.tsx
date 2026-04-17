@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import Header from '../../components/layout/Header'
 import { mockBuildings, mockFloors, mockSpaces, mockPricingRules } from '../../mocks/propertyMocks'
-import { mockServices } from '../../mocks/bookingMocks'
+import { mockBookingAddOns } from '../../mocks/pricingMocks'
 
 // ---- helpers ----
 function calcDurationMinutes(start: string, end: string) {
@@ -74,13 +74,14 @@ export function BookingFormPage() {
   // Step 1 state
   const [customerName, setCustomerName] = useState('')
   const [customerPhone, setCustomerPhone] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
   const [buildingId, setBuildingId] = useState('')
   const [floorId, setFloorId] = useState('')
   const [spaceId, setSpaceId] = useState('')
   const [date, setDate] = useState('')
   const [startTime, setStartTime] = useState('')
   const [endTime, setEndTime] = useState('')
-  const [selectedServices, setSelectedServices] = useState<string[]>([])
+  const [selectedAddOns, setSelectedAddOns] = useState<Record<string, number>>({}) // id -> quantity
   const [discountPercent, setDiscountPercent] = useState(0)
   const [notes, setNotes] = useState('')
   const [conflict, setConflict] = useState<string | null>(null)
@@ -102,19 +103,32 @@ export function BookingFormPage() {
   const duration = calcDurationMinutes(startTime, endTime) // phút
   const durationHours = duration / 60
   const spacePrice = spacePricePerHour * durationHours
-  const servicesPrice = selectedServices.reduce((sum, id) => {
-    const sv = mockServices.find(s => s.id === id)
-    return sum + (sv ? sv.price : 0)
+  const servicesPrice = Object.entries(selectedAddOns).reduce((sum, [id, qty]) => {
+    const addon = mockBookingAddOns.find(a => a.id === id)
+    return sum + (addon ? addon.unitPrice * qty : 0)
   }, 0)
   const subtotal = spacePrice + servicesPrice
   const discountAmount = subtotal * (discountPercent / 100)
   const totalPrice = subtotal - discountAmount
 
-  // Toggle service
-  const toggleService = (id: string) => {
-    setSelectedServices(prev =>
-      prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
-    )
+  // Toggle/update add-ons
+  const toggleAddOn = (id: string) => {
+    setSelectedAddOns(prev => {
+      if (prev[id]) {
+        const next = { ...prev }
+        delete next[id]
+        return next
+      }
+      return { ...prev, [id]: 1 }
+    })
+  }
+
+  const setAddOnQty = (id: string, qty: number) => {
+    if (qty <= 0) {
+      setSelectedAddOns(prev => { const next = { ...prev }; delete next[id]; return next })
+    } else {
+      setSelectedAddOns(prev => ({ ...prev, [id]: qty }))
+    }
   }
 
   // Giả lập kiểm tra lịch trùng
@@ -187,7 +201,7 @@ export function BookingFormPage() {
                 <h3 className="font-semibold text-slate-700 flex items-center gap-2 mb-4">
                   <User className="w-4 h-4 text-[#b11e29]" /> Thông tin khách hàng
                 </h3>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="block text-sm font-medium text-slate-600 mb-1">Tên khách hàng *</label>
                     <input
@@ -205,6 +219,16 @@ export function BookingFormPage() {
                       placeholder="0901234567"
                       value={customerPhone}
                       onChange={e => setCustomerPhone(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">Email</label>
+                    <input
+                      type="email"
+                      className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
+                      placeholder="email@example.com"
+                      value={customerEmail}
+                      onChange={e => setCustomerEmail(e.target.value)}
                     />
                   </div>
                 </div>
@@ -319,25 +343,97 @@ export function BookingFormPage() {
                 )}
               </div>
 
+              {/* Tiền thuê không gian */}
+              {selectedSpace && (
+                <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+                  <h3 className="font-semibold text-slate-700 flex items-center gap-2 mb-4">
+                    <CreditCard className="w-4 h-4 text-[#b11e29]" /> Tiền thuê không gian
+                  </h3>
+                  <div className="flex items-center justify-between text-sm mb-2">
+                    <span className="text-slate-500">Đơn giá</span>
+                    <span className="font-medium text-slate-700">
+                      {spacePricePerHour > 0 ? formatPrice(spacePricePerHour) + ' / giờ' : <span className="text-slate-400 italic">Chưa có giá</span>}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm mb-2">
+                    <span className="text-slate-500">Thời lượng</span>
+                    <span className="font-medium text-slate-700">
+                      {duration > 0
+                        ? `${Math.floor(duration / 60)}h${duration % 60 > 0 ? ` ${duration % 60}m` : ''} (${durationHours.toFixed(2).replace(/\.?0+$/, '')} giờ)`
+                        : <span className="text-slate-400 italic">Chưa chọn thời gian</span>}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <span className="font-semibold text-slate-700">Thành tiền thuê</span>
+                    <span className={`text-lg font-bold ${spacePrice > 0 ? 'text-[#b11e29]' : 'text-slate-400'}`}>
+                      {spacePrice > 0 ? formatPrice(spacePrice) : '—'}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* Tiện ích không gian */}
+              {selectedSpace && selectedSpace.amenities.length > 0 && (
+                <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+                  <h3 className="font-semibold text-slate-700 flex items-center gap-2 mb-3">
+                    <LayoutGrid className="w-4 h-4 text-[#b11e29]" /> Tiện ích đi kèm không gian
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedSpace.amenities.map(amenity => (
+                      <span key={amenity} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium border border-blue-100">
+                        ✓ {amenity}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="text-xs text-slate-400 mt-2">Các tiện ích này đã được bao gồm trong giá thuê không gian.</p>
+                </div>
+              )}
+
               {/* Dịch vụ thêm */}
               <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-                <h3 className="font-semibold text-slate-700 flex items-center gap-2 mb-4">
+                <h3 className="font-semibold text-slate-700 flex items-center gap-2 mb-1">
                   <LayoutGrid className="w-4 h-4 text-[#b11e29]" /> Dịch vụ sử dụng thêm
                 </h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {mockServices.map(sv => (
-                    <label key={sv.id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all
-                      ${selectedServices.includes(sv.id) ? 'border-[#b11e29] bg-[#b11e29]/5' : 'border-slate-200 hover:border-slate-300'}`}>
-                      <input
-                        type="checkbox"
-                        className="accent-[#b11e29]"
-                        checked={selectedServices.includes(sv.id)}
-                        onChange={() => toggleService(sv.id)}
-                      />
-                      <span className="text-sm text-slate-700">{sv.name}</span>
-                      <span className="ml-auto text-xs text-slate-500">{formatPrice(sv.price)}</span>
-                    </label>
-                  ))}
+                <p className="text-xs text-slate-400 mb-4">Chọn và nhập số lượng dịch vụ muốn thêm vào booking.</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {mockBookingAddOns.map(addon => {
+                    const qty = selectedAddOns[addon.id] ?? 0
+                    const checked = qty > 0
+                    return (
+                      <div key={addon.id} className={`flex items-center gap-3 p-3 rounded-lg border transition-all
+                        ${checked ? 'border-[#b11e29] bg-[#b11e29]/5' : 'border-slate-200 hover:border-slate-300'}`}>
+                        <input
+                          type="checkbox"
+                          className="accent-[#b11e29] shrink-0"
+                          checked={checked}
+                          onChange={() => toggleAddOn(addon.id)}
+                        />
+                        <span className="text-lg shrink-0">{addon.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-slate-700">{addon.name}</p>
+                          <p className="text-xs text-slate-400 truncate">{addon.description}</p>
+                        </div>
+                        <span className="text-xs text-slate-500 shrink-0 whitespace-nowrap">
+                          {formatPrice(addon.unitPrice)}/{addon.unit}
+                        </span>
+                        {checked && (
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button type="button"
+                              onClick={() => setAddOnQty(addon.id, qty - 1)}
+                              className="w-6 h-6 rounded-md border border-slate-300 flex items-center justify-center text-slate-600 hover:bg-slate-100">
+                              <Minus className="w-3 h-3" />
+                            </button>
+                            <span className="w-7 text-center text-sm font-semibold text-slate-800">{qty}</span>
+                            <button type="button"
+                              onClick={() => setAddOnQty(addon.id, qty + 1)}
+                              className="w-6 h-6 rounded-md border border-slate-300 flex items-center justify-center text-slate-600 hover:bg-slate-100">
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
 
@@ -390,7 +486,11 @@ export function BookingFormPage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-slate-500">Khách hàng</span>
-                    <span className="font-medium text-slate-700">{customerName} {customerPhone && `– ${customerPhone}`}</span>
+                    <span className="font-medium text-slate-700 text-right">
+                      {customerName}
+                      {customerPhone && ` – ${customerPhone}`}
+                      {customerEmail && ` · ${customerEmail}`}
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-500">Không gian</span>
@@ -400,11 +500,14 @@ export function BookingFormPage() {
                     <span className="text-slate-500">Thời gian</span>
                     <span className="font-medium text-slate-700">{date}, {startTime} – {endTime}</span>
                   </div>
-                  {selectedServices.length > 0 && (
+                  {Object.keys(selectedAddOns).length > 0 && (
                     <div className="flex justify-between">
                       <span className="text-slate-500">Dịch vụ thêm</span>
-                      <span className="font-medium text-slate-700">
-                        {selectedServices.map(id => mockServices.find(s => s.id === id)?.name).join(', ')}
+                      <span className="font-medium text-slate-700 text-right">
+                        {Object.entries(selectedAddOns).map(([id, qty]) => {
+                          const a = mockBookingAddOns.find(x => x.id === id)
+                          return a ? `${a.name} ×${qty}` : ''
+                        }).filter(Boolean).join(', ')}
                       </span>
                     </div>
                   )}

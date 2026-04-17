@@ -27,7 +27,7 @@ import type {
 
 const STEPS = [
   { id: 1, label: 'Thông tin cơ bản', icon: FileText },
-  { id: 2, label: 'Giá & Thanh toán', icon: DollarSign },
+  { id: 2, label: 'Giá trị hợp đồng', icon: DollarSign },
   { id: 3, label: 'Xem trước & Xác nhận', icon: Check },
 ]
 
@@ -478,7 +478,7 @@ export function ContractFormPage() {
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                   <DollarSign className="w-5 h-5" />
-                  Giá & Thanh toán
+                    Giá trị hợp đồng
                 </h2>
 
                 <div className="grid grid-cols-2 gap-6">

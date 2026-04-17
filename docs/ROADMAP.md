@@ -30,9 +30,10 @@ Roadmap phát triển hệ thống quản lý Coworking Space cho **Cobi** (2 t�
 | EP-08 | Inventory & Asset Management | Must have | 4 | Asset tracking, serial numbers, maintenance logs |
 | EP-11 | Role-based Dashboards ⭐ | Must have | 6 | 6 dashboards cho 6 roles, KPIs, charts |
 | EP-15 | Customer Portal **Partial** | Must have | 3 | Customer login, book online, view bookings (Phase 1 only) |
+| EP-17 | Pricing & Promotions Management | Must have | 8 | Space pricing, add-on services pricing, khuyến mãi, voucher |
 
-**Total Features**: 58 features  
-**Note**: EP-03, EP-04, EP-05, EP-06 extended với customer self-service booking flow + template management + company employee management + **prepaid credit system**. EP-15 partial implementation (3/7 features) để support customer booking.
+**Total Features**: 66 features  
+**Note**: EP-03, EP-04, EP-05, EP-06 extended với customer self-service booking flow + template management + company employee management + **prepaid credit system**. EP-15 partial implementation (3/7 features) để support customer booking. EP-17 tách từ F-11 của EP-02, mở rộng thêm quản lý giá dịch vụ và chương trình khuyến mãi.
 
 ### Deliverables
 - [x] Login system với 6 roles

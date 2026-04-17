@@ -17,6 +17,7 @@ import DashboardPage from './pages/DashboardPage'
 import { CustomerListPage } from './pages/customers/CustomerListPage'
 import { CustomerDetailsPage } from './pages/customers/CustomerDetailsPage'
 import InvoicesPage from './pages/InvoicesPage'
+import CreditPage from './pages/credits/CreditPage'
 import MaintenancePage from './pages/MaintenancePage'
 import ReportsPage from './pages/ReportsPage'
 
@@ -32,7 +33,6 @@ import SalesDashboard from './pages/dashboards/SalesDashboard'
 import { BuildingsPage } from './pages/properties/BuildingsPage'
 import { FloorsPage } from './pages/properties/FloorsPage'
 import { SpacesPage } from './pages/properties/SpacesPage'
-import { PricingPage } from './pages/properties/PricingPage'
 
 // Booking management pages
 import {
@@ -53,6 +53,9 @@ import {
   TermsListPage,
   TermsFormPage,
 } from './pages/contracts'
+
+// Pricing & Promotions pages
+import { PromotionsPage, VouchersPage, PricingCalculatorPage, ServicePricingPage } from './pages/pricing'
 
 // Error pages
 import NotFoundPage from './pages/NotFoundPage'
@@ -82,6 +85,7 @@ function App() {
           <Route path="/customers" element={<CustomerListPage />} />
           <Route path="/customers/:customerId" element={<CustomerDetailsPage />} />
           <Route path="/invoices" element={<InvoicesPage />} />
+          <Route path="/credits" element={<CreditPage />} />
           <Route path="/maintenance" element={<MaintenancePage />} />
           <Route path="/reports" element={<ReportsPage />} />
         </Route>
@@ -130,7 +134,6 @@ function App() {
           <Route path="/properties/buildings" element={<BuildingsPage />} />
           <Route path="/properties/floors" element={<FloorsPage />} />
           <Route path="/properties/spaces" element={<SpacesPage />} />
-          <Route path="/properties/pricing" element={<PricingPage />} />
         </Route>
       </Route>
 
@@ -166,6 +169,16 @@ function App() {
           <Route path="/contracts/terms/new" element={<TermsFormPage />} />
           <Route path="/contracts/terms/:id" element={<TermsFormPage />} />
           <Route path="/contracts/terms/:id/edit" element={<TermsFormPage />} />
+        </Route>
+      </Route>
+
+      {/* Pricing & Promotions routes - Admin, Manager, Accountant & Sale */}
+      <Route element={<ProtectedRoute allowedRoles={['admin', 'manager', 'accountant', 'sale']} />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/pricing/services" element={<ServicePricingPage />} />
+          <Route path="/pricing/promotions" element={<PromotionsPage />} />
+          <Route path="/pricing/vouchers" element={<VouchersPage />} />
+          <Route path="/pricing/calculator" element={<PricingCalculatorPage />} />
         </Route>
       </Route>
 

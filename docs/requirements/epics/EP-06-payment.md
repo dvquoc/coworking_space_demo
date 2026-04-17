@@ -13,11 +13,11 @@
 
 ## Mô tả
 
-Quản lý hóa đơn thanh toán cho bookings và contracts. Tích hợp VNPay, MoMo, ZaloPay cho thanh toán online. Hỗ trợ thanh toán thủ công (cash/bank transfer). Theo dõi trạng thái paid/unpaid, công nợ.
+Quản lý hóa đơn thanh toán cho bookings và contracts. Tích hợp VNPay, MoMo, ZaloPay, Chuyển khoản, và Credit cho thanh toán online. Hỗ trợ thanh toán thủ công (cash/bank transfer). Theo dõi trạng thái paid/unpaid, công nợ.
 
 **Phase 1 Extended**: Bổ sung **deposit payment flow** (thanh toán đặt cọc 30%, 50%, 100%) cho bookings, **partial payment tracking**, và **auto-generate deposit invoices**.
 
-**Phase 1 Credit System**: Hệ thống **nạp tiền trước (prepaid credit)** cho Individual và Company customers. **1 credit = 1,000 VND**. Customers nạp credits vào tài khoản, dùng credits để thanh toán services (space rental, printing, parking, coffee...). Company accounts hỗ trợ **employee-level tracking** (biết nhân viên nào dùng bao nhiêu credits).
+> **Lưu ý**: Hệ thống Credit Account (nạp tiền trước, bonus credits, lịch sử giao dịch) đã được tách sang **[EP-07 – Credit Account Management](EP-07-credit.md)**. EP-06 chỉ xử lý phần **nhận thanh toán bằng credits** khi customer chọn phương thức "Pay by Credit" lúc thanh toán invoice.
 
 ## Features thuộc Epic này
 
@@ -33,11 +33,9 @@ Quản lý hóa đơn thanh toán cho bookings và contracts. Tích hợp VNPay,
 | F-46B | Deposit payment flow | Thanh toán đặt cọc (30%, 50%, 100%) | Draft |
 | F-46C | Partial payment tracking | Theo dõi thanh toán một phần (deposit + balance) | Draft |
 | F-46D | Auto-generate deposit invoice | Tự động tạo invoice đặt cọc sau khi booking approved | Draft |
-| F-46E | Credit Account Management | Quản lý tài khoản credit cho Individual và Company | Draft |
-| F-46F | Credit Top-up | Nạp tiền vào credit account (VNPay/MoMo/ZaloPay/Cash) | Draft |
-| F-46G | Pay by Credit | Thanh toán services bằng credits | Draft |
-| F-46H | Service Credit Pricing | Quy đổi giá services (VND → Credits) | Draft |
-| F-46I | Credit Transaction History | Lịch sử nạp/dùng credits, employee tracking cho company | Draft |
+| F-46G | Pay by Credit | Nhận thanh toán invoice bằng credits (tích hợp với EP-07) | Draft |
+
+> Features F-46E, F-46F, F-46H, F-46I (Credit Account, Top-up, Bonus, History) → xem **[EP-07 – Credit Account Management](EP-07-credit.md)**
 
 ### Phase 2 - Advanced Features
 - F-47: Auto-reconciliation với payment gateways
@@ -132,110 +130,11 @@ interface PaymentTransaction {
 }
 ```
 
-### Credit Account (F-46E)
-```typescript
-interface CreditAccount {
-  id: string;
-  accountCode: string;          // "CA-CUS-0001", "CA-COM-0001"
-  
-  // Owner
-  ownerType: 'individual' | 'company';
-  customerId?: string;          // Nếu ownerType = individual
-  companyId?: string;           // Nếu ownerType = company
-  
-  // Balance
-  currentBalance: number;       // Credits hiện có
-  totalTopUp: number;           // Tổng credits đã nạp (lifetime)
-  totalSpent: number;           // Tổng credits đã dùng (lifetime)
-  
-  // Alerts
-  lowBalanceThreshold?: number; // Ngưỡng cảnh báo (VD: 100 credits)
-  
-  // Status
-  status: 'active' | 'suspended' | 'closed';
-  
-  // Meta
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
+### Credit Account (tham chiếu EP-07)
 
-### Credit Transaction (F-46I)
-```typescript
-interface CreditTransaction {
-  id: string;
-  creditAccountId: string;
-  
-  // Transaction Info
-  type: 'top_up' | 'payment' | 'refund' | 'adjustment';
-  amount: number;               // + cho top_up/refund, - cho payment
-  balanceBefore: number;
-  balanceAfter: number;
-  
-  // Employee Tracking (for company accounts)
-  employeeId?: string;          // CompanyEmployee nào dùng credits (nếu type = payment)
-  
-  // Reference
-  referenceType?: 'invoice' | 'booking' | 'service';
-  referenceId?: string;         // ID của invoice/booking/service
-  
-  // Payment Gateway (nếu top_up online)
-  paymentMethod?: PaymentMethod;
-  paymentTransactionId?: string;
-  
-  // Meta
-  description?: string;         // "Nạp 500 credits", "Thanh toán Hot Desk 3h"
-  createdBy: string;            // User/Customer ID
-  createdAt: Date;
-}
-```
+> Data models cho `CreditAccount`, `CreditTransaction`, `BonusCreditCampaign` đã được chuyển sang **[EP-07 – Credit Account Management](EP-07-credit.md)**.
 
-### Service Credit Price (F-46H)
-```typescript
-interface ServiceCreditPrice {
-  id: string;
-  
-  // Service Info
-  serviceType: string;          // 'space_rental', 'printing', 'parking', 'locker', 'coffee', 'meeting_room'
-  serviceName: string;          // "Hot Desk", "A4 Color Print", "Parking Slot"
-  spaceId?: string;             // Nếu serviceType = space_rental
-  
-  // Pricing
-  priceVND: number;             // Giá VND
-  priceCredits: number;         // = priceVND / 1000
-  unitType: 'hour' | 'day' | 'month' | 'item' | 'page';
-  
-  // Validity
-  effectiveDate: Date;
-  expiryDate?: Date;
-  isActive: boolean;
-  
-  // Meta
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
-
-### Customer Service Subscription (F-46E)
-```typescript
-interface CustomerServiceSubscription {
-  id: string;
-  customerId: string;
-  
-  // Services enabled
-  servicesEnabled: string[];    // ['space_rental', 'printing', 'parking']
-  
-  // Credit settings
-  creditPaymentEnabled: boolean;
-  autoTopUpEnabled: boolean;
-  autoTopUpThreshold?: number;  // Tự động nạp khi balance < threshold
-  autoTopUpAmount?: number;     // Số credits nạp mỗi lần
-  
-  // Meta
-  createdAt: Date;
-  updatedAt: Date;
-}
-```
+EP-06 chỉ sử dụng `paymentMethod = 'credit'` trong `PaymentTransaction` như một trong các phương thức thanh toán.
 
 ## User Stories
 
@@ -279,56 +178,17 @@ interface CustomerServiceSubscription {
 - [ ] Filter invoices by status
 - [ ] Export overdue list to Excel
 
-### US-46E: Tạo credit account cho customer
-> Là **Manager**, tôi muốn **tạo credit account cho customer** để **họ có thể nạp tiền trước**
+### US-46G: Thanh toán invoice bằng credits
+> Là **Kế toán**, tôi muốn **chọn phương thức "Pay by Credit" khi ghi nhận thanh toán invoice** để **sử dụng số dư credit của customer**.
 
 **Acceptance Criteria**:
-- [ ] Khi tạo customer mới, tự động tạo CreditAccount với balance = 0
-- [ ] Account code format: "CA-CUS-XXXX" (individual), "CA-COM-XXXX" (company)
-- [ ] Hiển thị current balance trên customer profile
-- [ ] Set low balance threshold (VD: 100 credits)
+- [ ] Trong modal Record Payment, chọn method "Credit"
+- [ ] Hiển thị số dư credit hiện tại của customer (lấy từ EP-07)
+- [ ] Kiểm tra balance đủ hay không trước khi xác nhận
+- [ ] Nếu đủ: invoice status → paid, paymentMethod = credit; EP-07 trừ credits
+- [ ] Nếu không đủ: hiển thị thông báo và gợi ý top-up
 
-### US-46F: Customer nạp credits
-> Là **Customer**, tôi muốn **nạp credits vào tài khoản** để **thanh toán services sau này**
-
-**Acceptance Criteria**:
-- [ ] Customer chọn "Top-up Credits" trên portal
-- [ ] Nhập số VND muốn nạp (minimum 100,000 VND = 100 credits)
-- [ ] Chọn payment method: VNPay/MoMo/ZaloPay
-- [ ] Sau khi thanh toán success → credits cộng vào balance
-- [ ] Tạo CreditTransaction type = top_up
-- [ ] Gửi email xác nhận top-up
-
-### US-46G: Thanh toán bằng credits
-> Là **Customer**, tôi muốn **thanh toán booking bằng credits** để **tiện lợi**
-
-**Acceptance Criteria**:
-- [ ] Khi booking, hiển thị option "Pay by Credit" nếu balance đủ
-- [ ] Check balance >= booking price (in credits)
-- [ ] Trừ credits từ balance
-- [ ] Tạo CreditTransaction type = payment, lưu employeeId nếu là company employee
-- [ ] Invoice được mark paid, paymentMethod = CREDIT
-- [ ] Gửi receipt email
-
-### US-46H: Quản lý service credit pricing
-> Là **Manager**, tôi muốn **set giá credits cho services** để **customers biết conversion rate**
-
-**Acceptance Criteria**:
-- [ ] CRUD danh sách ServiceCreditPrice
-- [ ] Auto-calculate priceCredits = priceVND / 1000
-- [ ] Hiển thị giá VND và Credits song song (VD: "50,000 VND = 50 credits")
-- [ ] Version control: effective date, expiry date
-- [ ] Apply giá mới cho bookings sau effective date
-
-### US-46I: Xem credit transaction history
-> Là **Customer/Manager**, tôi muốn **xem lịch sử nạp/dùng credits** để **theo dõi chi tiêu**
-
-**Acceptance Criteria**:
-- [ ] Hiển thị danh sách CreditTransactions (top_up, payment, refund, adjustment)
-- [ ] Filter theo type, date range
-- [ ] Company account: hiển thị employeeId trong payment transactions
-- [ ] Export to Excel
-- [ ] Hiển thị balanceBefore, balanceAfter mỗi transaction
+> ℹ️ Các user stories liên quan đến Credit Account (tạo account, nạp tiền, lịch sử giao dịch) xem tại **[EP-07 – Credit Account Management](EP-07-credit.md)**.
 
 ## Scenarios
 
@@ -359,57 +219,23 @@ Given Invoice "INV-002", amount 8,000,000 VND, unpaid
 When Kế toán click "Record Payment"
 And Chọn method "Cash", amount 8,000,000
 And Click "Save"
-Then Invoice status  → paid
+Then Invoice status → paid
 And Receipt PDF generated
 ```
 
-### Scenario 4: Customer nạp credits qua VNPay
+### Scenario 4: Thanh toán invoice bằng credits
 ```
-Given Customer "John" có CreditAccount với balance = 50 credits
-When John click "Top-up Credits" trên portal
-And Nhập amount 200,000 VND → 200 credits
-And Chọn VNPay → redirect
-And Complete payment success → VNPay callback
-Then CreditAccount balance = 250 credits
-And CreditTransaction created: type = top_up, amount = +200, balanceAfter = 250
-And Email confirmation: "Bạn đã nạp thành công 200 credits"
-```
-
-### Scenario 5: Individual customer thanh toán booking bằng credits
-```
-Given Customer "Jane" có 300 credits
-And Hot Desk 3h = 150,000 VND = 150 credits
-When Jane book Hot Desk 3h
-And Chọn "Pay by Credit"
-And Confirm booking
-Then CreditAccount balance = 150 credits (300 - 150)
-And CreditTransaction: type = payment, amount = -150, referenceType = booking
-And Invoice created, status = paid, paymentMethod = CREDIT
-And Booking confirmed
+Given Invoice "INV-003", amount 150,000 VND = 150 credits
+And Customer "Jane" có balance = 300 credits (theo EP-07)
+When Kế toán chọn Record Payment → method = Credit
+And Hệ thống kiểm tra balance đủ (300 >= 150)
+And Xác nhận thanh toán
+Then Invoice status → paid, paymentMethod = credit
+And EP-07 trừ 150 credits, balance còn 150
+And Email biên lai gửi customer
 ```
 
-### Scenario 6: Company employee dùng company credits
-```
-Given Company "ABC Corp" có 1000 credits
-And Employee "Tom" (employeeId = "EMP-001") có canBookSpaces = true
-When Tom book Meeting Room 2h = 500,000 VND = 500 credits
-And Chọn "Pay by Company Credit"
-And Confirm
-Then Company CreditAccount balance = 500 credits
-And CreditTransaction: type = payment, amount = -500, employeeId = "EMP-001"
-And Manager có thể xem report: "Tom đã dùng 500 credits"
-```
-
-### Scenario 7: Insufficient balance
-```
-Given Customer "Alice" có 50 credits
-And Private Office 1 day = 200 credits
-When Alice book Private Office
-And Chọn "Pay by Credit"
-Then System hiển thị error: "Insufficient balance. You have 50 credits, need 200."
-And Suggest: "Top-up 150 credits to continue"
-And Option to switch payment method (VNPay/MoMo)
-```
+> ℹ️ Các scenario về top-up, bonus credits, employee tracking xem tại **[EP-07](EP-07-credit.md)**.
 
 ## Phụ thuộc
 
@@ -417,6 +243,7 @@ And Option to switch payment method (VNPay/MoMo)
 - EP-03: Customer
 - EP-04: Booking (invoices từ bookings)
 - EP-05: Contract (invoices từ contracts)
+- EP-07: Credit Account Management (khi customer chọn "Pay by Credit")
 - NFR-04: Payment Integration reliability
 
 **Được sử dụng bởi**:

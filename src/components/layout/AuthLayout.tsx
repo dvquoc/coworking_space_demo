@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
+import { LanguageSwitcher } from '../LanguageSwitcher'
 
 export default function AuthLayout() {
   return (
@@ -28,9 +29,14 @@ export default function AuthLayout() {
       </div>
 
       {/* Right side - Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-slate-100">
-        <div className="w-full max-w-md">
-          <Outlet />
+      <div className="flex-1 flex flex-col bg-slate-100">
+        <div className="flex justify-end p-4">
+          <LanguageSwitcher />
+        </div>
+        <div className="flex-1 flex items-center justify-center px-8 pb-8">
+          <div className="w-full max-w-md">
+            <Outlet />
+          </div>
         </div>
       </div>
     </div>

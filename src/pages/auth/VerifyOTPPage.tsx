@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Shield, ArrowLeft, AlertCircle } from 'lucide-react'
 import { useVerifyOTP, useResendOTP, getErrorMessage } from '../../hooks/useAuth'
 
 export default function VerifyOTPPage() {
+  const { t } = useTranslation('auth')
   const [searchParams] = useSearchParams()
   const email = searchParams.get('email') || ''
   
@@ -103,9 +105,9 @@ export default function VerifyOTPPage() {
         <div className="inline-flex items-center justify-center w-16 h-16 bg-[#b11e29] rounded-full mb-4">
           <Shield className="w-8 h-8 text-white" />
         </div>
-        <h1 className="text-3xl font-bold text-slate-900">Xác thực OTP</h1>
+        <h1 className="text-3xl font-bold text-slate-900">{t('verify_otp_title')}</h1>
         <p className="text-slate-600 mt-2">
-          Mã OTP đã được gửi đến email
+          {t('verify_otp_subtitle')}
         </p>
         <p className="text-[#b11e29] font-medium mt-1">
           {email.replace(/(.{2})(.*)(@.*)/, '$1***$3')}
@@ -120,7 +122,7 @@ export default function VerifyOTPPage() {
               <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-start gap-3">
                 <AlertCircle className="w-5 w-5 text-rose-600 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-sm text-rose-800 font-medium">Mã OTP không hợp lệ</p>
+                  <p className="text-sm text-rose-800 font-medium">{t('otp_invalid_title')}</p>
                   <p className="text-sm text-rose-700 mt-1">
                     {getErrorMessage(verifyOTPMutation.error)}
                   </p>
@@ -131,7 +133,7 @@ export default function VerifyOTPPage() {
             {/* OTP Input Boxes */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-3 text-center">
-                Nhập mã OTP (6 chữ số)
+                {t('enter_otp_label')}
               </label>
               <div className="flex gap-2 justify-center" onPaste={handlePaste}>
                 {otp.map((digit, index) => (
@@ -154,7 +156,7 @@ export default function VerifyOTPPage() {
             {/* Countdown Timer */}
             <div className="text-center">
               <p className="text-sm text-slate-600">
-                Mã OTP hết hạn sau:{' '}
+                {t('otp_expires_in')}{' '}
                 <span className={`font-bold ${countdown < 60 ? 'text-rose-600' : 'text-[#b11e29]'}`}>
                   {formatTime(countdown)}
                 </span>
@@ -165,7 +167,7 @@ export default function VerifyOTPPage() {
             <div className="text-center">
               {resendCooldown > 0 ? (
                 <p className="text-sm text-slate-500">
-                  Gửi lại mã sau {resendCooldown}s
+                  {t('resend_cooldown', { countdown: resendCooldown })}
                 </p>
               ) : (
                 <button
@@ -174,7 +176,7 @@ export default function VerifyOTPPage() {
                   disabled={resendOTPMutation.isPending}
                   className="text-sm text-[#b11e29] hover:text-[#8f1821] font-medium disabled:text-slate-400"
                 >
-                  {resendOTPMutation.isPending ? 'Đang gửi...' : 'Gửi lại mã OTP'}
+                  {resendOTPMutation.isPending ? t('sending') : t('resend_otp_btn')}
                 </button>
               )}
             </div>
@@ -187,7 +189,7 @@ export default function VerifyOTPPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <span className="text-sm font-medium">Đang xác thực...</span>
+                  <span className="text-sm font-medium">{t('verifying')}</span>
                 </div>
               </div>
             )}
@@ -198,7 +200,7 @@ export default function VerifyOTPPage() {
               className="flex items-center justify-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition"
             >
               <ArrowLeft className="w-4 h-4" />
-              Quay lại
+              {t('back')}
             </Link>
           </div>
         </div>

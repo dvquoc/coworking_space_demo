@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { Mail, ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react'
 import { useForgotPassword, getErrorMessage } from '../../hooks/useAuth'
 
@@ -8,6 +9,7 @@ interface ForgotPasswordFormData {
 }
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation('auth')
   const {
     register,
     handleSubmit,
@@ -27,9 +29,9 @@ export default function ForgotPasswordPage() {
         <div className="inline-flex items-center justify-center w-16 h-16 bg-[#b11e29] rounded-full mb-4">
           <Mail className="w-8 h-8 text-white" />
         </div>
-        <h1 className="text-3xl font-bold text-slate-900">Quên mật khẩu</h1>
+        <h1 className="text-3xl font-bold text-slate-900">{t('forgot_password_title')}</h1>
         <p className="text-slate-600 mt-2">
-          Nhập email của bạn để nhận mã OTP
+          {t('forgot_password_subtitle')}
         </p>
       </div>
 
@@ -42,13 +44,13 @@ export default function ForgotPasswordPage() {
                 <CheckCircle className="w-8 h-8 text-emerald-600" />
               </div>
               <h2 className="text-xl font-semibold text-slate-900 mb-2">
-                Mã OTP đã được gửi!
+                {t('otp_sent_title')}
               </h2>
               <p className="text-slate-600 mb-6">
-                Vui lòng kiểm tra email của bạn và nhập mã OTP để tiếp tục.
+                {t('otp_sent_message')}
               </p>
               <p className="text-sm text-slate-500">
-                Đang chuyển hướng...
+                {t('redirecting')}
               </p>
             </div>
           ) : (
@@ -58,7 +60,7 @@ export default function ForgotPasswordPage() {
                 <div className="bg-rose-50 border border-rose-200 rounded-xl p-4 flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
-                    <p className="text-sm text-rose-800 font-medium">Có lỗi xảy ra</p>
+                    <p className="text-sm text-rose-800 font-medium">{t('error_title')}</p>
                     <p className="text-sm text-rose-700 mt-1">
                       {getErrorMessage(forgotPasswordMutation.error)}
                     </p>
@@ -77,10 +79,10 @@ export default function ForgotPasswordPage() {
                   </div>
                   <input
                     {...register('email', {
-                      required: 'Email là bắt buộc',
+                      required: t('email_required'),
                       pattern: {
                         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: 'Email không hợp lệ',
+                        message: t('email_invalid'),
                       },
                     })}
                     type="email"
@@ -109,12 +111,12 @@ export default function ForgotPasswordPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span>Đang xử lý...</span>
+                    <span>{t('processing')}</span>
                   </>
                 ) : (
                   <>
                     <Mail className="w-5 h-5" />
-                    <span>Gửi mã OTP</span>
+                    <span>{t('send_otp_btn')}</span>
                   </>
                 )}
               </button>
@@ -125,7 +127,7 @@ export default function ForgotPasswordPage() {
                 className="flex items-center justify-center gap-2 text-sm text-slate-600 hover:text-slate-900 transition"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Quay lại đăng nhập
+                {t('back_to_login')}
               </Link>
             </form>
           )}

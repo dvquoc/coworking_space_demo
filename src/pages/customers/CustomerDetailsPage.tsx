@@ -214,7 +214,7 @@ export function CustomerDetailsPage() {
                     <span className="text-xs text-amber-700 font-semibold uppercase">Chính</span>
                   </div>
                   <span className="text-lg font-bold text-amber-800">{new Intl.NumberFormat('vi-VN').format(customer.creditBalance || 0)}</span>
-                  <span className="text-xs text-slate-400">Cobi</span>
+                  <span className="text-xs text-slate-400">Credit</span>
                 </div>
                 <div className="flex flex-col items-center bg-white border border-purple-100 rounded-lg px-3 py-2 min-w-[120px]">
                   <div className="flex items-center gap-1 mb-0.5">
@@ -222,7 +222,7 @@ export function CustomerDetailsPage() {
                     <span className="text-xs text-purple-700 font-semibold uppercase">Reward</span>
                   </div>
                   <span className="text-lg font-bold text-purple-800">{new Intl.NumberFormat('vi-VN').format(customer.rewardBalance || 0)}</span>
-                  <span className="text-xs text-slate-400">Cobi</span>
+                  <span className="text-xs text-slate-400">Credit</span>
                 </div>
               </div>
               {/* Actions */}
@@ -243,7 +243,7 @@ export function CustomerDetailsPage() {
             </div>
             <div className="flex items-center gap-2 mt-2 ml-1">
               <span className="text-xs text-slate-500">Quy đổi:</span>
-              <span className="text-xs font-bold text-amber-700">1 Cobi = 1 VNĐ</span>
+              <span className="text-xs font-bold text-amber-700">1 Credit = 1 VNĐ</span>
               <span className="text-xs text-slate-400">(áp dụng cho thanh toán dịch vụ)</span>
             </div>
           </div>

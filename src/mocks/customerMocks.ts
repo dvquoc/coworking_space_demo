@@ -273,7 +273,7 @@ export const mockCustomerDetails: Record<string, CustomerDetails> = {
       totalSpent: 125000000,
       outstandingBalance: 5000000,
     },
-    // Credit Wallet (Cobi: 1 Cobi = 1.000 VND)
+    // Credit Wallet (Credit: 1 Credit = 1.000 VND)
     creditBalance: 15000,
     rewardBalance: 500,
     creditSummary: {
@@ -341,7 +341,7 @@ export const mockCustomerDetails: Record<string, CustomerDetails> = {
       totalSpent: 450000000,
       outstandingBalance: 15000000,
     },
-    // Credit Wallet (Cobi: 1 Cobi = 1.000 VND)
+    // Credit Wallet (Credit: 1 Credit = 1.000 VND)
     creditBalance: 50000,
     rewardBalance: 2000,
     creditSummary: {

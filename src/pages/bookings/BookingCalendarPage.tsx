@@ -2,11 +2,13 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ChevronLeft, ChevronRight, X, Clock, AlertCircle, CheckCircle2,
-  Minus, Plus, CreditCard, Banknote, Smartphone, LayoutGrid,
+  Minus, Plus, CreditCard, Banknote, Smartphone, LayoutGrid, User,
 } from 'lucide-react'
 import Header from '../../components/layout/Header'
 import { mockBuildings, mockFloors, mockSpaces, mockPricingRules } from '../../mocks/propertyMocks'
-import { mockBookingList, mockServices } from '../../mocks/bookingMocks'
+import { mockBookingList } from '../../mocks/bookingMocks'
+import { mockBookingAddOns } from '../../mocks/pricingMocks'
+import { mockCustomers } from '../../mocks/customerMocks'
 
 const DAY_LABELS = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
 const MONTH_LABELS = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
@@ -64,7 +66,11 @@ export function BookingCalendarPage() {
   const [modalStep, setModalStep] = useState<1 | 2>(1)
   const [startTime, setStartTime] = useState('')
   const [endTime, setEndTime] = useState('')
-  const [selectedServices, setSelectedServices] = useState<string[]>([])
+  const [selectedAddOns, setSelectedAddOns] = useState<Record<string, number>>({})
+  const [customerId, setCustomerId] = useState('')
+  const [customerName, setCustomerName] = useState('')
+  const [customerPhone, setCustomerPhone] = useState('')
+  const [customerEmail, setCustomerEmail] = useState('')
   const [discountPercent, setDiscountPercent] = useState(0)
   const [notes, setNotes] = useState('')
   const [conflict, setConflict] = useState<string | null>(null)
@@ -106,8 +112,9 @@ export function BookingCalendarPage() {
   const duration = calcMins(startTime, endTime)
   const durationHours = duration / 60
   const spacePrice = pricePerHour * durationHours
-  const servicesPrice = selectedServices.reduce((sum, id) => {
-    return sum + (mockServices.find(s => s.id === id)?.price ?? 0)
+  const servicesPrice = Object.entries(selectedAddOns).reduce((sum, [id, qty]) => {
+    const addon = mockBookingAddOns.find(a => a.id === id)
+    return sum + (addon ? addon.unitPrice * qty : 0)
   }, 0)
   const discountAmount = (spacePrice + servicesPrice) * discountPercent / 100
   const totalPrice = spacePrice + servicesPrice - discountAmount
@@ -126,7 +133,11 @@ export function BookingCalendarPage() {
     setModalStep(1)
     setStartTime('')
     setEndTime('')
-    setSelectedServices([])
+    setSelectedAddOns({})
+    setCustomerId('')
+    setCustomerName('')
+    setCustomerPhone('')
+    setCustomerEmail('')
     setDiscountPercent(0)
     setNotes('')
     setConflict(null)
@@ -151,6 +162,16 @@ export function BookingCalendarPage() {
     }
     setConflict(null)
     setModalStep(2)
+  }
+
+  // Add-on helpers
+  const toggleAddOn = (id: string) => setSelectedAddOns(prev => {
+    if (prev[id]) { const next = { ...prev }; delete next[id]; return next }
+    return { ...prev, [id]: 1 }
+  })
+  const setAddOnQty = (id: string, qty: number) => {
+    if (qty <= 0) setSelectedAddOns(prev => { const next = { ...prev }; delete next[id]; return next })
+    else setSelectedAddOns(prev => ({ ...prev, [id]: qty }))
   }
 
   // Handle payment
@@ -271,19 +292,40 @@ export function BookingCalendarPage() {
       {/* =============== MODAL =============== */}
       {modalDate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[92vh] flex flex-col overflow-hidden">
 
             {/* Modal header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
-              <div>
-                <h2 className="font-semibold text-slate-800">
-                  {modalStep === 1 ? `Đặt lịch cho ngày ${formatDateVN(modalDate)}` : 'Xác nhận & Thanh toán'}
-                </h2>
-                {selectedSpace && (
-                  <p className="text-xs text-slate-400 mt-0.5">{selectedSpace.name} · {mockBuildings.find(b => b.id === selectedSpace.buildingId)?.name}</p>
-                )}
+              <div className="min-w-0">
+                <p className="text-xs text-slate-400 mb-1">{formatDateVN(modalDate)}{selectedSpace ? ` · ${selectedSpace.name}` : ''}</p>
+                {/* Step indicator */}
+                <div className="flex items-center gap-1">
+                  {[{ no: 1, label: 'Thông tin đặt chỗ' }, { no: 2, label: 'Thanh toán' }].map((s, i, arr) => (
+                    <div key={s.no} className="flex items-center gap-1">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0
+                        ${paymentSuccess ? 'bg-green-500 border-green-500 text-white'
+                          : modalStep === s.no ? 'bg-[#b11e29] border-[#b11e29] text-white'
+                          : modalStep > s.no ? 'bg-green-500 border-green-500 text-white'
+                          : 'bg-white border-slate-300 text-slate-400'}`}>
+                        {(!paymentSuccess && modalStep > s.no) || paymentSuccess
+                          ? <CheckCircle2 className="w-3.5 h-3.5" />
+                          : s.no}
+                      </div>
+                      <span className={`text-xs font-medium whitespace-nowrap
+                        ${paymentSuccess ? 'text-green-600'
+                          : modalStep === s.no ? 'text-[#b11e29]'
+                          : modalStep > s.no ? 'text-green-600'
+                          : 'text-slate-400'}`}>
+                        {s.label}
+                      </span>
+                      {i < arr.length - 1 && (
+                        <div className={`h-px w-8 mx-1 ${modalStep > s.no ? 'bg-green-400' : 'bg-slate-200'}`} />
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-              <button onClick={() => setModalDate(null)} className="p-2 hover:bg-slate-100 rounded-lg transition-colors">
+              <button onClick={() => setModalDate(null)} className="p-2 hover:bg-slate-100 rounded-lg transition-colors ml-4 shrink-0">
                 <X className="w-4 h-4 text-slate-500" />
               </button>
             </div>
@@ -350,14 +392,62 @@ export function BookingCalendarPage() {
                 </div>
 
                 {/* ---- RIGHT: booking form or payment ---- */}
-                <div className="flex-1 overflow-auto flex flex-col">
+                <div className="flex-1 overflow-hidden flex flex-col">
                   {modalStep === 1 ? (
+                    <>
                     <div className="flex-1 overflow-auto p-5 space-y-4">
+                      {/* Customer */}
+                      <div>
+                        <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700 mb-2">
+                          <User className="w-4 h-4 text-[#b11e29]" /> Khách hàng
+                        </label>
+                        <select
+                          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30 mb-2"
+                          value={customerId}
+                          onChange={e => {
+                            const c = mockCustomers.find(x => x.id === e.target.value)
+                            setCustomerId(e.target.value)
+                            setCustomerName(c?.fullName ?? '')
+                            setCustomerPhone((c as any)?.phone ?? (c as any)?.contactPhone ?? '')
+                            setCustomerEmail(c?.email ?? '')
+                          }}
+                        >
+                          <option value="">-- Chọn từ danh sách --</option>
+                          {mockCustomers.filter(c => c.status === 'active').map(c => (
+                            <option key={c.id} value={c.id}>{c.fullName} ({c.customerCode})</option>
+                          ))}
+                        </select>
+                        <div className="grid grid-cols-3 gap-2">
+                          <input
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
+                            placeholder="Tên khách hàng *"
+                            value={customerName}
+                            onChange={e => setCustomerName(e.target.value)}
+                          />
+                          <input
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
+                            placeholder="Số điện thoại"
+                            value={customerPhone}
+                            onChange={e => setCustomerPhone(e.target.value)}
+                          />
+                          <input
+                            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
+                            placeholder="Email"
+                            type="email"
+                            value={customerEmail}
+                            onChange={e => setCustomerEmail(e.target.value)}
+                          />
+                        </div>
+                      </div>
+
                       {/* Time */}
                       <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-1.5">
+                        <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700 mb-1">
                           <Clock className="w-4 h-4 text-[#b11e29]" /> Khung giờ
                         </label>
+                        <p className="text-base font-bold text-slate-800 mb-2">
+                          {new Date(modalDate + 'T00:00:00').toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        </p>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
                             <p className="text-xs text-slate-500 mb-1">Bắt đầu *</p>
@@ -375,23 +465,99 @@ export function BookingCalendarPage() {
                         )}
                       </div>
 
-                      {/* Services */}
+                      {/* Tiền thuê không gian */}
+                      {selectedSpace && (
+                        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 space-y-2">
+                          <p className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
+                            <CreditCard className="w-4 h-4 text-[#b11e29]" /> Tiền thuê không gian
+                          </p>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-slate-500">Đơn giá</span>
+                            <span className="font-medium text-slate-700">
+                              {pricePerHour > 0 ? formatPrice(pricePerHour) + ' / giờ' : <span className="text-slate-400 italic">Chưa có giá</span>}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-slate-500">Thời lượng</span>
+                            <span className="font-medium text-slate-700">
+                              {duration > 0
+                                ? `${Math.floor(duration / 60)}h${duration % 60 > 0 ? ` ${duration % 60}m` : ''} (${(durationHours % 1 === 0 ? durationHours.toFixed(0) : durationHours.toFixed(2).replace(/0+$/, ''))} giờ)`
+                                : <span className="text-slate-400 italic">Chưa chọn thời gian</span>}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between pt-2 border-t border-slate-200">
+                            <span className="font-semibold text-slate-700 text-sm">Thành tiền thuê</span>
+                            <span className={`text-base font-bold ${spacePrice > 0 ? 'text-[#b11e29]' : 'text-slate-400'}`}>
+                              {spacePrice > 0 ? formatPrice(spacePrice) : '—'}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Space amenities */}
+                      {selectedSpace?.amenities && selectedSpace.amenities.length > 0 && (
+                        <div>
+                          <p className="text-sm font-semibold text-slate-700 mb-2">Tiện ích đi kèm không gian</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {selectedSpace.amenities.map((a: string) => (
+                              <span key={a} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium border border-blue-100">
+                                ✓ {a}
+                              </span>
+                            ))}
+                          </div>
+                          <p className="text-xs text-slate-400 mt-1">Đã bao gồm trong giá thuê không gian</p>
+                        </div>
+                      )}
+
+                      {/* Add-on services */}
                       <div>
                         <p className="text-sm font-semibold text-slate-700 mb-2">Dịch vụ sử dụng thêm</p>
-                        <div className="grid grid-cols-2 gap-2">
-                          {mockServices.map(sv => (
-                            <label key={sv.id} className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer text-sm transition-all
-                              ${selectedServices.includes(sv.id) ? 'border-[#b11e29] bg-[#b11e29]/5' : 'border-slate-200 hover:border-slate-300'}`}>
-                              <input type="checkbox" className="accent-[#b11e29]"
-                                checked={selectedServices.includes(sv.id)}
-                                onChange={() => setSelectedServices(prev =>
-                                  prev.includes(sv.id) ? prev.filter(s => s !== sv.id) : [...prev, sv.id]
-                                )} />
-                              <span className="flex-1 text-slate-700">{sv.name}</span>
-                              <span className="text-xs text-slate-400">{formatPrice(sv.price)}</span>
-                            </label>
-                          ))}
-                        </div>
+                        {(['av', 'catering', 'printing', 'internet', 'support', 'other'] as const).map(cat => {
+                          const catAddOns = mockBookingAddOns.filter(a => a.category === cat)
+                          const catLabels: Record<string, string> = {
+                            av: 'Âm thanh & Hình ảnh', catering: 'Ăn uống', printing: 'In ấn',
+                            internet: 'Internet', support: 'Hỗ trợ', other: 'Khác',
+                          }
+                          return (
+                            <div key={cat} className="mb-3">
+                              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">{catLabels[cat]}</p>
+                              <div className="grid grid-cols-2 gap-2">
+                                {catAddOns.map(addon => {
+                                  const qty = selectedAddOns[addon.id] ?? 0
+                                  const checked = qty > 0
+                                  return (
+                                    <div key={addon.id} className={`flex items-center gap-2.5 p-2.5 rounded-lg border transition-all ${checked ? 'border-[#b11e29] bg-[#b11e29]/5' : 'border-slate-200 hover:border-slate-300'}`}>
+                                      <input type="checkbox" className="accent-[#b11e29] shrink-0"
+                                        checked={checked} onChange={() => toggleAddOn(addon.id)} />
+                                      <span className="text-lg leading-none shrink-0">{addon.icon}</span>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-slate-700">{addon.name}</p>
+                                        <p className="text-xs text-slate-400 truncate">{addon.description}</p>
+                                      </div>
+                                      <div className="text-right shrink-0">
+                                        <p className="text-xs font-semibold text-slate-700">{formatPrice(addon.unitPrice)}</p>
+                                        <p className="text-[10px] text-slate-400">/{addon.unit}</p>
+                                      </div>
+                                      {checked && (
+                                        <div className="flex items-center gap-1 shrink-0">
+                                          <button type="button" onClick={() => setAddOnQty(addon.id, qty - 1)}
+                                            className="w-6 h-6 flex items-center justify-center border border-slate-300 rounded hover:bg-slate-100">
+                                            <Minus className="w-3 h-3 text-slate-500" />
+                                          </button>
+                                          <span className="w-6 text-center text-sm font-semibold text-slate-700">{qty}</span>
+                                          <button type="button" onClick={() => setAddOnQty(addon.id, qty + 1)}
+                                            className="w-6 h-6 flex items-center justify-center border border-slate-300 rounded hover:bg-slate-100">
+                                            <Plus className="w-3 h-3 text-slate-500" />
+                                          </button>
+                                        </div>
+                                      )}
+                                    </div>
+                                  )
+                                })}
+                              </div>
+                            </div>
+                          )
+                        })}
                       </div>
 
                       {/* Discount & Notes */}
@@ -422,6 +588,10 @@ export function BookingCalendarPage() {
                         </div>
                       </div>
 
+                    </div>
+
+                    {/* ── Sticky footer ── */}
+                    <div className="shrink-0 border-t border-slate-100 bg-white px-5 py-4 space-y-3">
                       {/* Price summary */}
                       {totalPrice > 0 && (
                         <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-1.5 text-sm">
@@ -447,7 +617,6 @@ export function BookingCalendarPage() {
                           </div>
                         </div>
                       )}
-
                       {/* Conflict error */}
                       {conflict && (
                         <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
@@ -455,7 +624,6 @@ export function BookingCalendarPage() {
                           <span>{conflict}</span>
                         </div>
                       )}
-
                       {/* Book button */}
                       <button
                         onClick={handleBook}
@@ -464,11 +632,22 @@ export function BookingCalendarPage() {
                         Đặt chỗ
                       </button>
                     </div>
+                    </>
                   ) : (
                     /* ---- PAYMENT STEP ---- */
                     <div className="flex-1 overflow-auto p-5 space-y-4">
                       {/* Summary */}
                       <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2 text-sm">
+                        {customerName && (
+                          <div className="flex justify-between text-slate-600">
+                            <span>Khách hàng</span>
+                            <span className="font-medium text-right">
+                              {customerName}
+                              {customerPhone ? ` – ${customerPhone}` : ''}
+                              {customerEmail ? ` · ${customerEmail}` : ''}
+                            </span>
+                          </div>
+                        )}
                         <div className="flex justify-between text-slate-600">
                           <span>Ngày</span>
                           <span className="font-medium">{new Date(modalDate + 'T00:00:00').toLocaleDateString('vi-VN')}</span>
@@ -483,11 +662,14 @@ export function BookingCalendarPage() {
                             <span className="font-medium">{selectedSpace.name}</span>
                           </div>
                         )}
-                        {selectedServices.length > 0 && (
+                        {Object.keys(selectedAddOns).length > 0 && (
                           <div className="flex justify-between text-slate-600">
-                            <span>Dịch vụ</span>
+                            <span>Dịch vụ thêm</span>
                             <span className="font-medium text-right max-w-[60%]">
-                              {selectedServices.map(id => mockServices.find(s => s.id === id)?.name).join(', ')}
+                              {Object.entries(selectedAddOns).map(([id, qty]) => {
+                                const a = mockBookingAddOns.find(x => x.id === id)
+                                return a ? `${a.icon} ${a.name} ×${qty}` : ''
+                              }).filter(Boolean).join(', ')}
                             </span>
                           </div>
                         )}

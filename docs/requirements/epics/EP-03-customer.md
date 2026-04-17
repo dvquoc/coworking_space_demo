@@ -84,9 +84,9 @@ interface Customer {
   // Status
   status: 'active' | 'inactive' | 'suspended';
   
-  // Credit Wallet (F-19B) - Đơn vị: Cobi (1 Cobi = 1.000 VND)
-  creditBalance: number;        // Credit đã nạp (không hết hạn) - Cobi
-  rewardBalance: number;        // Credit thưởng (có hạn sử dụng) - Cobi
+  // Credit Wallet (F-19B) - Đơn vị: Credit (1 Credit = 1.000 VND)
+  creditBalance: number;        // Credit đã nạp (không hết hạn) - Credit
+  rewardBalance: number;        // Credit thưởng (có hạn sử dụng) - Credit
   
   // Relationship
   referredBy?: string;          // Customer ID của người giới thiệu
@@ -276,14 +276,14 @@ interface CustomerContact {
 
 **Acceptance Criteria**:
 - [ ] Hiển thị full customer info
-- [ ] **Ví Cobi** (hiển thị nổi bật):
+- [ ] **Ví Credit** (hiển thị nổi bật):
   - Tổng số dư (creditBalance + rewardBalance)
   - Credit balance (không hết hạn)
   - Reward balance (có hạn sử dụng)
-  - Quy đổi: 1 Cobi = 1.000 VND
-  - Nút "Nạp Cobi" → mở modal nạp credit
+  - Quy đổi: 1 Credit = 1.000 VND
+  - Nút "Nạp Credit" → mở modal nạp credit
 - [ ] Tab "Tổng quan": Thông tin cá nhân/công ty
-- [ ] Tab "Ví Cobi": Chi tiết giao dịch, rewards đang active
+- [ ] Tab "Ví Credit": Chi tiết giao dịch, rewards đang active
 - [ ] Tab "Đặt chỗ": List tất cả bookings (past + upcoming)
 - [ ] Tab "Hợp đồng": List contracts đang active/expired
 - [ ] Tab "Hóa đơn": Payment history
@@ -481,28 +481,28 @@ And Click booking → navigate to booking details
 
 ### Scenario 7: Nạp credit cho khách hàng
 ```
-Given Customer "CUS-0001" có creditBalance = 500 Cobi
+Given Customer "CUS-0001" có creditBalance = 500 Credit
 When Kế toán vào Customer Details → Tab "Credit"
-And Click "Nạp Cobi"
-And Nhập amount = 1,000 Cobi (= 1,000,000 VND)
+And Click "Nạp Credit"
+And Nhập amount = 1,000 Credit (= 1,000,000 VND)
 And Chọn method = "Bank Transfer"
 And Click "Confirm"
-Then creditBalance → 1,500 Cobi
+Then creditBalance → 1,500 Credit
 And CreditTransaction được tạo với type = "topup"
-And Toast: "Nạp Cobi thành công"
+And Toast: "Nạp Credit thành công"
 ```
 
 ### Scenario 8: Tặng credit reward
 ```
-Given Customer "CUS-0001" có rewardBalance = 0 Cobi
+Given Customer "CUS-0001" có rewardBalance = 0 Credit
 When Manager vào Customer Details → Tab "Credit"
-And Click "Tặng Cobi Reward"
-And Nhập amount = 200 Cobi (= 200,000 VND)
+And Click "Tặng Credit Reward"
+And Nhập amount = 200 Credit (= 200,000 VND)
 And Chọn source = "referral"
 And Chọn expiresAt = "31/05/2026"
 And Nhập description = "Thưởng giới thiệu khách hàng CUS-0002"
 And Click "Save"
-Then rewardBalance → 200 Cobi
+Then rewardBalance → 200 Credit
 And CreditReward được tạo với status = "active"
 And CreditTransaction được tạo với type = "reward"
 ```
@@ -510,13 +510,13 @@ And CreditTransaction được tạo với type = "reward"
 ### Scenario 9: Thanh toán booking bằng credit
 ```
 Given Customer "CUS-0001" có:
-  - creditBalance = 500 Cobi
-  - rewardBalance = 200 Cobi (hết hạn 31/05/2026)
-And Booking amount = 300 Cobi (= 300,000 VND)
-When Customer click "Pay with Cobi"
-Then System trừ 200 Cobi từ rewardBalance trước
-And Trừ tiếp 100 Cobi từ creditBalance
-Then rewardBalance → 0, creditBalance → 400 Cobi
+  - creditBalance = 500 Credit
+  - rewardBalance = 200 Credit (hết hạn 31/05/2026)
+And Booking amount = 300 Credit (= 300,000 VND)
+When Customer click "Pay with Credit"
+Then System trừ 200 Credit từ rewardBalance trước
+And Trừ tiếp 100 Credit từ creditBalance
+Then rewardBalance → 0, creditBalance → 400 Credit
 And CreditReward.remainingAmount → 0, status → "used"
 And CreditTransaction với type = "spend"
 And Booking status → "paid"
@@ -525,13 +525,13 @@ And Booking status → "paid"
 ### Scenario 10: Credit reward hết hạn
 ```
 Given CreditReward của customer CUS-0001:
-  - amount = 100 Cobi, remainingAmount = 80 Cobi
+  - amount = 100 Credit, remainingAmount = 80 Credit
   - expiresAt = "17/04/2026" (hôm nay)
 When System chạy scheduled job lúc 00:00
 Then CreditReward.status → "expired"
-And rewardBalance giảm 80 Cobi
+And rewardBalance giảm 80 Credit
 And CreditTransaction được tạo với type = "expire"
-And Customer nhận notification "80 Cobi reward đã hết hạn"
+And Customer nhận notification "80 Credit reward đã hết hạn"
 ```
 
 ## Phụ thuộc (Dependencies)
@@ -627,7 +627,7 @@ CREATE INDEX idx_credit_rewards_expires ON credit_rewards(expires_at);
 - **Company customer suspended** → All employees cũng bị suspend (không access được)
 
 **Credit Wallet Rules:**
-- **Đơn vị Cobi**: 1 Cobi = 1.000 VND (dễ nhớ, dễ tính)
+- **Đơn vị Credit**: 1 Credit = 1.000 VND (dễ nhớ, dễ tính)
 - `creditBalance`: Credit đã nạp, **không hết hạn**, có thể hoàn lại
 - `rewardBalance`: Tổng credit thưởng còn lại, **có hạn sử dụng**, không hoàn lại
 - Khi thanh toán: **Ưu tiên trừ reward trước** (FIFO theo expiresAt)
@@ -635,8 +635,8 @@ CREATE INDEX idx_credit_rewards_expires ON credit_rewards(expires_at);
 - Scheduled job chạy hàng ngày để expire rewards hết hạn
 - Company customer: Credit wallet thuộc về company, không phải employee
 - Cannot delete customer nếu creditBalance > 0 (phải hoàn lại trước)
-- Minimum topup amount: 100 Cobi (= 100,000 VND)
-- Maximum single topup: 50,000 Cobi (= 50,000,000 VND)
+- Minimum topup amount: 100 Credit (= 100,000 VND)
+- Maximum single topup: 50,000 Credit (= 50,000,000 VND)
 
 ## Integration Points
 
