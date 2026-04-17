@@ -203,6 +203,51 @@ export function CustomerDetailsPage() {
               </div>
             )}
           </div>
+          {/* Wallet Info - Compact */}
+          <div className="bg-gradient-to-br from-amber-50 to-purple-50 border border-amber-200 shadow rounded-xl px-4 py-3 my-4">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              {/* Wallets */}
+              <div className="flex flex-1 gap-3">
+                <div className="flex flex-col items-center bg-white border border-amber-100 rounded-lg px-3 py-2 min-w-[120px]">
+                  <div className="flex items-center gap-1 mb-0.5">
+                    <Wallet className="w-4 h-4 text-amber-600" />
+                    <span className="text-xs text-amber-700 font-semibold uppercase">Chính</span>
+                  </div>
+                  <span className="text-lg font-bold text-amber-800">{new Intl.NumberFormat('vi-VN').format(customer.creditBalance || 0)}</span>
+                  <span className="text-xs text-slate-400">Cobi</span>
+                </div>
+                <div className="flex flex-col items-center bg-white border border-purple-100 rounded-lg px-3 py-2 min-w-[120px]">
+                  <div className="flex items-center gap-1 mb-0.5">
+                    <Gift className="w-4 h-4 text-purple-600" />
+                    <span className="text-xs text-purple-700 font-semibold uppercase">Reward</span>
+                  </div>
+                  <span className="text-lg font-bold text-purple-800">{new Intl.NumberFormat('vi-VN').format(customer.rewardBalance || 0)}</span>
+                  <span className="text-xs text-slate-400">Cobi</span>
+                </div>
+              </div>
+              {/* Actions */}
+              <div className="flex flex-col items-end gap-1 md:flex-row md:items-center md:gap-2 mt-2 md:mt-0">
+                <button className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 flex items-center gap-1">
+                  <CirclePlus className="w-4 h-4" />
+                  Nạp
+                </button>
+                <button className="px-3 py-1.5 border border-slate-300 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-50 flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  Lịch sử
+                </button>
+                <button className="px-3 py-1.5 border border-purple-300 text-purple-700 rounded-lg text-sm font-semibold hover:bg-purple-50 flex items-center gap-1">
+                  <Gift className="w-4 h-4" />
+                  Tặng
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 mt-2 ml-1">
+              <span className="text-xs text-slate-500">Quy đổi:</span>
+              <span className="text-xs font-bold text-amber-700">1 Cobi = 1 VNĐ</span>
+              <span className="text-xs text-slate-400">(áp dụng cho thanh toán dịch vụ)</span>
+            </div>
+          </div>
+             
           {/* Content with Tabs */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             {/* Tabs */}
