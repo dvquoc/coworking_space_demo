@@ -17,6 +17,7 @@ import {
   Landmark,
   Wallet,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import Header from '../../components/layout/Header'
 import { mockBuildings, mockFloors, mockSpaces, mockPricingRules } from '../../mocks/propertyMocks'
 import { mockBookingAddOns } from '../../mocks/pricingMocks'
@@ -44,19 +45,25 @@ function formatPrice(price: number) {
 }
 
 const PAYMENT_METHODS = [
-  { id: 'vnpay', label: 'VNPay', icon: <CreditCard className="w-5 h-5" /> },
-  { id: 'momo', label: 'MoMo', icon: <Smartphone className="w-5 h-5" /> },
-  { id: 'zalopay', label: 'ZaloPay', icon: <Smartphone className="w-5 h-5" /> },
-  { id: 'cash', label: 'Tiền mặt', icon: <Banknote className="w-5 h-5" /> },
-  { id: 'bank_transfer', label: 'Chuyển khoản', icon: <Landmark className="w-5 h-5" /> },
-  { id: 'credit', label: 'Credit', icon: <Wallet className="w-5 h-5" /> },
+  { id: 'vnpay', icon: <CreditCard className="w-5 h-5" /> },
+  { id: 'momo', icon: <Smartphone className="w-5 h-5" /> },
+  { id: 'zalopay', icon: <Smartphone className="w-5 h-5" /> },
+  { id: 'cash', icon: <Banknote className="w-5 h-5" /> },
+  { id: 'bank_transfer', icon: <Landmark className="w-5 h-5" /> },
+  { id: 'credit', icon: <Wallet className="w-5 h-5" /> },
 ]
+
+const PAYMENT_METHOD_KEYS: Record<string, string> = {
+  vnpay: 'method_vnpay', momo: 'method_momo', zalopay: 'method_zalopay',
+  cash: 'method_cash', bank_transfer: 'method_bank_transfer', credit: 'method_credit',
+}
 
 // ---- Step Indicator ----
 function StepIndicator({ step }: { step: number }) {
+  const { t } = useTranslation('bookings')
   const steps = [
-    { no: 1, label: 'Thông tin đặt chỗ' },
-    { no: 2, label: 'Xác nhận & Thanh toán' },
+    { no: 1, label: t('step1_label') },
+    { no: 2, label: t('step2_label') },
   ]
   return (
     <div className="flex items-center gap-0 mb-8">
@@ -83,6 +90,7 @@ function StepIndicator({ step }: { step: number }) {
 // ---- Main Component ----
 export function BookingFormPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation('bookings')
   const [step, setStep] = useState(1)
 
   // Step 1 state
@@ -153,7 +161,7 @@ export function BookingFormPage() {
   const checkConflict = (): boolean => {
     // TODO: thay bằng API thực tế
     if (spaceId === 'sp-002' && date === '2026-04-21' && startTime < '11:00' && endTime > '09:00') {
-      setConflict('Không gian đã được đặt từ 09:00 đến 11:00 ngày 21/04/2026. Vui lòng chọn khung giờ khác.')
+      setConflict(t('conflict_mock'))
       return false
     }
     setConflict(null)
@@ -178,25 +186,25 @@ export function BookingFormPage() {
   if (paymentSuccess) {
     return (
       <div className="flex flex-col h-full">
-        <Header title="Tạo Booking" />
+        <Header title={t('page_title_create')} />
         <div className="flex-1 flex flex-col items-center justify-center gap-4">
           <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
             <CheckCircle2 className="w-8 h-8 text-green-600" />
           </div>
-          <h2 className="text-xl font-bold text-slate-800">Đặt chỗ thành công!</h2>
-          <p className="text-slate-500 text-sm">Booking đã được xác nhận. Chỗ đã được giữ cho khách hàng.</p>
+          <h2 className="text-xl font-bold text-slate-800">{t('success_title')}</h2>
+          <p className="text-slate-500 text-sm">{t('success_message')}</p>
           <div className="flex gap-3 mt-2">
             <button
               onClick={() => navigate('/bookings')}
               className="px-5 py-2 bg-[#b11e29] text-white rounded-lg text-sm font-medium hover:bg-[#8f1820]"
             >
-              Xem danh sách booking
+              {t('btn_view_list')}
             </button>
             <button
               onClick={() => { setStep(1); setPaymentSuccess(false); setCustomerName(''); setSpaceId(''); setDate(''); setStartTime(''); setEndTime('') }}
               className="px-5 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50"
             >
-              Tạo booking mới
+              {t('btn_create_new')}
             </button>
           </div>
         </div>
@@ -206,7 +214,7 @@ export function BookingFormPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header title="Tạo Booking Mới" />
+      <Header title={t('page_title_new')} />
       <div className="flex-1 overflow-auto p-6 pb-2">
         <div className="max-w-2xl mx-auto">
           <StepIndicator step={step} />
@@ -217,30 +225,30 @@ export function BookingFormPage() {
               {/* Khách hàng */}
               <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
                 <h3 className="font-semibold text-slate-700 flex items-center gap-2 mb-4">
-                  <User className="w-4 h-4 text-[#b11e29]" /> Thông tin khách hàng
+                  <User className="w-4 h-4 text-[#b11e29]" /> {t('section_customer')}
                 </h3>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-1">Tên khách hàng *</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">{t('label_customer_name')}</label>
                     <input
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
-                      placeholder="Nhập tên hoặc chọn từ danh sách..."
+                      placeholder={t('placeholder_customer_name')}
                       value={customerName}
                       onChange={e => setCustomerName(e.target.value)}
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-1">Số điện thoại</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">{t('label_phone')}</label>
                     <input
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
-                      placeholder="0901234567"
+                      placeholder={t('placeholder_phone')}
                       value={customerPhone}
                       onChange={e => setCustomerPhone(e.target.value)}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-1">Email</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">{t('label_email')}</label>
                     <input
                       type="email"
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
@@ -255,25 +263,25 @@ export function BookingFormPage() {
               {/* Chọn không gian */}
               <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
                 <h3 className="font-semibold text-slate-700 flex items-center gap-2 mb-4">
-                  <Building2 className="w-4 h-4 text-[#b11e29]" /> Chọn không gian
+                  <Building2 className="w-4 h-4 text-[#b11e29]" /> {t('section_space')}
                 </h3>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-1">Tòa nhà *</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">{t('label_building')}</label>
                     <select
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
                       value={buildingId}
                       onChange={e => { setBuildingId(e.target.value); setFloorId(''); setSpaceId('') }}
                       required
                     >
-                      <option value="">-- Chọn tòa nhà --</option>
+                      <option value="">{t('placeholder_select_building')}</option>
                       {mockBuildings.map(b => (
                         <option key={b.id} value={b.id}>{b.name}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-1">Tầng *</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">{t('label_floor')}</label>
                     <select
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
                       value={floorId}
@@ -281,14 +289,14 @@ export function BookingFormPage() {
                       disabled={!buildingId}
                       required
                     >
-                      <option value="">-- Chọn tầng --</option>
+                      <option value="">{t('placeholder_select_floor')}</option>
                       {floors.map(f => (
-                        <option key={f.id} value={f.id}>{f.floorName || `Tầng ${f.floorNumber}`}</option>
+                        <option key={f.id} value={f.id}>{f.floorName || t('floor_label', { number: f.floorNumber })}</option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-1">Không gian *</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">{t('label_space')}</label>
                     <select
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
                       value={spaceId}
@@ -296,12 +304,12 @@ export function BookingFormPage() {
                       disabled={!floorId}
                       required
                     >
-                      <option value="">-- Chọn không gian --</option>
+                      <option value="">{t('placeholder_select_space')}</option>
                       {spaces.map(s => {
                         const price = mockPricingRules.find(p => p.spaceType === s.type)?.pricePerHour
                         return (
                           <option key={s.id} value={s.id}>
-                            {s.name}{price ? ` (${(price / 1000).toLocaleString()}k/giờ)` : ''}
+                            {s.name}{price ? ` (${(price / 1000).toLocaleString()}${t('currency_per_hour')})` : ''}
                           </option>
                         )
                       })}
@@ -313,11 +321,11 @@ export function BookingFormPage() {
               {/* Thời gian */}
               <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
                 <h3 className="font-semibold text-slate-700 flex items-center gap-2 mb-4">
-                  <Calendar className="w-4 h-4 text-[#b11e29]" /> Thời gian đặt chỗ
+                  <Calendar className="w-4 h-4 text-[#b11e29]" /> {t('section_time')}
                 </h3>
                 <div className="grid grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-1">Ngày *</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">{t('label_date')}</label>
                     <input
                       type="date"
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
@@ -327,7 +335,7 @@ export function BookingFormPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-1">Giờ bắt đầu *</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">{t('label_start_time')}</label>
                     <input
                       type="time"
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
@@ -337,7 +345,7 @@ export function BookingFormPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-1">Giờ kết thúc *</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">{t('label_end_time')}</label>
                     <input
                       type="time"
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
@@ -350,7 +358,7 @@ export function BookingFormPage() {
                 {duration > 0 && (
                   <p className="flex items-center gap-1 text-xs text-slate-500 mt-2">
                     <Clock className="w-3.5 h-3.5" />
-                    Thời lượng: {Math.floor(duration / 60)}h{duration % 60 > 0 ? ` ${duration % 60}m` : ''}
+                    {t('label_duration')}: {Math.floor(duration / 60)}h{duration % 60 > 0 ? ` ${duration % 60}m` : ''}
                   </p>
                 )}
                 {conflict && (
@@ -365,24 +373,24 @@ export function BookingFormPage() {
               {selectedSpace && (
                 <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
                   <h3 className="font-semibold text-slate-700 flex items-center gap-2 mb-4">
-                    <CreditCard className="w-4 h-4 text-[#b11e29]" /> Tiền thuê không gian
+                    <CreditCard className="w-4 h-4 text-[#b11e29]" /> {t('section_space_price')}
                   </h3>
                   <div className="flex items-center justify-between text-sm mb-2">
-                    <span className="text-slate-500">Đơn giá</span>
+                    <span className="text-slate-500">{t('label_unit_price')}</span>
                     <span className="font-medium text-slate-700">
-                      {spacePricePerHour > 0 ? formatPrice(spacePricePerHour) + ' / giờ' : <span className="text-slate-400 italic">Chưa có giá</span>}
+                      {spacePricePerHour > 0 ? t('price_per_hour', { price: formatPrice(spacePricePerHour) }) : <span className="text-slate-400 italic">{t('no_price')}</span>}
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-sm mb-2">
-                    <span className="text-slate-500">Thời lượng</span>
+                    <span className="text-slate-500">{t('label_duration')}</span>
                     <span className="font-medium text-slate-700">
                       {duration > 0
-                        ? `${Math.floor(duration / 60)}h${duration % 60 > 0 ? ` ${duration % 60}m` : ''} (${durationHours.toFixed(2).replace(/\.?0+$/, '')} giờ)`
-                        : <span className="text-slate-400 italic">Chưa chọn thời gian</span>}
+                        ? `${Math.floor(duration / 60)}h${duration % 60 > 0 ? ` ${duration % 60}m` : ''} (${durationHours.toFixed(2).replace(/\.?0+$/, '')} ${t('duration_hours', { hours: '' }).trim()})`
+                        : <span className="text-slate-400 italic">{t('no_time_selected')}</span>}
                     </span>
                   </div>
                   <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                    <span className="font-semibold text-slate-700">Thành tiền thuê</span>
+                    <span className="font-semibold text-slate-700">{t('label_rental_total')}</span>
                     <span className={`text-lg font-bold ${spacePrice > 0 ? 'text-[#b11e29]' : 'text-slate-400'}`}>
                       {spacePrice > 0 ? formatPrice(spacePrice) : '—'}
                     </span>
@@ -394,7 +402,7 @@ export function BookingFormPage() {
               {selectedSpace && selectedSpace.amenities.length > 0 && (
                 <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
                   <h3 className="font-semibold text-slate-700 flex items-center gap-2 mb-3">
-                    <LayoutGrid className="w-4 h-4 text-[#b11e29]" /> Tiện ích đi kèm không gian
+                    <LayoutGrid className="w-4 h-4 text-[#b11e29]" /> {t('section_amenities')}
                   </h3>
                   <div className="flex flex-wrap gap-2">
                     {selectedSpace.amenities.map(amenity => (
@@ -403,16 +411,16 @@ export function BookingFormPage() {
                       </span>
                     ))}
                   </div>
-                  <p className="text-xs text-slate-400 mt-2">Các tiện ích này đã được bao gồm trong giá thuê không gian.</p>
+                  <p className="text-xs text-slate-400 mt-2">{t('amenities_included')}</p>
                 </div>
               )}
 
               {/* Dịch vụ thêm */}
               <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
                 <h3 className="font-semibold text-slate-700 flex items-center gap-2 mb-1">
-                  <LayoutGrid className="w-4 h-4 text-[#b11e29]" /> Dịch vụ sử dụng thêm
+                  <LayoutGrid className="w-4 h-4 text-[#b11e29]" /> {t('section_addons')}
                 </h3>
-                <p className="text-xs text-slate-400 mb-4">Chọn và nhập số lượng dịch vụ muốn thêm vào booking.</p>
+                <p className="text-xs text-slate-400 mb-4">{t('section_addons_desc')}</p>
                 <div className="grid grid-cols-2 gap-3">
                   {mockBookingAddOns.map(addon => {
                     const qty = selectedAddOns[addon.id] ?? 0
@@ -457,10 +465,10 @@ export function BookingFormPage() {
 
               {/* Ưu đãi & Ghi chú */}
               <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-                <h3 className="font-semibold text-slate-700 mb-4">Ưu đãi & Ghi chú</h3>
+                <h3 className="font-semibold text-slate-700 mb-4">{t('section_discount')}</h3>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-1">Giảm giá (%)</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">{t('label_discount')}</label>
                     <div className="flex items-center gap-2">
                       <button type="button" onClick={() => setDiscountPercent(v => Math.max(0, v - 5))}
                         className="p-1.5 border border-slate-200 rounded-lg hover:bg-slate-50">
@@ -480,11 +488,11 @@ export function BookingFormPage() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-600 mb-1">Ghi chú</label>
+                    <label className="block text-sm font-medium text-slate-600 mb-1">{t('label_notes')}</label>
                     <textarea
                       rows={2}
                       className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
-                      placeholder="Yêu cầu đặc biệt..."
+                      placeholder={t('placeholder_notes')}
                       value={notes}
                       onChange={e => setNotes(e.target.value)}
                     />
@@ -500,10 +508,10 @@ export function BookingFormPage() {
             <form id="booking-step2" onSubmit={handlePaymentSubmit} className="space-y-6">
               {/* Tóm tắt booking */}
               <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-                <h3 className="font-semibold text-slate-700 mb-4">Tóm tắt đặt chỗ</h3>
+                <h3 className="font-semibold text-slate-700 mb-4">{t('section_summary')}</h3>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Khách hàng</span>
+                    <span className="text-slate-500">{t('section_customer_info')}</span>
                     <span className="font-medium text-slate-700 text-right">
                       {customerName}
                       {customerPhone && ` – ${customerPhone}`}
@@ -511,16 +519,16 @@ export function BookingFormPage() {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Không gian</span>
+                    <span className="text-slate-500">{t('label_space_short')}</span>
                     <span className="font-medium text-slate-700">{selectedSpace?.name}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Thời gian</span>
+                    <span className="text-slate-500">{t('col_time')}</span>
                     <span className="font-medium text-slate-700">{date}, {startTime} – {endTime}</span>
                   </div>
                   {Object.keys(selectedAddOns).length > 0 && (
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Dịch vụ thêm</span>
+                      <span className="text-slate-500">{t('label_addons')}</span>
                       <span className="font-medium text-slate-700 text-right">
                         {Object.entries(selectedAddOns).map(([id, qty]) => {
                           const a = mockBookingAddOns.find(x => x.id === id)
@@ -531,16 +539,16 @@ export function BookingFormPage() {
                   )}
                   {notes && (
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Ghi chú</span>
+                      <span className="text-slate-500">{t('section_notes')}</span>
                       <span className="font-medium text-slate-700">{notes}</span>
                     </div>
                   )}
                   <div className="flex justify-between text-slate-500">
-                    <span>VAT (10%)</span>
+                    <span>{t('vat_label')}</span>
                     <span className="font-medium text-slate-700">+{formatPrice(taxAmount)}</span>
                   </div>
                   <div className="flex justify-between pt-2 border-t border-slate-100 font-bold text-base">
-                    <span className="text-slate-700">Tổng cộng</span>
+                    <span className="text-slate-700">{t('total')}</span>
                     <span className="text-[#b11e29]">{formatPrice(totalPrice)}</span>
                   </div>
                 </div>
@@ -548,7 +556,7 @@ export function BookingFormPage() {
 
               {/* Chọn phương thức thanh toán */}
               <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-                <h3 className="font-semibold text-slate-700 mb-4">Phương thức thanh toán</h3>
+                <h3 className="font-semibold text-slate-700 mb-4">{t('section_payment_method')}</h3>
                 <div className="grid grid-cols-2 gap-3">
                   {PAYMENT_METHODS.map(m => (
                     <label key={m.id} className={`flex items-center gap-3 p-3 rounded-xl border-2 cursor-pointer transition-all
@@ -563,7 +571,7 @@ export function BookingFormPage() {
                         required
                       />
                       {m.icon}
-                      <span className="font-medium text-sm text-slate-700">{m.label}</span>
+                      <span className="font-medium text-sm text-slate-700">{t(PAYMENT_METHOD_KEYS[m.id])}</span>
                     </label>
                   ))}
                 </div>
@@ -571,7 +579,7 @@ export function BookingFormPage() {
 
               {/* Gửi hóa đơn */}
               <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-                <h3 className="font-semibold text-slate-700 mb-4">Gửi hóa đơn</h3>
+                <h3 className="font-semibold text-slate-700 mb-4">{t('section_send_invoice')}</h3>
                 <div className="space-y-3">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
@@ -581,8 +589,8 @@ export function BookingFormPage() {
                       onChange={e => setSendInvoiceZalo(e.target.checked)}
                     />
                     <div>
-                      <p className="text-sm font-medium text-slate-700">Gửi hóa đơn qua Zalo</p>
-                      <p className="text-xs text-slate-400">Gửi thông báo và hóa đơn tới Zalo của khách hàng</p>
+                      <p className="text-sm font-medium text-slate-700">{t('send_invoice_zalo')}</p>
+                      <p className="text-xs text-slate-400">{t('send_invoice_zalo_desc')}</p>
                     </div>
                   </label>
                   <label className="flex items-center gap-3 cursor-pointer">
@@ -593,8 +601,8 @@ export function BookingFormPage() {
                       onChange={e => setSendInvoiceEmail(e.target.checked)}
                     />
                     <div>
-                      <p className="text-sm font-medium text-slate-700">Gửi hóa đơn qua Email</p>
-                      <p className="text-xs text-slate-400">Gửi hóa đơn đến email {customerEmail || '(chưa nhập email)'}</p>
+                      <p className="text-sm font-medium text-slate-700">{t('send_invoice_email')}</p>
+                      <p className="text-xs text-slate-400">{customerEmail ? t('send_invoice_email_desc', { email: customerEmail }) : t('send_invoice_no_email')}</p>
                     </div>
                   </label>
                 </div>
@@ -613,13 +621,13 @@ export function BookingFormPage() {
               {totalPrice > 0 && (
                 <div className="flex items-center justify-between mb-3 text-sm">
                   <div className="flex items-center gap-4 text-slate-500">
-                    <span>Không gian: <span className="text-slate-700 font-medium">{formatPrice(spacePrice)}</span></span>
-                    {servicesPrice > 0 && <span>Dịch vụ: <span className="text-slate-700 font-medium">{formatPrice(servicesPrice)}</span></span>}
-                    {discountAmount > 0 && <span className="text-green-600">Giảm: <span className="font-medium">-{formatPrice(discountAmount)}</span></span>}
-                    <span>VAT 10%: <span className="text-slate-700 font-medium">+{formatPrice(taxAmount)}</span></span>
+                    <span>{t('label_space_bottom')}: <span className="text-slate-700 font-medium">{formatPrice(spacePrice)}</span></span>
+                    {servicesPrice > 0 && <span>{t('label_services')}: <span className="text-slate-700 font-medium">{formatPrice(servicesPrice)}</span></span>}
+                    {discountAmount > 0 && <span className="text-green-600">{t('label_discount_bottom')}: <span className="font-medium">-{formatPrice(discountAmount)}</span></span>}
+                    <span>{t('vat_short')}: <span className="text-slate-700 font-medium">+{formatPrice(taxAmount)}</span></span>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-slate-400">Tổng cộng</p>
+                    <p className="text-xs text-slate-400">{t('total')}</p>
                     <p className="text-lg font-bold text-[#b11e29]">{formatPrice(totalPrice)}</p>
                   </div>
                 </div>
@@ -629,14 +637,14 @@ export function BookingFormPage() {
                 form="booking-step1"
                 className="w-full flex items-center justify-center gap-2 py-3 bg-[#b11e29] text-white rounded-xl font-semibold hover:bg-[#8f1820] transition-colors"
               >
-                Tiếp theo: Thanh toán <ChevronRight className="w-4 h-4" />
+                {t('btn_next_payment')} <ChevronRight className="w-4 h-4" />
               </button>
             </>
           )}
           {step === 2 && (
             <>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm text-slate-500">Tổng thanh toán</p>
+                <p className="text-sm text-slate-500">{t('total_payment')}</p>
                 <p className="text-lg font-bold text-[#b11e29]">{formatPrice(totalPrice)}</p>
               </div>
               <div className="flex gap-3">
@@ -645,14 +653,14 @@ export function BookingFormPage() {
                   onClick={() => setStep(1)}
                   className="flex-1 py-3 border border-slate-200 text-slate-600 rounded-xl font-semibold hover:bg-slate-50 transition-colors"
                 >
-                  Quay lại
+                  {t('btn_back')}
                 </button>
                 <button
                   type="submit"
                   form="booking-step2"
                   className="flex-1 py-3 bg-[#b11e29] text-white rounded-xl font-semibold hover:bg-[#8f1820] transition-colors"
                 >
-                  Xác nhận & Thanh toán
+                  {t('btn_confirm_payment')}
                 </button>
               </div>
             </>

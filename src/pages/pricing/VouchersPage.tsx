@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Ticket,
   Plus,
@@ -30,6 +31,7 @@ interface CreateModalProps {
 }
 
 function CreateModal({ promotions, onClose, onCreate, saving }: CreateModalProps) {
+  const { t } = useTranslation('pricing')
   const [form, setForm] = useState({
     promotionId: promotions[0]?.id ?? '',
     mode: 'auto' as 'auto' | 'manual',
@@ -46,7 +48,7 @@ function CreateModal({ promotions, onClose, onCreate, saving }: CreateModalProps
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (form.mode === 'manual' && !form.manualCode.trim()) {
-      alert('Vui lòng nhập mã voucher.')
+      alert(t('voucher_alert_enter_code'))
       return
     }
     onCreate({
@@ -65,11 +67,11 @@ function CreateModal({ promotions, onClose, onCreate, saving }: CreateModalProps
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
-        <h2 className="text-lg font-semibold text-slate-800 mb-5">Tạo mã voucher</h2>
+        <h2 className="text-lg font-semibold text-slate-800 mb-5">{t('voucher_modal_title')}</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Chương trình khuyến mãi *</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t('voucher_label_promotion')}</label>
             <select className={inputCls} value={form.promotionId} onChange={e => set('promotionId', e.target.value)} required>
               {promotions.map(p => (
                 <option key={p.id} value={p.id}>{p.name} ({p.code})</option>
@@ -78,12 +80,12 @@ function CreateModal({ promotions, onClose, onCreate, saving }: CreateModalProps
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Loại tạo mã</label>
+            <label className="block text-xs font-medium text-slate-600 mb-1">{t('voucher_label_create_mode')}</label>
             <div className="flex gap-3">
               {(['auto', 'manual'] as const).map(m => (
                 <label key={m} className="flex items-center gap-2 cursor-pointer text-sm text-slate-700">
                   <input type="radio" name="mode" value={m} checked={form.mode === m} onChange={() => set('mode', m)} className="accent-[#b11e29]" />
-                  {m === 'auto' ? 'Tự động (random)' : 'Nhập thủ công'}
+                  {m === 'auto' ? t('voucher_mode_auto') : t('voucher_mode_manual')}
                 </label>
               ))}
             </div>
@@ -91,38 +93,38 @@ function CreateModal({ promotions, onClose, onCreate, saving }: CreateModalProps
 
           {form.mode === 'auto' ? (
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Số lượng mã cần tạo</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{t('voucher_label_code_count')}</label>
               <input type="number" min={1} max={500} className={inputCls} value={form.count} onChange={e => set('count', e.target.value)} />
             </div>
           ) : (
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Mã voucher *</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{t('voucher_label_code')}</label>
               <input className={inputCls} value={form.manualCode} onChange={e => set('manualCode', e.target.value.toUpperCase())} placeholder="VD: SUMMER25" maxLength={32} required />
             </div>
           )}
 
           <div>
             <label className="block text-xs font-medium text-slate-600 mb-1">
-              Gán cho khách hàng cụ thể <span className="text-slate-400 font-normal">(ID hoặc để trống = public)</span>
+              {t('voucher_label_customer')} <span className="text-slate-400 font-normal">({t('voucher_customer_hint')})</span>
             </label>
             <input className={inputCls} value={form.assignedCustomerId} onChange={e => set('assignedCustomerId', e.target.value)} placeholder="cus-001" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Lượt dùng tối đa / mã</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{t('voucher_label_max_usage')}</label>
               <input type="number" min={1} className={inputCls} value={form.maxUsageTotal} onChange={e => set('maxUsageTotal', e.target.value)} />
             </div>
             <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Hết hạn sau ngày</label>
+              <label className="block text-xs font-medium text-slate-600 mb-1">{t('voucher_label_expires')}</label>
               <input type="date" className={inputCls} value={form.expiresAt} onChange={e => set('expiresAt', e.target.value)} />
             </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-2">
-            <button type="button" onClick={onClose} className="px-4 py-2 text-sm rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">Hủy</button>
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">{t('btn_cancel')}</button>
             <button type="submit" disabled={saving} className="px-4 py-2 text-sm rounded-lg bg-[#b11e29] text-white font-medium hover:bg-[#8e1820] disabled:opacity-50">
-              {saving ? 'Đang tạo...' : 'Tạo mã'}
+              {saving ? t('voucher_btn_creating') : t('voucher_btn_create')}
             </button>
           </div>
         </form>
@@ -134,6 +136,7 @@ function CreateModal({ promotions, onClose, onCreate, saving }: CreateModalProps
 // ========== COPY BUTTON ==========
 
 function CopyButton({ text }: { text: string }) {
+  const { t } = useTranslation('pricing')
   const [copied, setCopied] = useState(false)
   const handleCopy = () => {
     navigator.clipboard.writeText(text).then(() => {
@@ -142,7 +145,7 @@ function CopyButton({ text }: { text: string }) {
     })
   }
   return (
-    <button onClick={handleCopy} title="Sao chép mã" className="ml-1 text-slate-400 hover:text-[#b11e29] transition-colors">
+    <button onClick={handleCopy} title={t('tooltip_copy_code')} className="ml-1 text-slate-400 hover:text-[#b11e29] transition-colors">
       {copied ? <CheckCircle className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
     </button>
   )
@@ -151,6 +154,7 @@ function CopyButton({ text }: { text: string }) {
 // ========== MAIN PAGE ==========
 
 export function VouchersPage() {
+  const { t } = useTranslation('pricing')
   const [search, setSearch] = useState('')
   const [activeFilter, setActiveFilter] = useState<'' | 'true' | 'false'>('')
   const [showCreate, setShowCreate] = useState(false)
@@ -181,16 +185,16 @@ export function VouchersPage() {
       await createMutation.mutateAsync(data)
       setShowCreate(false)
     } catch {
-      alert('Không thể tạo voucher. Vui lòng thử lại.')
+      alert(t('voucher_create_error'))
     }
   }
 
   const handleRevoke = async (v: VoucherCode) => {
-    if (confirm(`Thu hồi mã voucher "${v.code}"? Mã sẽ không thể sử dụng nữa.`)) {
+    if (confirm(t('voucher_confirm_revoke', { code: v.code }))) {
       try {
         await revokeMutation.mutateAsync(v.id)
       } catch {
-        alert('Thao tác thất bại.')
+        alert(t('voucher_revoke_error'))
       }
     }
   }
@@ -200,7 +204,7 @@ export function VouchersPage() {
 
   return (
     <>
-      <Header title="Mã giảm giá (Voucher)" subtitle="Quản lý mã voucher gắn với chương trình khuyến mãi" />
+      <Header title={t('page_title_vouchers')} subtitle={t('page_subtitle_vouchers')} />
 
       <main className="flex-1 overflow-y-auto p-8">
         <div className="max-w-6xl mx-auto space-y-6">
@@ -208,10 +212,10 @@ export function VouchersPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: 'Tổng mã', value: stats.total, icon: <Ticket className="w-5 h-5" />, color: 'bg-blue-50 text-blue-600' },
-              { label: 'Còn hiệu lực', value: stats.active, icon: <CheckCircle className="w-5 h-5" />, color: 'bg-green-50 text-green-600' },
-              { label: 'Đã sử dụng', value: stats.used, icon: <XCircle className="w-5 h-5" />, color: 'bg-slate-50 text-slate-500' },
-              { label: 'Gán riêng khách hàng', value: stats.assigned, icon: <User className="w-5 h-5" />, color: 'bg-purple-50 text-purple-600' },
+              { label: t('voucher_stat_total'), value: stats.total, icon: <Ticket className="w-5 h-5" />, color: 'bg-blue-50 text-blue-600' },
+              { label: t('voucher_stat_active'), value: stats.active, icon: <CheckCircle className="w-5 h-5" />, color: 'bg-green-50 text-green-600' },
+              { label: t('voucher_stat_used'), value: stats.used, icon: <XCircle className="w-5 h-5" />, color: 'bg-slate-50 text-slate-500' },
+              { label: t('voucher_stat_assigned'), value: stats.assigned, icon: <User className="w-5 h-5" />, color: 'bg-purple-50 text-purple-600' },
             ].map(c => (
               <div key={c.label} className="bg-white rounded-xl shadow-sm border border-slate-100 p-5 flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${c.color}`}>{c.icon}</div>
@@ -228,41 +232,41 @@ export function VouchersPage() {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-5 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <Ticket className="w-5 h-5 text-[#b11e29]" />
-                <h2 className="font-semibold text-slate-800">Danh sách mã voucher</h2>
+                <h2 className="font-semibold text-slate-800">{t('voucher_list_title')}</h2>
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input className="pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg w-44 focus:outline-none focus:ring-2 focus:ring-[#b11e29]/20 focus:border-[#b11e29]" placeholder="Tìm mã voucher..." value={search} onChange={e => setSearch(e.target.value)} />
+                  <input className="pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-lg w-44 focus:outline-none focus:ring-2 focus:ring-[#b11e29]/20 focus:border-[#b11e29]" placeholder={t('voucher_search_placeholder')} value={search} onChange={e => setSearch(e.target.value)} />
                 </div>
                 <select className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#b11e29]/20 focus:border-[#b11e29]" value={activeFilter} onChange={e => setActiveFilter(e.target.value as '' | 'true' | 'false')}>
-                  <option value="">Tất cả trạng thái</option>
-                  <option value="true">Còn hiệu lực</option>
-                  <option value="false">Đã dùng / Thu hồi</option>
+                  <option value="">{t('voucher_filter_all')}</option>
+                  <option value="true">{t('voucher_filter_active')}</option>
+                  <option value="false">{t('voucher_filter_inactive')}</option>
                 </select>
                 <button onClick={() => setShowCreate(true)} disabled={visiblePromotions.length === 0} className="flex items-center gap-1.5 px-4 py-2 bg-[#b11e29] text-white text-sm font-medium rounded-lg hover:bg-[#8e1820] transition-colors disabled:opacity-40 whitespace-nowrap">
                   <Plus className="w-4 h-4" />
-                  Tạo mã
+                  {t('btn_create_code')}
                 </button>
               </div>
             </div>
 
             {isLoading ? (
-              <div className="py-16 text-center text-slate-400 text-sm">Đang tải...</div>
+              <div className="py-16 text-center text-slate-400 text-sm">{t('voucher_loading')}</div>
             ) : vouchers.length === 0 ? (
-              <div className="py-16 text-center text-slate-400 text-sm">Không có mã voucher nào</div>
+              <div className="py-16 text-center text-slate-400 text-sm">{t('voucher_empty')}</div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="text-xs text-slate-500 border-b border-slate-100">
-                      <th className="text-left font-medium px-5 py-3">Mã Voucher</th>
-                      <th className="text-left font-medium px-5 py-3">Chương trình KM</th>
-                      <th className="text-left font-medium px-5 py-3">Gán cho</th>
-                      <th className="text-center font-medium px-5 py-3">Đã dùng</th>
-                      <th className="text-left font-medium px-5 py-3">Hết hạn</th>
-                      <th className="text-center font-medium px-5 py-3">Trạng thái</th>
-                      <th className="text-right font-medium px-5 py-3">Thao tác</th>
+                      <th className="text-left font-medium px-5 py-3">{t('voucher_col_code')}</th>
+                      <th className="text-left font-medium px-5 py-3">{t('voucher_col_promotion')}</th>
+                      <th className="text-left font-medium px-5 py-3">{t('voucher_col_assigned')}</th>
+                      <th className="text-center font-medium px-5 py-3">{t('voucher_col_used')}</th>
+                      <th className="text-left font-medium px-5 py-3">{t('voucher_col_expires')}</th>
+                      <th className="text-center font-medium px-5 py-3">{t('voucher_col_status')}</th>
+                      <th className="text-right font-medium px-5 py-3">{t('voucher_col_actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-50">
@@ -304,18 +308,18 @@ export function VouchersPage() {
                           <td className="px-5 py-3.5 text-center">
                             {v.isActive && !expired && !fullyUsed ? (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700">
-                                <CheckCircle className="w-3 h-3" />Còn hiệu lực
+                                <CheckCircle className="w-3 h-3" />{t('voucher_status_active')}
                               </span>
                             ) : (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-500">
-                                <XCircle className="w-3 h-3" />{expired ? 'Hết hạn' : fullyUsed ? 'Đã dùng hết' : 'Đã thu hồi'}
+                                <XCircle className="w-3 h-3" />{expired ? t('voucher_status_expired') : fullyUsed ? t('voucher_status_fully_used') : t('voucher_status_revoked')}
                               </span>
                             )}
                           </td>
                           <td className="px-5 py-3.5 text-right">
                             {v.isActive && !expired && !fullyUsed && (
                               <button onClick={() => handleRevoke(v)} disabled={revokeMutation.isPending} className="text-xs text-red-600 hover:text-red-800 font-medium transition-colors">
-                                Thu hồi
+                                {t('btn_revoke')}
                               </button>
                             )}
                           </td>

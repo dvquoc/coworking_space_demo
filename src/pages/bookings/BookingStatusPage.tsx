@@ -10,15 +10,16 @@ import {
   TrendingDown,
   LayoutGrid,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import Header from '../../components/layout/Header'
 import { mockBookingList } from '../../mocks/bookingMocks'
 
 type BookingStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled'
 type TabKey = 'all' | BookingStatus
 
-const STATUS_CONFIG: Record<BookingStatus, { label: string; icon: React.ReactNode; cardClass: string; badgeClass: string; dotClass: string; tabActive: string }> = {
+const STATUS_CONFIG: Record<BookingStatus, { labelKey: string; icon: React.ReactNode; cardClass: string; badgeClass: string; dotClass: string; tabActive: string }> = {
   pending: {
-    label: 'Chờ thanh toán',
+    labelKey: 'status_pending',
     icon: <AlertCircle className="w-5 h-5" />,
     cardClass: 'bg-amber-50 border-amber-200',
     badgeClass: 'bg-amber-50 text-amber-700 border-amber-200',
@@ -26,7 +27,7 @@ const STATUS_CONFIG: Record<BookingStatus, { label: string; icon: React.ReactNod
     tabActive: 'border-amber-500 text-amber-600',
   },
   confirmed: {
-    label: 'Đã xác nhận',
+    labelKey: 'status_confirmed',
     icon: <Loader2 className="w-5 h-5" />,
     cardClass: 'bg-blue-50 border-blue-200',
     badgeClass: 'bg-blue-50 text-blue-700 border-blue-200',
@@ -34,7 +35,7 @@ const STATUS_CONFIG: Record<BookingStatus, { label: string; icon: React.ReactNod
     tabActive: 'border-blue-500 text-blue-600',
   },
   completed: {
-    label: 'Hoàn thành',
+    labelKey: 'status_completed',
     icon: <CheckCircle2 className="w-5 h-5" />,
     cardClass: 'bg-green-50 border-green-200',
     badgeClass: 'bg-green-50 text-green-700 border-green-200',
@@ -42,7 +43,7 @@ const STATUS_CONFIG: Record<BookingStatus, { label: string; icon: React.ReactNod
     tabActive: 'border-green-500 text-green-600',
   },
   cancelled: {
-    label: 'Đã hủy',
+    labelKey: 'status_cancelled',
     icon: <XCircle className="w-5 h-5" />,
     cardClass: 'bg-slate-50 border-slate-200',
     badgeClass: 'bg-slate-100 text-slate-500 border-slate-200',
@@ -59,6 +60,7 @@ function formatPrice(price: number) {
 
 export function BookingStatusPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation('bookings')
   const [activeTab, setActiveTab] = useState<TabKey>('all')
 
   const stats = useMemo(() => {
@@ -86,7 +88,7 @@ export function BookingStatusPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header title="Theo Dõi Trạng Thái" />
+      <Header title={t('page_title_status')} />
       <div className="flex-1 overflow-auto p-6">
         <div className="max-w-5xl mx-auto space-y-6">
 
@@ -104,7 +106,7 @@ export function BookingStatusPage() {
                     <span className={status === 'completed' ? 'text-green-600' : status === 'cancelled' ? 'text-slate-400' : status === 'pending' ? 'text-amber-500' : 'text-blue-600'}>
                       {cfg.icon}
                     </span>
-                    <span className="text-sm font-medium text-slate-600">{cfg.label}</span>
+                    <span className="text-sm font-medium text-slate-600">{t(cfg.labelKey)}</span>
                   </div>
                   <p className="text-3xl font-bold text-slate-800">{stats.counts[status]}</p>
                   <p className="text-xs text-slate-500 mt-1">{formatPrice(stats.revenues[status])}</p>
@@ -116,24 +118,24 @@ export function BookingStatusPage() {
           {/* KPIs */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4">
-              <p className="text-xs text-slate-400 mb-1">Doanh thu thực thu</p>
+              <p className="text-xs text-slate-400 mb-1">{t('kpi_revenue')}</p>
               <p className="text-2xl font-bold text-[#b11e29]">{formatPrice(totalRevenue)}</p>
               <div className="flex items-center gap-1 text-xs text-green-600 mt-1">
-                <TrendingUp className="w-3.5 h-3.5" /> Từ các booking hoàn thành
+                <TrendingUp className="w-3.5 h-3.5" /> {t('kpi_revenue_note')}
               </div>
             </div>
             <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4">
-              <p className="text-xs text-slate-400 mb-1">Tỷ lệ hoàn thành</p>
+              <p className="text-xs text-slate-400 mb-1">{t('kpi_completion_rate')}</p>
               <p className="text-2xl font-bold text-green-600">{completedRate}%</p>
               <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
                 <CheckCircle2 className="w-3.5 h-3.5" /> {stats.counts.completed}/{mockBookingList.length} booking
               </div>
             </div>
             <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4">
-              <p className="text-xs text-slate-400 mb-1">Tỷ lệ hủy</p>
+              <p className="text-xs text-slate-400 mb-1">{t('kpi_cancellation_rate')}</p>
               <p className="text-2xl font-bold text-slate-500">{cancelledRate}%</p>
               <div className="flex items-center gap-1 text-xs text-rose-500 mt-1">
-                <TrendingDown className="w-3.5 h-3.5" /> {stats.counts.cancelled} booking bị hủy
+                <TrendingDown className="w-3.5 h-3.5" /> {t('kpi_cancelled_count', { count: stats.counts.cancelled })}
               </div>
             </div>
           </div>
@@ -143,10 +145,10 @@ export function BookingStatusPage() {
             {/* Tab bar */}
             <div className="flex border-b border-slate-100 overflow-x-auto">
               {([
-                { key: 'all' as TabKey, label: 'Tất cả', count: mockBookingList.length, dotClass: 'bg-slate-400', activeClass: 'border-[#b11e29] text-[#b11e29]' },
+                { key: 'all' as TabKey, label: t('tab_all'), count: mockBookingList.length, dotClass: 'bg-slate-400', activeClass: 'border-[#b11e29] text-[#b11e29]' },
                 ...STATUSES.map(s => ({
                   key: s as TabKey,
-                  label: STATUS_CONFIG[s].label,
+                  label: t(STATUS_CONFIG[s].labelKey),
                   count: stats.counts[s],
                   dotClass: STATUS_CONFIG[s].dotClass,
                   activeClass: STATUS_CONFIG[s].tabActive,
@@ -175,16 +177,16 @@ export function BookingStatusPage() {
             {filteredBookings.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-16 gap-3 text-slate-400">
                 <LayoutGrid className="w-10 h-10 opacity-30" />
-                <p className="text-sm">Không có booking nào trong trạng thái này</p>
+                <p className="text-sm">{t('empty_status')}</p>
               </div>
             ) : (
               <>
                 {/* Table header */}
                 <div className="grid grid-cols-[1fr_160px_140px_100px_44px] gap-4 px-5 py-2 bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-400 uppercase tracking-wide">
-                  <span>Booking</span>
-                  <span>Thời gian</span>
-                  <span>Trạng thái</span>
-                  <span className="text-right">Giá trị</span>
+                  <span>{t('col_booking')}</span>
+                  <span>{t('col_time')}</span>
+                  <span>{t('col_status')}</span>
+                  <span className="text-right">{t('col_value')}</span>
                   <span />
                 </div>
                 <div className="divide-y divide-slate-50">
@@ -208,7 +210,7 @@ export function BookingStatusPage() {
                         <div>
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${cfg.badgeClass}`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${cfg.dotClass}`} />
-                            {cfg.label}
+                            {t(cfg.labelKey)}
                           </span>
                         </div>
                         <div className="text-right">

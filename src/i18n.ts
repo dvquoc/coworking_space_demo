@@ -10,6 +10,7 @@ import viContracts from './locales/vi/contracts.json'
 import viCrm from './locales/vi/crm.json'
 import viInvoices from './locales/vi/invoices.json'
 import viBookings from './locales/vi/bookings.json'
+import viPricing from './locales/vi/pricing.json'
 import enCommon from './locales/en/common.json'
 import enNav from './locales/en/nav.json'
 import enAuth from './locales/en/auth.json'
@@ -19,6 +20,7 @@ import enContracts from './locales/en/contracts.json'
 import enCrm from './locales/en/crm.json'
 import enInvoices from './locales/en/invoices.json'
 import enBookings from './locales/en/bookings.json'
+import enPricing from './locales/en/pricing.json'
 import koCommon from './locales/ko/common.json'
 import koNav from './locales/ko/nav.json'
 import koAuth from './locales/ko/auth.json'
@@ -28,6 +30,7 @@ import koContracts from './locales/ko/contracts.json'
 import koCrm from './locales/ko/crm.json'
 import koInvoices from './locales/ko/invoices.json'
 import koBookings from './locales/ko/bookings.json'
+import koPricing from './locales/ko/pricing.json'
 
 const STORAGE_KEY = 'coworking_preferred_locale'
 
@@ -43,9 +46,9 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      vi: { common: viCommon, nav: viNav, auth: viAuth, reports: viReports, dashboard: viDashboard, contracts: viContracts, crm: viCrm, invoices: viInvoices, bookings: viBookings },
-      en: { common: enCommon, nav: enNav, auth: enAuth, reports: enReports, dashboard: enDashboard, contracts: enContracts, crm: enCrm, invoices: enInvoices, bookings: enBookings },
-      ko: { common: koCommon, nav: koNav, auth: koAuth, reports: koReports, dashboard: koDashboard, contracts: koContracts, crm: koCrm, invoices: koInvoices, bookings: koBookings },
+      vi: { common: viCommon, nav: viNav, auth: viAuth, reports: viReports, dashboard: viDashboard, contracts: viContracts, crm: viCrm, invoices: viInvoices, bookings: viBookings, pricing: viPricing },
+      en: { common: enCommon, nav: enNav, auth: enAuth, reports: enReports, dashboard: enDashboard, contracts: enContracts, crm: enCrm, invoices: enInvoices, bookings: enBookings, pricing: enPricing },
+      ko: { common: koCommon, nav: koNav, auth: koAuth, reports: koReports, dashboard: koDashboard, contracts: koContracts, crm: koCrm, invoices: koInvoices, bookings: koBookings, pricing: koPricing },
     },
     lng: detectLanguage(),
     fallbackLng: 'vi',

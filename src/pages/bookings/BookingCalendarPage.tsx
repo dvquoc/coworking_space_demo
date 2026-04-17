@@ -5,21 +5,22 @@ import {
   Minus, Plus, CreditCard, Banknote, Smartphone, LayoutGrid, User,
   Landmark, Wallet,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import Header from '../../components/layout/Header'
 import { mockBuildings, mockFloors, mockSpaces, mockPricingRules } from '../../mocks/propertyMocks'
 import { mockBookingList } from '../../mocks/bookingMocks'
 import { mockBookingAddOns } from '../../mocks/pricingMocks'
 import { mockCustomers } from '../../mocks/customerMocks'
 
-const DAY_LABELS = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
-const MONTH_LABELS = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
+const DAY_KEYS = ['day_sun', 'day_mon', 'day_tue', 'day_wed', 'day_thu', 'day_fri', 'day_sat']
+const MONTH_KEYS = ['month_1', 'month_2', 'month_3', 'month_4', 'month_5', 'month_6', 'month_7', 'month_8', 'month_9', 'month_10', 'month_11', 'month_12']
 
 const STATUS_DOT: Record<string, string> = {
   pending: 'bg-amber-400', confirmed: 'bg-blue-500',
   completed: 'bg-green-500', cancelled: 'bg-slate-300',
 }
-const STATUS_LABEL: Record<string, string> = {
-  pending: 'Chờ TT', confirmed: 'Đã XN', completed: 'Hoàn thành', cancelled: 'Đã hủy',
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  pending: 'status_short_pending', confirmed: 'status_short_confirmed', completed: 'status_completed', cancelled: 'status_cancelled',
 }
 const STATUS_BADGE: Record<string, string> = {
   pending: 'bg-amber-50 text-amber-700',
@@ -28,13 +29,18 @@ const STATUS_BADGE: Record<string, string> = {
   cancelled: 'bg-slate-100 text-slate-500',
 }
 const PAYMENT_METHODS = [
-  { id: 'vnpay', label: 'VNPay', icon: <CreditCard className="w-4 h-4" /> },
-  { id: 'momo', label: 'MoMo', icon: <Smartphone className="w-4 h-4" /> },
-  { id: 'zalopay', label: 'ZaloPay', icon: <Smartphone className="w-4 h-4" /> },
-  { id: 'cash', label: 'Tiền mặt', icon: <Banknote className="w-4 h-4" /> },
-  { id: 'bank_transfer', label: 'Chuyển khoản', icon: <Landmark className="w-4 h-4" /> },
-  { id: 'credit', label: 'Credit', icon: <Wallet className="w-4 h-4" /> },
+  { id: 'vnpay', icon: <CreditCard className="w-4 h-4" /> },
+  { id: 'momo', icon: <Smartphone className="w-4 h-4" /> },
+  { id: 'zalopay', icon: <Smartphone className="w-4 h-4" /> },
+  { id: 'cash', icon: <Banknote className="w-4 h-4" /> },
+  { id: 'bank_transfer', icon: <Landmark className="w-4 h-4" /> },
+  { id: 'credit', icon: <Wallet className="w-4 h-4" /> },
 ]
+
+const PAYMENT_METHOD_KEYS: Record<string, string> = {
+  vnpay: 'method_vnpay', momo: 'method_momo', zalopay: 'method_zalopay',
+  cash: 'method_cash', bank_transfer: 'method_bank_transfer', credit: 'method_credit',
+}
 
 function getDaysInMonth(y: number, m: number) { return new Date(y, m + 1, 0).getDate() }
 function getFirstDayOfMonth(y: number, m: number) { return new Date(y, m, 1).getDay() }
@@ -53,6 +59,7 @@ function formatDateVN(dateStr: string) {
 
 export function BookingCalendarPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation('bookings')
   const today = new Date()
 
   // Filter state
@@ -156,9 +163,9 @@ export function BookingCalendarPage() {
 
   // Handle booking submit
   const handleBook = () => {
-    if (!spaceId) { setConflict('Vui lòng chọn không gian ở bộ lọc phía trên trước khi đặt.'); return }
-    if (!startTime || !endTime) { setConflict('Vui lòng chọn giờ bắt đầu và kết thúc.'); return }
-    if (calcMins(startTime, endTime) <= 0) { setConflict('Giờ kết thúc phải sau giờ bắt đầu.'); return }
+    if (!spaceId) { setConflict(t('conflict_select_space')); return }
+    if (!startTime || !endTime) { setConflict(t('conflict_select_time')); return }
+    if (calcMins(startTime, endTime) <= 0) { setConflict(t('conflict_end_after_start')); return }
     const overlapping = dayBookings.find(b => {
       if (b.status === 'cancelled') return false
       const bs = b.startTime.slice(11, 16)
@@ -166,7 +173,7 @@ export function BookingCalendarPage() {
       return startTime < be && endTime > bs
     })
     if (overlapping) {
-      setConflict(`Không gian đã được đặt từ ${overlapping.startTime.slice(11, 16)} đến ${overlapping.endTime.slice(11, 16)}. Vui lòng chọn khung giờ khác.`)
+      setConflict(t('conflict_overlap', { start: overlapping.startTime.slice(11, 16), end: overlapping.endTime.slice(11, 16) }))
       return
     }
     setConflict(null)
@@ -191,7 +198,7 @@ export function BookingCalendarPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header title="Đặt Chỗ theo lịch" subtitle='Kiểm tra lịch trùng trước khi đặt chỗ' />
+      <Header title={t('page_title_calendar')} subtitle={t('page_subtitle_calendar')} />
       <div className="flex-1 overflow-auto p-6">
         <div className="max-w-5xl mx-auto space-y-4">
 
@@ -199,37 +206,37 @@ export function BookingCalendarPage() {
           <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-4">
             <div className="grid grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-medium text-slate-500 mb-1">Tòa nhà</label>
+                <label className="block text-xs font-medium text-slate-500 mb-1">{t('label_building_short')}</label>
                 <select
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
                   value={buildingId}
                   onChange={e => { setBuildingId(e.target.value); setFloorId(''); setSpaceId('') }}
                 >
-                  <option value="">-- Tất cả tòa nhà --</option>
+                  <option value="">{t('placeholder_all_buildings')}</option>
                   {mockBuildings.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-500 mb-1">Tầng</label>
+                <label className="block text-xs font-medium text-slate-500 mb-1">{t('label_floor_short')}</label>
                 <select
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
                   value={floorId}
                   onChange={e => { setFloorId(e.target.value); setSpaceId('') }}
                   disabled={!buildingId}
                 >
-                  <option value="">-- Tất cả tầng --</option>
-                  {floors.map(f => <option key={f.id} value={f.id}>{f.floorName || `Tầng ${f.floorNumber}`}</option>)}
+                  <option value="">{t('placeholder_all_floors')}</option>
+                  {floors.map(f => <option key={f.id} value={f.id}>{f.floorName || t('floor_label', { number: f.floorNumber })}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-xs font-medium text-slate-500 mb-1">Không gian</label>
+                <label className="block text-xs font-medium text-slate-500 mb-1">{t('label_space_short')}</label>
                 <select
                   className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
                   value={spaceId}
                   onChange={e => setSpaceId(e.target.value)}
                   disabled={!floorId}
                 >
-                  <option value="">-- Tất cả không gian --</option>
+                  <option value="">{t('placeholder_all_spaces')}</option>
                   {spaces.map(s => {
                     const price = mockPricingRules.find(p => p.spaceType === s.type)?.pricePerHour
                     return <option key={s.id} value={s.id}>{s.name}{price ? ` · ${(price / 1000).toFixed(0)}k/h` : ''}</option>
@@ -244,13 +251,13 @@ export function BookingCalendarPage() {
             {/* Nav */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100">
               <button onClick={prevMonth} className="p-1.5 hover:bg-slate-50 rounded-lg"><ChevronLeft className="w-4 h-4 text-slate-500" /></button>
-              <h2 className="text-sm font-semibold text-slate-700">{MONTH_LABELS[viewMonth]} {viewYear}</h2>
+              <h2 className="text-sm font-semibold text-slate-700">{t(MONTH_KEYS[viewMonth])} {viewYear}</h2>
               <button onClick={nextMonth} className="p-1.5 hover:bg-slate-50 rounded-lg"><ChevronRight className="w-4 h-4 text-slate-500" /></button>
             </div>
             {/* Day labels */}
             <div className="grid grid-cols-7 border-b border-slate-100">
-              {DAY_LABELS.map(d => (
-                <div key={d} className="py-2 text-center text-xs font-semibold text-slate-400 uppercase tracking-wide">{d}</div>
+              {DAY_KEYS.map(d => (
+                <div key={d} className="py-2 text-center text-xs font-semibold text-slate-400 uppercase tracking-wide">{t(d)}</div>
               ))}
             </div>
             {/* Grid */}
@@ -291,8 +298,8 @@ export function BookingCalendarPage() {
 
           {/* Legend */}
           <div className="flex items-center gap-5 text-xs text-slate-400">
-            {Object.entries(STATUS_LABEL).map(([s, l]) => (
-              <div key={s} className="flex items-center gap-1.5"><span className={`w-2 h-2 rounded-full ${STATUS_DOT[s]}`} />{l}</div>
+            {Object.entries(STATUS_LABEL_KEYS).map(([s, k]) => (
+              <div key={s} className="flex items-center gap-1.5"><span className={`w-2 h-2 rounded-full ${STATUS_DOT[s]}`} />{t(k)}</div>
             ))}
           </div>
         </div>
@@ -309,7 +316,7 @@ export function BookingCalendarPage() {
                 <p className="text-xs text-slate-400 mb-1">{formatDateVN(modalDate)}{selectedSpace ? ` · ${selectedSpace.name}` : ''}</p>
                 {/* Step indicator */}
                 <div className="flex items-center gap-1">
-                  {[{ no: 1, label: 'Thông tin đặt chỗ' }, { no: 2, label: 'Thanh toán' }].map((s, i, arr) => (
+                  {[{ no: 1, label: t('step1_label') }, { no: 2, label: t('step2_label_short') }].map((s, i, arr) => (
                     <div key={s.no} className="flex items-center gap-1">
                       <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2 shrink-0
                         ${paymentSuccess ? 'bg-green-500 border-green-500 text-white'
@@ -345,14 +352,14 @@ export function BookingCalendarPage() {
                 <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
                   <CheckCircle2 className="w-7 h-7 text-green-600" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-800">Đặt chỗ thành công!</h3>
-                <p className="text-sm text-slate-500">Booking đã được xác nhận. Chỗ đã được giữ cho khách hàng.</p>
+                <h3 className="text-lg font-bold text-slate-800">{t('success_title')}</h3>
+                <p className="text-sm text-slate-500">{t('success_message')}</p>
                 <div className="flex gap-3">
                   <button onClick={() => navigate('/bookings')} className="px-5 py-2 bg-[#b11e29] text-white rounded-lg text-sm font-medium hover:bg-[#8f1820]">
-                    Xem danh sách
+                    {t('btn_view_list_short')}
                   </button>
                   <button onClick={() => setModalDate(null)} className="px-5 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50">
-                    Đóng
+                    {t('btn_close')}
                   </button>
                 </div>
               </div>
@@ -362,21 +369,21 @@ export function BookingCalendarPage() {
                 {/* ---- LEFT: existing bookings ---- */}
                 <div className="w-72 shrink-0 border-r border-slate-100 flex flex-col bg-slate-50 overflow-hidden">
                   <div className="px-4 py-3 border-b border-slate-100 bg-white">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Lịch đã đặt</p>
-                    {!spaceId && <p className="text-[11px] text-slate-400 mt-0.5">Chọn không gian để lọc lịch</p>}
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('calendar_booked')}</p>
+                    {!spaceId && <p className="text-[11px] text-slate-400 mt-0.5">{t('calendar_select_space')}</p>}
                   </div>
                   <div className="flex-1 overflow-auto p-3 space-y-2">
                     {dayBookings.filter(b => b.status !== 'cancelled').length === 0 ? (
                       <div className="flex flex-col items-center justify-center pt-10 gap-2 text-slate-400">
                         <LayoutGrid className="w-8 h-8 opacity-30" />
-                        <p className="text-xs text-center">{spaceId ? 'Chưa có booking nào ngày này' : 'Chưa có dữ liệu'}</p>
+                        <p className="text-xs text-center">{spaceId ? t('calendar_no_bookings') : t('calendar_no_data')}</p>
                       </div>
                     ) : (
                       dayBookings.filter(b => b.status !== 'cancelled').map(b => (
                         <div key={b.id} className="bg-white rounded-lg border border-slate-100 p-3">
                           <div className="flex items-center justify-between mb-1">
                             <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${STATUS_BADGE[b.status]}`}>
-                              {STATUS_LABEL[b.status]}
+                              {t(STATUS_LABEL_KEYS[b.status])}
                             </span>
                             <span className="text-[10px] text-slate-400 font-mono">
                               {b.startTime.slice(11, 16)}–{b.endTime.slice(11, 16)}
@@ -408,7 +415,7 @@ export function BookingCalendarPage() {
                       {/* Customer */}
                       <div>
                         <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700 mb-2">
-                          <User className="w-4 h-4 text-[#b11e29]" /> Khách hàng
+                          <User className="w-4 h-4 text-[#b11e29]" /> {t('section_customer_info')}
                         </label>
                         <select
                           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30 mb-2"
@@ -421,7 +428,7 @@ export function BookingCalendarPage() {
                             setCustomerEmail(c?.email ?? '')
                           }}
                         >
-                          <option value="">-- Chọn từ danh sách --</option>
+                          <option value="">{t('placeholder_select_customer')}</option>
                           {mockCustomers.filter(c => c.status === 'active').map(c => (
                             <option key={c.id} value={c.id}>{c.fullName} ({c.customerCode})</option>
                           ))}
@@ -429,19 +436,19 @@ export function BookingCalendarPage() {
                         <div className="grid grid-cols-3 gap-2">
                           <input
                             className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
-                            placeholder="Tên khách hàng *"
+                            placeholder={t('label_customer_name')}
                             value={customerName}
                             onChange={e => setCustomerName(e.target.value)}
                           />
                           <input
                             className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
-                            placeholder="Số điện thoại"
+                            placeholder={t('label_phone')}
                             value={customerPhone}
                             onChange={e => setCustomerPhone(e.target.value)}
                           />
                           <input
                             className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
-                            placeholder="Email"
+                            placeholder={t('label_email')}
                             type="email"
                             value={customerEmail}
                             onChange={e => setCustomerEmail(e.target.value)}
@@ -452,25 +459,25 @@ export function BookingCalendarPage() {
                       {/* Time */}
                       <div>
                         <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700 mb-1">
-                          <Clock className="w-4 h-4 text-[#b11e29]" /> Khung giờ
+                          <Clock className="w-4 h-4 text-[#b11e29]" /> {t('label_time_slot')}
                         </label>
                         <p className="text-base font-bold text-slate-800 mb-2">
                           {new Date(modalDate + 'T00:00:00').toLocaleDateString('vi-VN', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
                         </p>
                         <div className="grid grid-cols-2 gap-3">
                           <div>
-                            <p className="text-xs text-slate-500 mb-1">Bắt đầu *</p>
+                            <p className="text-xs text-slate-500 mb-1">{t('label_start')}</p>
                             <input type="time" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
                               value={startTime} onChange={e => { setStartTime(e.target.value); setConflict(null) }} />
                           </div>
                           <div>
-                            <p className="text-xs text-slate-500 mb-1">Kết thúc *</p>
+                            <p className="text-xs text-slate-500 mb-1">{t('label_end')}</p>
                             <input type="time" className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
                               value={endTime} onChange={e => { setEndTime(e.target.value); setConflict(null) }} />
                           </div>
                         </div>
                         {duration > 0 && (
-                          <p className="text-xs text-slate-400 mt-1">Thời lượng: {Math.floor(duration / 60)}h{duration % 60 > 0 ? ` ${duration % 60}m` : ''}</p>
+                          <p className="text-xs text-slate-400 mt-1">{t('label_duration')}: {Math.floor(duration / 60)}h{duration % 60 > 0 ? ` ${duration % 60}m` : ''}</p>
                         )}
                       </div>
 
@@ -478,24 +485,24 @@ export function BookingCalendarPage() {
                       {selectedSpace && (
                         <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 space-y-2">
                           <p className="text-sm font-semibold text-slate-700 flex items-center gap-1.5">
-                            <CreditCard className="w-4 h-4 text-[#b11e29]" /> Tiền thuê không gian
+                            <CreditCard className="w-4 h-4 text-[#b11e29]" /> {t('section_space_price')}
                           </p>
                           <div className="flex items-center justify-between text-sm">
-                            <span className="text-slate-500">Đơn giá</span>
+                            <span className="text-slate-500">{t('label_unit_price')}</span>
                             <span className="font-medium text-slate-700">
-                              {pricePerHour > 0 ? formatPrice(pricePerHour) + ' / giờ' : <span className="text-slate-400 italic">Chưa có giá</span>}
+                              {pricePerHour > 0 ? t('price_per_hour', { price: formatPrice(pricePerHour) }) : <span className="text-slate-400 italic">{t('no_price')}</span>}
                             </span>
                           </div>
                           <div className="flex items-center justify-between text-sm">
-                            <span className="text-slate-500">Thời lượng</span>
+                            <span className="text-slate-500">{t('label_duration')}</span>
                             <span className="font-medium text-slate-700">
                               {duration > 0
-                                ? `${Math.floor(duration / 60)}h${duration % 60 > 0 ? ` ${duration % 60}m` : ''} (${(durationHours % 1 === 0 ? durationHours.toFixed(0) : durationHours.toFixed(2).replace(/0+$/, ''))} giờ)`
-                                : <span className="text-slate-400 italic">Chưa chọn thời gian</span>}
+                                ? `${Math.floor(duration / 60)}h${duration % 60 > 0 ? ` ${duration % 60}m` : ''} (${(durationHours % 1 === 0 ? durationHours.toFixed(0) : durationHours.toFixed(2).replace(/0+$/, ''))} ${t('duration_hours', { hours: '' }).trim()})`
+                                : <span className="text-slate-400 italic">{t('no_time_selected')}</span>}
                             </span>
                           </div>
                           <div className="flex items-center justify-between pt-2 border-t border-slate-200">
-                            <span className="font-semibold text-slate-700 text-sm">Thành tiền thuê</span>
+                            <span className="font-semibold text-slate-700 text-sm">{t('label_rental_total')}</span>
                             <span className={`text-base font-bold ${spacePrice > 0 ? 'text-[#b11e29]' : 'text-slate-400'}`}>
                               {spacePrice > 0 ? formatPrice(spacePrice) : '—'}
                             </span>
@@ -506,7 +513,7 @@ export function BookingCalendarPage() {
                       {/* Space amenities */}
                       {selectedSpace?.amenities && selectedSpace.amenities.length > 0 && (
                         <div>
-                          <p className="text-sm font-semibold text-slate-700 mb-2">Tiện ích đi kèm không gian</p>
+                          <p className="text-sm font-semibold text-slate-700 mb-2">{t('section_amenities')}</p>
                           <div className="flex flex-wrap gap-1.5">
                             {selectedSpace.amenities.map((a: string) => (
                               <span key={a} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-medium border border-blue-100">
@@ -514,18 +521,18 @@ export function BookingCalendarPage() {
                               </span>
                             ))}
                           </div>
-                          <p className="text-xs text-slate-400 mt-1">Đã bao gồm trong giá thuê không gian</p>
+                          <p className="text-xs text-slate-400 mt-1">{t('amenities_included')}</p>
                         </div>
                       )}
 
                       {/* Add-on services */}
                       <div>
-                        <p className="text-sm font-semibold text-slate-700 mb-2">Dịch vụ sử dụng thêm</p>
+                        <p className="text-sm font-semibold text-slate-700 mb-2">{t('section_addons')}</p>
                         {(['av', 'catering', 'printing', 'internet', 'support', 'other'] as const).map(cat => {
                           const catAddOns = mockBookingAddOns.filter(a => a.category === cat)
                           const catLabels: Record<string, string> = {
-                            av: 'Âm thanh & Hình ảnh', catering: 'Ăn uống', printing: 'In ấn',
-                            internet: 'Internet', support: 'Hỗ trợ', other: 'Khác',
+                            av: t('addon_cat_av'), catering: t('addon_cat_catering'), printing: t('addon_cat_printing'),
+                            internet: t('addon_cat_internet'), support: t('addon_cat_support'), other: t('addon_cat_other'),
                           }
                           return (
                             <div key={cat} className="mb-3">
@@ -572,9 +579,9 @@ export function BookingCalendarPage() {
                       {/* Discount & Notes */}
                       <div className="space-y-3">
                         <div>
-                          <p className="text-sm font-semibold text-slate-700 mb-2">Ưu đãi & Ghi chú</p>
+                          <p className="text-sm font-semibold text-slate-700 mb-2">{t('section_discount')}</p>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-slate-500 w-20 shrink-0">Giảm giá (%)</span>
+                            <span className="text-xs text-slate-500 w-20 shrink-0">{t('label_discount')}</span>
                             <button type="button" onClick={() => setDiscountPercent(v => Math.max(0, v - 5))}
                               className="p-1 border border-slate-200 rounded hover:bg-slate-50">
                               <Minus className="w-3.5 h-3.5 text-slate-500" />
@@ -591,7 +598,7 @@ export function BookingCalendarPage() {
                           </div>
                         </div>
                         <div>
-                          <textarea rows={2} placeholder="Yêu cầu đặc biệt..."
+                          <textarea rows={2} placeholder={t('placeholder_notes')}
                             className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
                             value={notes} onChange={e => setNotes(e.target.value)} />
                         </div>
@@ -605,27 +612,27 @@ export function BookingCalendarPage() {
                       {totalPrice > 0 && (
                         <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-1.5 text-sm">
                           <div className="flex justify-between text-slate-500">
-                            <span>Không gian ({durationHours.toFixed(1)}h × {formatPrice(pricePerHour)})</span>
+                            <span>{t('label_space_bottom')} ({durationHours.toFixed(1)}h × {formatPrice(pricePerHour)})</span>
                             <span>{formatPrice(spacePrice)}</span>
                           </div>
                           {servicesPrice > 0 && (
                             <div className="flex justify-between text-slate-500">
-                              <span>Dịch vụ thêm</span>
+                              <span>{t('label_addons')}</span>
                               <span>{formatPrice(servicesPrice)}</span>
                             </div>
                           )}
                           {discountAmount > 0 && (
                             <div className="flex justify-between text-green-600">
-                              <span>Giảm giá ({discountPercent}%)</span>
+                              <span>{t('label_discount_bottom')} ({discountPercent}%)</span>
                               <span>-{formatPrice(discountAmount)}</span>
                             </div>
                           )}
                           <div className="flex justify-between text-slate-500">
-                            <span>VAT (10%)</span>
+                            <span>{t('vat_label')}</span>
                             <span>+{formatPrice(taxAmount)}</span>
                           </div>
                           <div className="flex justify-between font-bold text-slate-800 border-t border-slate-200 pt-1.5">
-                            <span>Tổng cộng</span>
+                            <span>{t('total')}</span>
                             <span className="text-[#b11e29]">{formatPrice(totalPrice)}</span>
                           </div>
                         </div>
@@ -642,7 +649,7 @@ export function BookingCalendarPage() {
                         onClick={handleBook}
                         className="w-full py-3 bg-[#b11e29] text-white rounded-xl font-semibold hover:bg-[#8f1820] transition-colors"
                       >
-                        Đặt chỗ
+                        {t('btn_book')}
                       </button>
                     </div>
                     </>
@@ -653,7 +660,7 @@ export function BookingCalendarPage() {
                       <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2 text-sm">
                         {customerName && (
                           <div className="flex justify-between text-slate-600">
-                            <span>Khách hàng</span>
+                            <span>{t('section_customer_info')}</span>
                             <span className="font-medium text-right">
                               {customerName}
                               {customerPhone ? ` – ${customerPhone}` : ''}
@@ -662,22 +669,22 @@ export function BookingCalendarPage() {
                           </div>
                         )}
                         <div className="flex justify-between text-slate-600">
-                          <span>Ngày</span>
+                          <span>{t('label_date')}</span>
                           <span className="font-medium">{new Date(modalDate + 'T00:00:00').toLocaleDateString('vi-VN')}</span>
                         </div>
                         <div className="flex justify-between text-slate-600">
-                          <span>Khung giờ</span>
+                          <span>{t('label_time_slot')}</span>
                           <span className="font-medium">{startTime} – {endTime}</span>
                         </div>
                         {selectedSpace && (
                           <div className="flex justify-between text-slate-600">
-                            <span>Không gian</span>
+                            <span>{t('label_space_short')}</span>
                             <span className="font-medium">{selectedSpace.name}</span>
                           </div>
                         )}
                         {Object.keys(selectedAddOns).length > 0 && (
                           <div className="flex justify-between text-slate-600">
-                            <span>Dịch vụ thêm</span>
+                            <span>{t('label_addons')}</span>
                             <span className="font-medium text-right max-w-[60%]">
                               {Object.entries(selectedAddOns).map(([id, qty]) => {
                                 const a = mockBookingAddOns.find(x => x.id === id)
@@ -687,18 +694,18 @@ export function BookingCalendarPage() {
                           </div>
                         )}
                         <div className="flex justify-between text-slate-500">
-                          <span>VAT (10%)</span>
+                          <span>{t('vat_label')}</span>
                           <span className="font-medium text-slate-700">+{formatPrice(taxAmount)}</span>
                         </div>
                         <div className="flex justify-between font-bold text-base border-t border-slate-200 pt-2">
-                          <span className="text-slate-700">Tổng cộng</span>
+                          <span className="text-slate-700">{t('total')}</span>
                           <span className="text-[#b11e29]">{formatPrice(totalPrice)}</span>
                         </div>
                       </div>
 
                       {/* Payment method */}
                       <div>
-                        <p className="text-sm font-semibold text-slate-700 mb-2">Phương thức thanh toán</p>
+                        <p className="text-sm font-semibold text-slate-700 mb-2">{t('section_payment_method')}</p>
                         <div className="grid grid-cols-2 gap-2">
                           {PAYMENT_METHODS.map(m => (
                             <label key={m.id} className={`flex items-center gap-2 p-3 rounded-xl border-2 cursor-pointer transition-all
@@ -706,7 +713,7 @@ export function BookingCalendarPage() {
                               <input type="radio" name="pm" value={m.id} className="accent-[#b11e29]"
                                 checked={paymentMethod === m.id} onChange={() => setPaymentMethod(m.id)} />
                               {m.icon}
-                              <span className="text-sm font-medium text-slate-700">{m.label}</span>
+                              <span className="text-sm font-medium text-slate-700">{t(PAYMENT_METHOD_KEYS[m.id])}</span>
                             </label>
                           ))}
                         </div>
@@ -714,22 +721,22 @@ export function BookingCalendarPage() {
 
                       {/* Gửi hóa đơn */}
                       <div>
-                        <p className="text-sm font-semibold text-slate-700 mb-2">Gửi hóa đơn</p>
+                        <p className="text-sm font-semibold text-slate-700 mb-2">{t('section_send_invoice')}</p>
                         <div className="space-y-2">
                           <label className="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" className="accent-[#b11e29] w-4 h-4"
                               checked={sendInvoiceZalo} onChange={e => setSendInvoiceZalo(e.target.checked)} />
                             <div>
-                              <p className="text-sm font-medium text-slate-700">Gửi hóa đơn qua Zalo</p>
-                              <p className="text-xs text-slate-400">Gửi thông báo và hóa đơn tới Zalo của khách hàng</p>
+                              <p className="text-sm font-medium text-slate-700">{t('send_invoice_zalo')}</p>
+                              <p className="text-xs text-slate-400">{t('send_invoice_zalo_desc')}</p>
                             </div>
                           </label>
                           <label className="flex items-center gap-3 cursor-pointer">
                             <input type="checkbox" className="accent-[#b11e29] w-4 h-4"
                               checked={sendInvoiceEmail} onChange={e => setSendInvoiceEmail(e.target.checked)} />
                             <div>
-                              <p className="text-sm font-medium text-slate-700">Gửi hóa đơn qua Email</p>
-                              <p className="text-xs text-slate-400">Gửi hóa đơn đến email {customerEmail || '(chưa nhập email)'}</p>
+                              <p className="text-sm font-medium text-slate-700">{t('send_invoice_email')}</p>
+                              <p className="text-xs text-slate-400">{customerEmail ? t('send_invoice_email_desc', { email: customerEmail }) : t('send_invoice_no_email')}</p>
                             </div>
                           </label>
                         </div>
@@ -742,7 +749,7 @@ export function BookingCalendarPage() {
                           onClick={() => setModalStep(1)}
                           className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-xl font-semibold hover:bg-slate-50 transition-colors"
                         >
-                          Quay lại
+                          {t('btn_back')}
                         </button>
                         <button
                           type="button"
@@ -750,7 +757,7 @@ export function BookingCalendarPage() {
                           disabled={!paymentMethod}
                           className="flex-1 py-2.5 bg-[#b11e29] text-white rounded-xl font-semibold hover:bg-[#8f1820] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                         >
-                          Xác nhận & Thanh toán
+                          {t('btn_confirm_payment')}
                         </button>
                       </div>
                     </div>

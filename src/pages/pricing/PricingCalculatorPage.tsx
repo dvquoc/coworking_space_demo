@@ -13,6 +13,7 @@ import {
   ExternalLink,
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import Header from '../../components/layout/Header'
 import { mockPricingRules } from '../../mocks/propertyMocks'
 import { mockPromotions } from '../../mocks/pricingMocks'
@@ -21,22 +22,22 @@ import { SpaceType } from '../../types/property'
 
 // ========== CONSTANTS ==========
 
-const SPACE_TYPE_LABELS: Record<string, string> = {
-  hot_desk: 'Hot Desk',
-  dedicated_desk: 'Dedicated Desk',
-  private_office: 'Văn phòng riêng',
-  meeting_room: 'Meeting Room',
-  conference_room: 'Phòng hội nghị',
-  open_space: 'Khu làm việc mở',
-  training_room: 'Phòng đào tạo',
-  event_space: 'Không gian sự kiện',
+const SPACE_TYPE_KEYS: Record<string, string> = {
+  hot_desk: 'space_type_hot_desk',
+  dedicated_desk: 'space_type_dedicated_desk',
+  private_office: 'space_type_private_office',
+  meeting_room: 'space_type_meeting_room',
+  conference_room: 'space_type_conference_room',
+  open_space: 'space_type_open_space',
+  training_room: 'space_type_training_room',
+  event_space: 'space_type_event_space',
 }
 
-const UNIT_LABELS: Record<string, string> = {
-  hour: 'Giờ',
-  day: 'Ngày',
-  week: 'Tuần',
-  month: 'Tháng',
+const UNIT_KEYS: Record<string, string> = {
+  hour: 'unit_hour',
+  day: 'unit_day',
+  week: 'unit_week',
+  month: 'unit_month',
 }
 
 const MOCK_BUILDINGS = [
@@ -78,20 +79,20 @@ function getUnitPrice(rule: (typeof mockPricingRules)[number] | undefined, unit:
 // Inline add-on services (EP-07 removed)
 interface AddonService {
   id: string
-  name: string
+  nameKey: string
   unitPrice: number
-  unit: string
+  unitKey: string
 }
 
 const ADDON_SERVICES: AddonService[] = [
-  { id: 'addon-wifi', name: 'WiFi Premium 100Mbps', unitPrice: 300000, unit: 'tháng' },
-  { id: 'addon-print-bw', name: 'In A4 trắng đen', unitPrice: 500, unit: 'trang' },
-  { id: 'addon-print-color', name: 'In A4 màu', unitPrice: 2000, unit: 'trang' },
-  { id: 'addon-locker', name: 'Tủ cá nhân (Locker)', unitPrice: 200000, unit: 'tháng' },
-  { id: 'addon-parking-motorbike', name: 'Đỗ xe máy', unitPrice: 150000, unit: 'tháng' },
-  { id: 'addon-parking-car', name: 'Đỗ xe ô tô', unitPrice: 1500000, unit: 'tháng' },
-  { id: 'addon-pa', name: 'Hệ thống PA / âm thanh', unitPrice: 500000, unit: 'lần' },
-  { id: 'addon-projector', name: 'Máy chiếu', unitPrice: 200000, unit: 'buổi' },
+  { id: 'addon-wifi', nameKey: 'addon_wifi_premium', unitPrice: 300000, unitKey: 'addon_unit_month' },
+  { id: 'addon-print-bw', nameKey: 'addon_print_bw', unitPrice: 500, unitKey: 'addon_unit_page' },
+  { id: 'addon-print-color', nameKey: 'addon_print_color', unitPrice: 2000, unitKey: 'addon_unit_page' },
+  { id: 'addon-locker', nameKey: 'addon_locker', unitPrice: 200000, unitKey: 'addon_unit_month' },
+  { id: 'addon-parking-motorbike', nameKey: 'addon_parking_motorbike', unitPrice: 150000, unitKey: 'addon_unit_month' },
+  { id: 'addon-parking-car', nameKey: 'addon_parking_car', unitPrice: 1500000, unitKey: 'addon_unit_month' },
+  { id: 'addon-pa', nameKey: 'addon_pa_system', unitPrice: 500000, unitKey: 'addon_unit_time' },
+  { id: 'addon-projector', nameKey: 'addon_projector', unitPrice: 200000, unitKey: 'addon_unit_session' },
 ]
 
 // ========== SECTION COMPONENTS ==========
@@ -119,6 +120,7 @@ const inputCls = 'w-full border border-slate-200 rounded-lg px-3 py-2 text-sm te
 
 export function PricingCalculatorPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation('pricing')
 
   // Inputs
   const [spaceType, setSpaceType] = useState<string>('hot_desk')
@@ -256,7 +258,7 @@ export function PricingCalculatorPage() {
       await validateMutation.mutateAsync(code)
       setAppliedVoucherCode(code)
     } catch {
-      alert('Mã voucher không hợp lệ hoặc đã hết hạn.')
+      alert(t('voucher_invalid_alert'))
     }
   }
 
@@ -268,31 +270,31 @@ export function PricingCalculatorPage() {
 
   const buildQuoteText = () => {
     const lines: string[] = [
-      '=== BÁO GIÁ COBI COWORKING SPACE ===',
+      t('quote_header'),
       '',
-      `Loại không gian: ${SPACE_TYPE_LABELS[spaceType] ?? spaceType}`,
-      `Tòa nhà: ${MOCK_BUILDINGS.find(b => b.id === buildingId)?.name ?? buildingId}`,
-      `Đơn vị: ${UNIT_LABELS[effectiveUnit]} × ${quantity}`,
+      `${t('quote_space_type')}: ${t(SPACE_TYPE_KEYS[spaceType] ?? spaceType)}`,
+      `${t('quote_building')}: ${MOCK_BUILDINGS.find(b => b.id === buildingId)?.name ?? buildingId}`,
+      `${t('quote_unit')}: ${t(UNIT_KEYS[effectiveUnit])} × ${quantity}`,
       '',
-      `Phí không gian:         ${formatVND(spaceFee)}`,
+      `${t('quote_space_fee')}:         ${formatVND(spaceFee)}`,
     ]
     if (addOns.length > 0) {
-      lines.push(`Phí dịch vụ thêm:       ${formatVND(addOnFee)}`)
+      lines.push(`${t('quote_addon_fee')}:       ${formatVND(addOnFee)}`)
       addOns.forEach(l => {
         const svc = ADDON_SERVICES.find(s => s.id === l.serviceId)
-        if (svc) lines.push(`  • ${svc.name} × ${l.quantity} ${svc.unit || ''}: ${formatVND(svc.unitPrice * l.quantity)}`)
+        if (svc) lines.push(`  • ${t(svc.nameKey)} × ${l.quantity} ${t(svc.unitKey) || ''}: ${formatVND(svc.unitPrice * l.quantity)}`)
       })
     }
-    lines.push(`Tạm tính:               ${formatVND(subtotal)}`)
+    lines.push(`${t('quote_subtotal')}:               ${formatVND(subtotal)}`)
     if (totalDiscount > 0) {
-      lines.push(`Giảm giá:               -${formatVND(totalDiscount)}`)
+      lines.push(`${t('quote_discount')}:               -${formatVND(totalDiscount)}`)
       autoPromotions.forEach(p => lines.push(`  • ${p.name}: -${formatVND(p.discountAmount)}`))
       if (voucherDiscountAmount > 0 && appliedVoucherCode) {
-        lines.push(`  • Voucher ${appliedVoucherCode}: -${formatVND(voucherDiscountAmount)}`)
+        lines.push(`  • ${t('quote_voucher', { code: appliedVoucherCode })}: -${formatVND(voucherDiscountAmount)}`)
       }
     }
     lines.push('')
-    lines.push(`TỔNG THANH TOÁN: ${formatVND(grandTotal)}`)
+    lines.push(`${t('quote_grand_total')}: ${formatVND(grandTotal)}`)
     return lines.join('\n')
   }
 
@@ -309,7 +311,7 @@ export function PricingCalculatorPage() {
 
   return (
     <>
-      <Header title="Công cụ tính giá" subtitle="Tạo báo giá nhanh theo loại không gian và dịch vụ" />
+      <Header title={t('page_title_calculator')} subtitle={t('page_subtitle_calculator')} />
 
       <main className="flex-1 overflow-y-auto p-8">
         <div className="max-w-6xl mx-auto">
@@ -319,15 +321,15 @@ export function PricingCalculatorPage() {
             <div className="space-y-5">
 
               {/* Space & Building */}
-              <SectionCard title="Thông tin không gian">
+              <SectionCard title={t('section_space_info')}>
                 <div className="space-y-3">
                   <div>
-                    <FieldLabel label="Loại không gian" />
+                    <FieldLabel label={t('label_space_type')} />
                     <div className="relative">
                       <select className={`${inputCls} appearance-none pr-8`} value={spaceType} onChange={e => handleSpaceTypeChange(e.target.value)}>
                         {mockPricingRules.map(r => (
                           <option key={r.id} value={r.spaceType ?? ''}>
-                            {SPACE_TYPE_LABELS[r.spaceType ?? ''] ?? r.spaceType}
+                            {t(SPACE_TYPE_KEYS[r.spaceType ?? ''] ?? r.spaceType ?? '')}
                           </option>
                         ))}
                       </select>
@@ -335,16 +337,16 @@ export function PricingCalculatorPage() {
                     </div>
                     {rule && (
                       <div className="mt-1.5 text-xs text-slate-500 flex flex-wrap gap-3">
-                        {rule.pricePerHour && <span>Giờ: <b className="text-slate-700">{formatVND(rule.pricePerHour)}</b></span>}
-                        {rule.pricePerDay && <span>Ngày: <b className="text-slate-700">{formatVND(rule.pricePerDay)}</b></span>}
-                        {rule.pricePerWeek && <span>Tuần: <b className="text-slate-700">{formatVND(rule.pricePerWeek)}</b></span>}
-                        {rule.pricePerMonth && <span>Tháng: <b className="text-slate-700">{formatVND(rule.pricePerMonth)}</b></span>}
+                        {rule.pricePerHour && <span>{t('unit_hour')}: <b className="text-slate-700">{formatVND(rule.pricePerHour)}</b></span>}
+                        {rule.pricePerDay && <span>{t('unit_day')}: <b className="text-slate-700">{formatVND(rule.pricePerDay)}</b></span>}
+                        {rule.pricePerWeek && <span>{t('unit_week')}: <b className="text-slate-700">{formatVND(rule.pricePerWeek)}</b></span>}
+                        {rule.pricePerMonth && <span>{t('unit_month')}: <b className="text-slate-700">{formatVND(rule.pricePerMonth)}</b></span>}
                       </div>
                     )}
                   </div>
 
                   <div>
-                    <FieldLabel label="Tòa nhà" />
+                    <FieldLabel label={t('label_building')} />
                     <div className="relative">
                       <select className={`${inputCls} appearance-none pr-8`} value={buildingId} onChange={e => setBuildingId(e.target.value)}>
                         {MOCK_BUILDINGS.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
@@ -356,16 +358,16 @@ export function PricingCalculatorPage() {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <FieldLabel label="Đơn vị thuê" />
+                      <FieldLabel label={t('label_billing_unit')} />
                       <div className="relative">
                         <select className={`${inputCls} appearance-none pr-8`} value={effectiveUnit} onChange={e => setUnit(e.target.value as BillingUnit)}>
-                          {availableUnits.map(u => <option key={u} value={u}>{UNIT_LABELS[u]}</option>)}
+                          {availableUnits.map(u => <option key={u} value={u}>{t(UNIT_KEYS[u])}</option>)}
                         </select>
                         <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                       </div>
                     </div>
                     <div>
-                      <FieldLabel label="Số lượng" />
+                      <FieldLabel label={t('label_quantity')} />
                       <input
                         type="number"
                         min={1}
@@ -380,10 +382,10 @@ export function PricingCalculatorPage() {
               </SectionCard>
 
               {/* Add-on Services */}
-              <SectionCard title="Dịch vụ đi kèm">
+              <SectionCard title={t('section_addons')}>
                 <div className="space-y-2">
                   {addOns.length === 0 && (
-                    <p className="text-xs text-slate-400 py-2">Chưa có dịch vụ đi kèm nào</p>
+                    <p className="text-xs text-slate-400 py-2">{t('label_no_addons')}</p>
                   )}
                   {addOns.map(line => {
                     const svc = ADDON_SERVICES.find(s => s.id === line.serviceId)
@@ -396,7 +398,7 @@ export function PricingCalculatorPage() {
                             onChange={e => updateAddOnLine(line.key, 'serviceId', e.target.value)}
                           >
                             {ADDON_SERVICES.map(s => (
-                              <option key={s.id} value={s.id}>{s.name} – {formatVND(s.unitPrice)}/{s.unit || 'lần'}</option>
+                              <option key={s.id} value={s.id}>{t(s.nameKey)} – {formatVND(s.unitPrice)}/{t(s.unitKey) || t('addon_unit_time')}</option>
                             ))}
                           </select>
                           <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
@@ -421,13 +423,13 @@ export function PricingCalculatorPage() {
                   })}
                   <button onClick={addAddOnLine} className="flex items-center gap-1.5 text-sm text-[#b11e29] hover:text-[#8e1820] font-medium mt-1 transition-colors">
                     <Plus className="w-4 h-4" />
-                    Thêm dịch vụ
+                    {t('btn_add_service')}
                   </button>
                 </div>
               </SectionCard>
 
               {/* Voucher */}
-              <SectionCard title="Mã giảm giá (Voucher)">
+              <SectionCard title={t('section_voucher')}>
                 {appliedVoucherCode ? (
                   <div className="flex items-center justify-between p-3 bg-green-50 rounded-xl border border-green-100">
                     <div className="flex items-center gap-2">
@@ -435,17 +437,17 @@ export function PricingCalculatorPage() {
                       <div>
                         <span className="font-mono font-semibold text-green-800">{appliedVoucherCode}</span>
                         <span className="text-xs text-green-600 ml-2">
-                          – {voucherPromotion ? `Giảm ${formatVND(voucherDiscountAmount)}` : 'Miễn phí dịch vụ'}
+                          – {voucherPromotion ? t('voucher_applied_discount', { amount: formatVND(voucherDiscountAmount) }) : t('voucher_free_service')}
                         </span>
                       </div>
                     </div>
-                    <button onClick={handleRemoveVoucher} className="text-xs text-red-500 hover:text-red-700 font-medium">Xóa</button>
+                    <button onClick={handleRemoveVoucher} className="text-xs text-red-500 hover:text-red-700 font-medium">{t('btn_remove')}</button>
                   </div>
                 ) : (
                   <div className="flex gap-2">
                     <input
                       className={`${inputCls} flex-1 font-mono uppercase`}
-                      placeholder="Nhập mã voucher..."
+                      placeholder={t('voucher_placeholder')}
                       value={voucherInput}
                       onChange={e => setVoucherInput(e.target.value.toUpperCase())}
                       onKeyDown={e => e.key === 'Enter' && handleApplyVoucher()}
@@ -455,14 +457,14 @@ export function PricingCalculatorPage() {
                       disabled={!voucherInput.trim() || validateMutation.isPending}
                       className="px-4 py-2 text-sm rounded-lg bg-slate-800 text-white font-medium hover:bg-slate-700 disabled:opacity-40 whitespace-nowrap transition-colors"
                     >
-                      {validateMutation.isPending ? 'Đang kiểm tra...' : 'Áp dụng'}
+                      {validateMutation.isPending ? t('voucher_checking') : t('btn_apply')}
                     </button>
                   </div>
                 )}
                 {validateMutation.isError && !appliedVoucherCode && (
                   <div className="flex items-center gap-1.5 mt-2 text-xs text-red-600">
                     <AlertCircle className="w-3.5 h-3.5" />
-                    Mã không hợp lệ hoặc đã hết lượt sử dụng
+                    {t('voucher_invalid')}
                   </div>
                 )}
               </SectionCard>
@@ -473,7 +475,7 @@ export function PricingCalculatorPage() {
               <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 sticky top-8">
                 <div className="flex items-center gap-2 mb-5">
                   <Calculator className="w-5 h-5 text-[#b11e29]" />
-                  <h3 className="font-semibold text-slate-800">Chi tiết báo giá</h3>
+                  <h3 className="font-semibold text-slate-800">{t('section_quote_detail')}</h3>
                 </div>
 
                 {/* Summary table */}
@@ -483,10 +485,10 @@ export function PricingCalculatorPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="text-sm text-slate-700 font-medium">
-                        {SPACE_TYPE_LABELS[spaceType] ?? spaceType}
+                        {t(SPACE_TYPE_KEYS[spaceType] ?? spaceType)}
                       </p>
                       <p className="text-xs text-slate-400 mt-0.5">
-                        {unitPrice ? formatVND(unitPrice) : '–'} × {quantity} {UNIT_LABELS[effectiveUnit]}
+                        {unitPrice ? formatVND(unitPrice) : '–'} × {quantity} {t(UNIT_KEYS[effectiveUnit])}
                         {' · '}{MOCK_BUILDINGS.find(b => b.id === buildingId)?.name}
                       </p>
                     </div>
@@ -500,8 +502,8 @@ export function PricingCalculatorPage() {
                     return (
                       <div key={line.key} className="flex items-start justify-between gap-4">
                         <div>
-                          <p className="text-sm text-slate-600">{svc.name}</p>
-                          <p className="text-xs text-slate-400 mt-0.5">{formatVND(svc.unitPrice)} × {line.quantity} {svc.unit || 'lần'}</p>
+                          <p className="text-sm text-slate-600">{t(svc.nameKey)}</p>
+                          <p className="text-xs text-slate-400 mt-0.5">{formatVND(svc.unitPrice)} × {line.quantity} {t(svc.unitKey) || t('addon_unit_time')}</p>
                         </div>
                         <span className="text-sm text-slate-700 shrink-0">{formatVND(svc.unitPrice * line.quantity)}</span>
                       </div>
@@ -509,7 +511,7 @@ export function PricingCalculatorPage() {
                   })}
 
                   <div className="border-t border-slate-100 pt-3 flex items-center justify-between">
-                    <span className="text-sm text-slate-600">Tạm tính</span>
+                    <span className="text-sm text-slate-600">{t('label_subtotal')}</span>
                     <span className="text-sm font-medium text-slate-700">{formatVND(subtotal)}</span>
                   </div>
 
@@ -537,7 +539,7 @@ export function PricingCalculatorPage() {
 
                   {totalDiscount > 0 && (
                     <div className="flex items-center justify-between pt-1">
-                      <span className="text-sm text-green-600">Tổng giảm giá</span>
+                      <span className="text-sm text-green-600">{t('label_total_discount')}</span>
                       <span className="text-sm font-semibold text-green-600">–{formatVND(totalDiscount)}</span>
                     </div>
                   )}
@@ -545,12 +547,12 @@ export function PricingCalculatorPage() {
                   {/* Grand total */}
                   <div className="bg-[#b11e29]/5 rounded-xl p-4 mt-2">
                     <div className="flex items-baseline justify-between">
-                      <span className="text-base font-semibold text-slate-800">Tổng thanh toán</span>
+                      <span className="text-base font-semibold text-slate-800">{t('label_grand_total')}</span>
                       <span className="text-2xl font-bold text-[#b11e29]">{formatVND(grandTotal)}</span>
                     </div>
                     {totalDiscount > 0 && (
                       <p className="text-xs text-slate-400 mt-1">
-                        Tiết kiệm {formatVND(totalDiscount)} ({Math.round(totalDiscount / subtotal * 100)}% tổng giá trị)
+                        {t('label_savings', { amount: formatVND(totalDiscount), percent: Math.round(totalDiscount / subtotal * 100) })}
                       </p>
                     )}
                   </div>
@@ -559,9 +561,9 @@ export function PricingCalculatorPage() {
                 {/* Long-term discounts hint */}
                 {rule?.longTermDiscount && rule.longTermDiscount.length > 0 && (
                   <div className="mt-4 p-3 bg-blue-50 rounded-xl text-xs text-blue-700">
-                    <p className="font-medium mb-1">Ưu đãi thuê dài hạn có thể áp dụng:</p>
+                    <p className="font-medium mb-1">{t('label_long_term_hint')}</p>
                     {rule.longTermDiscount.map(d => (
-                      <p key={d.months}>• Thuê ≥ {d.months} tháng: giảm thêm <b>{d.discountPercent}%</b></p>
+                      <p key={d.months}>• {t('label_long_term_months', { months: d.months, percent: d.discountPercent })}</p>
                     ))}
                   </div>
                 )}
@@ -573,8 +575,8 @@ export function PricingCalculatorPage() {
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
                   >
                     {copied
-                      ? <><Check className="w-4 h-4 text-green-500" />Đã sao chép</>
-                      : <><Copy className="w-4 h-4" />Sao chép báo giá</>
+                      ? <><Check className="w-4 h-4 text-green-500" />{t('btn_copied')}</>
+                      : <><Copy className="w-4 h-4" />{t('btn_copy_quote')}</>
                     }
                   </button>
                   <button
@@ -582,7 +584,7 @@ export function PricingCalculatorPage() {
                     className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-[#b11e29] rounded-xl text-sm font-medium text-white hover:bg-[#8e1820] transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    Tạo booking
+                    {t('btn_create_booking')}
                   </button>
                 </div>
               </div>
