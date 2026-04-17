@@ -67,7 +67,6 @@ export default function InvoicesPage() {
     })), [rawInvoices])
 
   const filtered = useMemo(() => {
-    setPage(1)
     return invoiceList.filter(inv => {
       if (statusTab !== 'all' && inv.computedStatus !== statusTab) return false
       if (search) {
@@ -176,7 +175,7 @@ export default function InvoicesPage() {
                 <div className="flex items-center justify-between border-b border-slate-100">
                     <div className="flex overflow-x-auto">
                     {STATUS_TABS.map(t => (
-                        <button key={t.key} onClick={() => setStatusTab(t.key)}
+                        <button key={t.key} onClick={() => { setStatusTab(t.key); setPage(1) }}
                         className={`flex items-center gap-1.5 px-4 py-3.5 text-sm font-medium border-b-2 shrink-0 transition-colors
                             ${statusTab === t.key
                             ? `${t.key !== 'all' ? S_CFG[t.key as InvoicePaymentStatus].tab : 'border-[#b11e29] text-[#b11e29]'}`
@@ -199,7 +198,7 @@ export default function InvoicesPage() {
                         <input
                         className="pl-8 pr-3 py-1.5 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30 w-52"
                         placeholder={t('search_placeholder')}
-                        value={search} onChange={e => setSearch(e.target.value)}
+                        value={search} onChange={e => { setSearch(e.target.value); setPage(1) }}
                         />
                     </div>
                     </div>

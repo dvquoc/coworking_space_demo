@@ -302,7 +302,7 @@ export default function Sidebar() {
                   >
                     <div className="flex items-center gap-3">
                       {item.icon}
-                      <span className="font-medium">{t(item.labelKey)}</span>
+                      <span className="font-medium flex-1 text-left">{t(item.labelKey)}</span>
                     </div>
                     {expandedMenus.includes(item.path) ? (
                       <ChevronDown className="w-4 h-4" />
@@ -328,7 +328,7 @@ export default function Sidebar() {
                             }
                           >
                             {subItem.icon}
-                            <span>{t(subItem.labelKey)}</span>
+                            <span className="flex-1 text-left">{t(subItem.labelKey)}</span>
                           </NavLink>
                         </li>
                       ))}
@@ -348,7 +348,7 @@ export default function Sidebar() {
                   }
                 >
                   {item.icon}
-                  <span className="font-medium">{t(item.labelKey)}</span>
+                  <span className="font-medium flex-1 text-left">{t(item.labelKey)}</span>
                 </NavLink>
               )}
             </li>

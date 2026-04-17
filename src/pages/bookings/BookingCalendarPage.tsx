@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   ChevronLeft, ChevronRight, X, Clock, AlertCircle, CheckCircle2,
   Minus, Plus, CreditCard, Banknote, Smartphone, LayoutGrid, User,
+  Landmark, Wallet,
 } from 'lucide-react'
 import Header from '../../components/layout/Header'
 import { mockBuildings, mockFloors, mockSpaces, mockPricingRules } from '../../mocks/propertyMocks'
@@ -31,6 +32,8 @@ const PAYMENT_METHODS = [
   { id: 'momo', label: 'MoMo', icon: <Smartphone className="w-4 h-4" /> },
   { id: 'zalopay', label: 'ZaloPay', icon: <Smartphone className="w-4 h-4" /> },
   { id: 'cash', label: 'Tiền mặt', icon: <Banknote className="w-4 h-4" /> },
+  { id: 'bank_transfer', label: 'Chuyển khoản', icon: <Landmark className="w-4 h-4" /> },
+  { id: 'credit', label: 'Credit', icon: <Wallet className="w-4 h-4" /> },
 ]
 
 function getDaysInMonth(y: number, m: number) { return new Date(y, m + 1, 0).getDate() }
@@ -75,6 +78,8 @@ export function BookingCalendarPage() {
   const [notes, setNotes] = useState('')
   const [conflict, setConflict] = useState<string | null>(null)
   const [paymentMethod, setPaymentMethod] = useState('')
+  const [sendInvoiceZalo, setSendInvoiceZalo] = useState(true)
+  const [sendInvoiceEmail, setSendInvoiceEmail] = useState(true)
   const [paymentSuccess, setPaymentSuccess] = useState(false)
 
   // Cascading selects
@@ -117,7 +122,9 @@ export function BookingCalendarPage() {
     return sum + (addon ? addon.unitPrice * qty : 0)
   }, 0)
   const discountAmount = (spacePrice + servicesPrice) * discountPercent / 100
-  const totalPrice = spacePrice + servicesPrice - discountAmount
+  const afterDiscount = spacePrice + servicesPrice - discountAmount
+  const taxAmount = afterDiscount * 0.1
+  const totalPrice = afterDiscount + taxAmount
 
   // Calendar helpers
   const daysInMonth = getDaysInMonth(viewYear, viewMonth)
@@ -131,8 +138,8 @@ export function BookingCalendarPage() {
   const openModal = (dateStr: string) => {
     setModalDate(dateStr)
     setModalStep(1)
-    setStartTime('')
-    setEndTime('')
+    setStartTime(new Date().toTimeString().slice(0, 5))
+    setEndTime(() => { const d = new Date(); d.setHours(d.getHours() + 1); return d.toTimeString().slice(0, 5) })
     setSelectedAddOns({})
     setCustomerId('')
     setCustomerName('')
@@ -142,6 +149,8 @@ export function BookingCalendarPage() {
     setNotes('')
     setConflict(null)
     setPaymentMethod('')
+    setSendInvoiceZalo(true)
+    setSendInvoiceEmail(true)
     setPaymentSuccess(false)
   }
 
@@ -611,6 +620,10 @@ export function BookingCalendarPage() {
                               <span>-{formatPrice(discountAmount)}</span>
                             </div>
                           )}
+                          <div className="flex justify-between text-slate-500">
+                            <span>VAT (10%)</span>
+                            <span>+{formatPrice(taxAmount)}</span>
+                          </div>
                           <div className="flex justify-between font-bold text-slate-800 border-t border-slate-200 pt-1.5">
                             <span>Tổng cộng</span>
                             <span className="text-[#b11e29]">{formatPrice(totalPrice)}</span>
@@ -673,6 +686,10 @@ export function BookingCalendarPage() {
                             </span>
                           </div>
                         )}
+                        <div className="flex justify-between text-slate-500">
+                          <span>VAT (10%)</span>
+                          <span className="font-medium text-slate-700">+{formatPrice(taxAmount)}</span>
+                        </div>
                         <div className="flex justify-between font-bold text-base border-t border-slate-200 pt-2">
                           <span className="text-slate-700">Tổng cộng</span>
                           <span className="text-[#b11e29]">{formatPrice(totalPrice)}</span>
@@ -692,6 +709,29 @@ export function BookingCalendarPage() {
                               <span className="text-sm font-medium text-slate-700">{m.label}</span>
                             </label>
                           ))}
+                        </div>
+                      </div>
+
+                      {/* Gửi hóa đơn */}
+                      <div>
+                        <p className="text-sm font-semibold text-slate-700 mb-2">Gửi hóa đơn</p>
+                        <div className="space-y-2">
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" className="accent-[#b11e29] w-4 h-4"
+                              checked={sendInvoiceZalo} onChange={e => setSendInvoiceZalo(e.target.checked)} />
+                            <div>
+                              <p className="text-sm font-medium text-slate-700">Gửi hóa đơn qua Zalo</p>
+                              <p className="text-xs text-slate-400">Gửi thông báo và hóa đơn tới Zalo của khách hàng</p>
+                            </div>
+                          </label>
+                          <label className="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" className="accent-[#b11e29] w-4 h-4"
+                              checked={sendInvoiceEmail} onChange={e => setSendInvoiceEmail(e.target.checked)} />
+                            <div>
+                              <p className="text-sm font-medium text-slate-700">Gửi hóa đơn qua Email</p>
+                              <p className="text-xs text-slate-400">Gửi hóa đơn đến email {customerEmail || '(chưa nhập email)'}</p>
+                            </div>
+                          </label>
                         </div>
                       </div>
 

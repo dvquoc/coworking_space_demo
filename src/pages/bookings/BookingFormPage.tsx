@@ -14,6 +14,8 @@ import {
   CreditCard,
   Banknote,
   Smartphone,
+  Landmark,
+  Wallet,
 } from 'lucide-react'
 import Header from '../../components/layout/Header'
 import { mockBuildings, mockFloors, mockSpaces, mockPricingRules } from '../../mocks/propertyMocks'
@@ -46,6 +48,8 @@ const PAYMENT_METHODS = [
   { id: 'momo', label: 'MoMo', icon: <Smartphone className="w-5 h-5" /> },
   { id: 'zalopay', label: 'ZaloPay', icon: <Smartphone className="w-5 h-5" /> },
   { id: 'cash', label: 'Tiền mặt', icon: <Banknote className="w-5 h-5" /> },
+  { id: 'bank_transfer', label: 'Chuyển khoản', icon: <Landmark className="w-5 h-5" /> },
+  { id: 'credit', label: 'Credit', icon: <Wallet className="w-5 h-5" /> },
 ]
 
 // ---- Step Indicator ----
