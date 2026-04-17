@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   Search,
   Plus,
@@ -15,14 +16,6 @@ import Header from '../../components/layout/Header'
 import { mockBookingList } from '../../mocks/bookingMocks'
 import type { BookingStatus, SpaceType } from '../../types/booking'
 
-const STATUS_LABEL: Record<BookingStatus, string> = {
-  pending: 'Chờ thanh toán',
-  confirmed: 'Đã xác nhận',
-  in_progress: 'Đang sử dụng',
-  completed: 'Hoàn thành',
-  cancelled: 'Đã hủy',
-}
-
 const STATUS_CLASS: Record<BookingStatus, string> = {
   pending: 'bg-amber-100 text-amber-700',
   confirmed: 'bg-green-100 text-green-700',
@@ -31,11 +24,19 @@ const STATUS_CLASS: Record<BookingStatus, string> = {
   cancelled: 'bg-red-100 text-red-600',
 }
 
-const SPACE_TYPE_LABEL: Record<SpaceType, string> = {
-  hot_desk: 'Hot Desk',
-  meeting_room: 'Meeting Room',
-  training_room: 'Training Room',
-  event_room: 'Event Room',
+const STATUS_KEYS: Record<BookingStatus, string> = {
+  pending: 'status_pending',
+  confirmed: 'status_confirmed',
+  in_progress: 'status_in_progress',
+  completed: 'status_completed',
+  cancelled: 'status_cancelled',
+}
+
+const SPACE_TYPE_KEYS: Record<SpaceType, string> = {
+  hot_desk: 'space_type_hot_desk',
+  meeting_room: 'space_type_meeting_room',
+  training_room: 'space_type_training_room',
+  event_room: 'space_type_event_room',
 }
 
 function formatDateTime(iso: string) {
@@ -48,6 +49,7 @@ function formatDateTime(iso: string) {
 
 export function BookingListPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation('bookings')
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<BookingStatus | ''>('')
   const [spaceTypeFilter, setSpaceTypeFilter] = useState<SpaceType | ''>('')
@@ -64,7 +66,6 @@ export function BookingListPage() {
     })
   }, [search, statusFilter, spaceTypeFilter])
 
-  // Stats
   const stats = useMemo(() => ({
     total: mockBookingList.length,
     pending: mockBookingList.filter(b => b.status === 'pending').length,
@@ -74,16 +75,15 @@ export function BookingListPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header title="Quản lý Đặt chỗ" />
-
+      <Header title={t('page_title')} />
       <div className="flex-1 overflow-auto p-6 space-y-6">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: 'Tổng booking', value: stats.total, color: 'text-slate-700', bg: 'bg-white' },
-            { label: 'Chờ thanh toán', value: stats.pending, color: 'text-amber-600', bg: 'bg-amber-50' },
-            { label: 'Đã xác nhận', value: stats.confirmed, color: 'text-green-600', bg: 'bg-green-50' },
-            { label: 'Đã hủy', value: stats.cancelled, color: 'text-red-500', bg: 'bg-red-50' },
+            { label: t('stat_total'), value: stats.total, color: 'text-slate-700', bg: 'bg-white' },
+            { label: t('stat_pending'), value: stats.pending, color: 'text-amber-600', bg: 'bg-amber-50' },
+            { label: t('stat_confirmed'), value: stats.confirmed, color: 'text-green-600', bg: 'bg-green-50' },
+            { label: t('stat_cancelled'), value: stats.cancelled, color: 'text-red-500', bg: 'bg-red-50' },
           ].map(s => (
             <div key={s.label} className={`${s.bg} rounded-xl border border-slate-100 p-4 flex flex-col gap-1 shadow-sm`}>
               <span className="text-sm text-slate-500">{s.label}</span>
@@ -98,7 +98,7 @@ export function BookingListPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               className="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
-              placeholder="Tìm theo mã booking, tên khách, không gian..."
+              placeholder={t('search_placeholder')}
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
@@ -108,9 +108,9 @@ export function BookingListPage() {
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value as BookingStatus | '')}
           >
-            <option value="">Tất cả trạng thái</option>
-            {(Object.keys(STATUS_LABEL) as BookingStatus[]).map(s => (
-              <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+            <option value="">{t('filter_all_statuses')}</option>
+            {(Object.keys(STATUS_KEYS) as BookingStatus[]).map(s => (
+              <option key={s} value={s}>{t(STATUS_KEYS[s])}</option>
             ))}
           </select>
           <select
@@ -118,9 +118,9 @@ export function BookingListPage() {
             value={spaceTypeFilter}
             onChange={e => setSpaceTypeFilter(e.target.value as SpaceType | '')}
           >
-            <option value="">Tất cả loại không gian</option>
-            {(Object.keys(SPACE_TYPE_LABEL) as SpaceType[]).map(t => (
-              <option key={t} value={t}>{SPACE_TYPE_LABEL[t]}</option>
+            <option value="">{t('filter_all_space_types')}</option>
+            {(Object.keys(SPACE_TYPE_KEYS) as SpaceType[]).map(tp => (
+              <option key={tp} value={tp}>{t(SPACE_TYPE_KEYS[tp])}</option>
             ))}
           </select>
           <button
@@ -128,7 +128,7 @@ export function BookingListPage() {
             className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-lg text-sm font-medium hover:bg-[#8f1820] transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Tạo booking
+            {t('btn_create_booking')}
           </button>
         </div>
 
@@ -138,13 +138,13 @@ export function BookingListPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-slate-100 bg-slate-50">
-                  <th className="text-left px-4 py-3 font-medium text-slate-500">Mã booking</th>
-                  <th className="text-left px-4 py-3 font-medium text-slate-500">Khách hàng</th>
-                  <th className="text-left px-4 py-3 font-medium text-slate-500">Không gian</th>
-                  <th className="text-left px-4 py-3 font-medium text-slate-500">Thời gian</th>
-                  <th className="text-left px-4 py-3 font-medium text-slate-500">Trạng thái</th>
-                  <th className="text-right px-4 py-3 font-medium text-slate-500">Tổng tiền</th>
-                  <th className="text-center px-4 py-3 font-medium text-slate-500">Thao tác</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-500">{t('col_booking_code')}</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-500">{t('col_customer')}</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-500">{t('col_space')}</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-500">{t('col_time')}</th>
+                  <th className="text-left px-4 py-3 font-medium text-slate-500">{t('col_status')}</th>
+                  <th className="text-right px-4 py-3 font-medium text-slate-500">{t('col_total')}</th>
+                  <th className="text-center px-4 py-3 font-medium text-slate-500">{t('col_actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -152,7 +152,7 @@ export function BookingListPage() {
                   <tr>
                     <td colSpan={7} className="text-center py-16 text-slate-400">
                       <LayoutGrid className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                      <p>Không có booking nào phù hợp</p>
+                      <p>{t('empty')}</p>
                     </td>
                   </tr>
                 )}
@@ -169,7 +169,7 @@ export function BookingListPage() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="text-slate-700 font-medium">{b.spaceName}</div>
-                      <div className="text-xs text-slate-400">{SPACE_TYPE_LABEL[b.spaceType]}</div>
+                      <div className="text-xs text-slate-400">{t(SPACE_TYPE_KEYS[b.spaceType])}</div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1 text-slate-600">
@@ -178,12 +178,12 @@ export function BookingListPage() {
                       </div>
                       <div className="flex items-center gap-1 text-xs text-slate-400 mt-0.5">
                         <Clock className="w-3 h-3" />
-                        <span>đến {formatDateTime(b.endTime)}</span>
+                        <span>{t('time_to')} {formatDateTime(b.endTime)}</span>
                       </div>
                     </td>
                     <td className="px-4 py-3">
                       <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${STATUS_CLASS[b.status]}`}>
-                        {STATUS_LABEL[b.status]}
+                        {t(STATUS_KEYS[b.status])}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-right font-medium text-slate-700">
@@ -194,7 +194,7 @@ export function BookingListPage() {
                         <button
                           onClick={() => navigate(`/bookings/${b.id}`)}
                           className="p-1.5 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-700"
-                          title="Xem chi tiết"
+                          title={t('tooltip_view')}
                         >
                           <Eye className="w-4 h-4" />
                         </button>
@@ -202,7 +202,7 @@ export function BookingListPage() {
                           <button
                             onClick={() => navigate(`/bookings/${b.id}/edit`)}
                             className="p-1.5 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-700"
-                            title="Sửa"
+                            title={t('tooltip_edit')}
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
@@ -210,7 +210,7 @@ export function BookingListPage() {
                         {(b.status === 'pending' || b.status === 'confirmed') && (
                           <button
                             className="p-1.5 rounded hover:bg-red-50 text-slate-400 hover:text-red-500"
-                            title="Hủy"
+                            title={t('tooltip_cancel')}
                           >
                             <XCircle className="w-4 h-4" />
                           </button>
@@ -227,5 +227,3 @@ export function BookingListPage() {
     </div>
   )
 }
-
-export default BookingListPage
