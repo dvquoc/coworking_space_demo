@@ -276,10 +276,18 @@ interface CustomerContact {
 
 **Acceptance Criteria**:
 - [ ] Hiển thị full customer info
-- [ ] Tab "Bookings": List tất cả bookings của customer (past + upcoming)
-- [ ] Tab "Contracts": List contracts đang active/expired
-- [ ] Tab "Invoices": Payment history
-- [ ] Tab "Feedback": Reviews/ratings customer đã submit (EP-16)
+- [ ] **Ví Cobi** (hiển thị nổi bật):
+  - Tổng số dư (creditBalance + rewardBalance)
+  - Credit balance (không hết hạn)
+  - Reward balance (có hạn sử dụng)
+  - Quy đổi: 1 Cobi = 1.000 VND
+  - Nút "Nạp Cobi" → mở modal nạp credit
+- [ ] Tab "Tổng quan": Thông tin cá nhân/công ty
+- [ ] Tab "Ví Cobi": Chi tiết giao dịch, rewards đang active
+- [ ] Tab "Đặt chỗ": List tất cả bookings (past + upcoming)
+- [ ] Tab "Hợp đồng": List contracts đang active/expired
+- [ ] Tab "Hóa đơn": Payment history
+- [ ] Tab "Nhân viên": Quản lý employees (chỉ company customers)
 - [ ] Edit button → chỉ Manager/Admin
 
 ### US-19: Phân loại khách hàng

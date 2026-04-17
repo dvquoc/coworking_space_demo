@@ -27,7 +27,7 @@ import { CustomerFormModal } from '../../components/customers/CustomerFormModal'
 import { EmployeesTab } from '../../components/customers/EmployeesTab'
 import type { CustomerBooking, CustomerContract, CustomerInvoice } from '../../types/customer'
 
-type TabType = 'overview' | 'credit' | 'bookings' | 'contracts' | 'invoices' | 'employees'
+type TabType = 'overview' | 'bookings' | 'contracts' | 'invoices' | 'employees'
 
 export function CustomerDetailsPage() {
   const { customerId } = useParams<{ customerId: string }>()
@@ -104,7 +104,6 @@ export function CustomerDetailsPage() {
   
   const tabs = [
     { id: 'overview', label: 'Tổng quan', icon: TrendingUp },
-    { id: 'credit', label: 'Ví Cobi', icon: Wallet },
     { id: 'bookings', label: 'Đặt chỗ', icon: Calendar },
     { id: 'contracts', label: 'Hợp đồng', icon: FileText },
     { id: 'invoices', label: 'Hóa đơn', icon: CreditCard },
@@ -117,7 +116,6 @@ export function CustomerDetailsPage() {
         title={customer.fullName}
         subtitle={customer.customerCode}
       />
-      
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Breadcrumb */}
@@ -129,7 +127,6 @@ export function CustomerDetailsPage() {
             <span className="text-slate-400">/</span>
             <span className="text-slate-900 font-medium">{customer.customerCode}</span>
           </nav>
-          
           {/* Customer Header Card */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
             {/* Suspended Warning Banner */}
@@ -139,7 +136,6 @@ export function CustomerDetailsPage() {
                 <span className="text-rose-700 font-medium">Khách hàng này đang bị tạm ngưng</span>
               </div>
             )}
-            
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-4">
                 {/* Avatar */}
@@ -152,7 +148,6 @@ export function CustomerDetailsPage() {
                     </span>
                   )}
                 </div>
-                
                 {/* Info */}
                 <div>
                   <div className="flex items-center gap-3 mb-1">
@@ -177,7 +172,6 @@ export function CustomerDetailsPage() {
                   </div>
                 </div>
               </div>
-              
               {/* Actions */}
               <div className="flex items-center gap-2">
                 <button
@@ -200,7 +194,6 @@ export function CustomerDetailsPage() {
                 )}
               </div>
             </div>
-            
             {/* Tags */}
             {customer.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-100">
@@ -210,33 +203,6 @@ export function CustomerDetailsPage() {
               </div>
             )}
           </div>
-          
-          {/* Statistics Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-              <p className="text-sm text-slate-600 mb-1">Tổng Bookings</p>
-              <p className="text-2xl font-bold text-slate-900">{customer.stats.totalBookings}</p>
-            </div>
-            <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-              <p className="text-sm text-slate-600 mb-1">Hợp đồng Active</p>
-              <p className="text-2xl font-bold text-slate-900">{customer.stats.activeContracts}</p>
-            </div>
-            <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-              <p className="text-sm text-slate-600 mb-1">Đã thanh toán</p>
-              <p className="text-2xl font-bold text-emerald-600">
-                {(customer.stats.totalSpent / 1000000).toFixed(0)}M
-              </p>
-            </div>
-            <div className="bg-white rounded-xl border border-slate-200 p-4 text-center">
-              <p className="text-sm text-slate-600 mb-1">Còn nợ</p>
-              <p className="text-2xl font-bold text-rose-600">
-                {customer.stats.outstandingBalance > 0 
-                  ? `${(customer.stats.outstandingBalance / 1000000).toFixed(0)}M` 
-                  : '0'}
-              </p>
-            </div>
-          </div>
-          
           {/* Content with Tabs */}
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             {/* Tabs */}
@@ -261,7 +227,6 @@ export function CustomerDetailsPage() {
                 })}
               </nav>
             </div>
-            
             {/* Tab Content */}
             <div className="p-6">
               {activeTab === 'overview' && (
@@ -286,7 +251,6 @@ export function CustomerDetailsPage() {
           </div>
         </div>
       </main>
-      
       {/* Edit Modal */}
       <CustomerFormModal
         isOpen={isEditModalOpen}
@@ -785,21 +749,6 @@ function CreditTab({ customer }: { customer: NonNullable<ReturnType<typeof useCu
           <p className="text-sm text-slate-500 mt-1">Tặng reward để khuyến khích khách hàng</p>
         </div>
       )}
-      
-      {/* Conversion note */}
-      <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
-        <div className="flex items-start gap-3">
-          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <Wallet className="w-4 h-4 text-blue-600" />
-          </div>
-          <div>
-            <p className="font-medium text-blue-800">Quy đổi Cobi</p>
-            <p className="text-sm text-blue-600 mt-1">
-              1 Cobi = 1.000 VND. Tổng giá trị ví: {new Intl.NumberFormat('vi-VN').format(totalBalance * 1000)}đ
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   )
 }
