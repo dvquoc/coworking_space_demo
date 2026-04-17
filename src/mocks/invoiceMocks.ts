@@ -1,4 +1,4 @@
-import type { Invoice } from '../types/invoice'
+import type { Invoice, InvoicePaymentMethod } from '../types/invoice'
 
 // ─────────────────────────────────────────────────────────────
 // INVOICES  (F-42, F-45)
@@ -383,3 +383,32 @@ export const mockInvoices: Invoice[] = [
     updatedAt: '2026-04-16T10:30:00Z',
   },
 ]
+
+// ─────────────────────────────────────────────────────────────
+// CRUD HELPERS
+// ─────────────────────────────────────────────────────────────
+
+export function getInvoices(): Invoice[] {
+  return mockInvoices
+}
+
+export function getInvoiceById(id: string): Invoice | undefined {
+  return mockInvoices.find((inv) => inv.id === id)
+}
+
+export function recordPayment(
+  invoiceId: string,
+  amount: number,
+  method: InvoicePaymentMethod,
+  notes?: string,
+): Invoice {
+  const inv = mockInvoices.find((i) => i.id === invoiceId)
+  if (!inv) throw new Error('Invoice not found')
+  inv.paidAmount += amount
+  inv.paymentMethod = method
+  inv.paidAt = new Date().toISOString()
+  inv.paymentStatus = inv.paidAmount >= inv.totalAmount ? 'paid' : 'partial'
+  if (notes) inv.notes = notes
+  inv.updatedAt = new Date().toISOString()
+  return { ...inv }
+}

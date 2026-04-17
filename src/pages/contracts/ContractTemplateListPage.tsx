@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   FileText,
@@ -23,6 +24,7 @@ import type {
 } from '../../types/contract'
 
 export function ContractTemplateListPage() {
+  const { t } = useTranslation('contracts')
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -95,7 +97,7 @@ export function ContractTemplateListPage() {
 
   const handleDeleteTemplate = async (template: ContractTemplateListItem) => {
     if (
-      confirm(`Bạn có chắc muốn xóa mẫu hợp đồng "${template.name}"?`)
+      confirm(`${t('tpl_confirm_delete', { name: template.name })}`)
     ) {
       try {
         await deleteMutation.mutateAsync(template.id)
@@ -110,20 +112,20 @@ export function ContractTemplateListPage() {
     if (isDefault) {
       return (
         <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-700">
-          Mặc định
+          {t('tpl_status_default')}
         </span>
       )
     }
     if (isActive) {
       return (
         <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-green-100 text-green-700">
-          Hoạt động
+          {t('tpl_status_active')}
         </span>
       )
     }
     return (
       <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-slate-100 text-slate-600">
-        Ngưng sử dụng
+        {t('tpl_status_inactive')}
       </span>
     )
   }
@@ -131,8 +133,8 @@ export function ContractTemplateListPage() {
   return (
     <>
       <Header
-        title="Mẫu hợp đồng"
-        subtitle="Quản lý các mẫu hợp đồng cho từng loại dịch vụ"
+        title={t('tpl_page_title')}
+        subtitle={t('tpl_page_subtitle')}
       />
 
       <main className="flex-1 overflow-y-auto p-6">
@@ -143,7 +145,7 @@ export function ContractTemplateListPage() {
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Tạo mẫu mới
+            {t('tpl_btn_create')}
           </button>
         </div>
 
@@ -158,7 +160,7 @@ export function ContractTemplateListPage() {
                 <p className="text-2xl font-semibold text-slate-900">
                   {stats.total}
                 </p>
-                <p className="text-sm text-slate-500">Tổng mẫu</p>
+                <p className="text-sm text-slate-500">{t('tpl_stat_total')}</p>
               </div>
             </div>
           </div>
@@ -171,7 +173,7 @@ export function ContractTemplateListPage() {
                 <p className="text-2xl font-semibold text-slate-900">
                   {stats.active}
                 </p>
-                <p className="text-sm text-slate-500">Đang hoạt động</p>
+                <p className="text-sm text-slate-500">{t('tpl_stat_active')}</p>
               </div>
             </div>
           </div>
@@ -185,7 +187,7 @@ export function ContractTemplateListPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Tìm kiếm theo tên hoặc mã mẫu..."
+                placeholder={t('tpl_search_placeholder')}
                 value={search}
                 onChange={(e) => updateParams({ search: e.target.value })}
                 className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
@@ -197,36 +199,36 @@ export function ContractTemplateListPage() {
         {/* Table */}
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           {isLoading ? (
-            <div className="p-8 text-center text-slate-500">Đang tải...</div>
+            <div className="p-8 text-center text-slate-500">{t('loading')}</div>
           ) : error ? (
             <div className="p-8 text-center text-rose-500">
-              Đã xảy ra lỗi khi tải dữ liệu
+              {t('error_load')}
             </div>
           ) : !data?.data.length ? (
             <div className="p-8 text-center text-slate-500">
-              Chưa có mẫu hợp đồng nào
+              {t('tpl_empty')}
             </div>
           ) : (
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50">
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Mã mẫu
+                    {t('tpl_col_code')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Tên mẫu
+                    {t('tpl_col_name')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Phiên bản
+                    {t('label_version')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Trạng thái
+                    {t('col_status')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Cập nhật
+                    {t('label_updated_at')}
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Thao tác
+                    {t('col_actions')}
                   </th>
                 </tr>
               </thead>
@@ -286,7 +288,7 @@ export function ContractTemplateListPage() {
                               className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                             >
                               <Eye className="w-4 h-4" />
-                              Xem chi tiết
+                              {t('menu_view')}
                             </button>
                             <button
                               onClick={(e) => {
@@ -296,7 +298,7 @@ export function ContractTemplateListPage() {
                               className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                             >
                               <Edit className="w-4 h-4" />
-                              Chỉnh sửa
+                              {t('menu_edit')}
                             </button>
                             <button
                               onClick={(e) => {
@@ -306,7 +308,7 @@ export function ContractTemplateListPage() {
                               className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                             >
                               <Copy className="w-4 h-4" />
-                              Tạo bản sao
+                              {t('tpl_menu_clone')}
                             </button>
                             <hr className="my-1 border-slate-200" />
                             <button
@@ -319,12 +321,12 @@ export function ContractTemplateListPage() {
                               {template.isActive ? (
                                 <>
                                   <XCircle className="w-4 h-4" />
-                                  Ngưng sử dụng
+                                  {t('tpl_status_inactive')}
                                 </>
                               ) : (
                                 <>
                                   <CheckCircle className="w-4 h-4" />
-                                  Kích hoạt
+                                  {t('menu_activate')}
                                 </>
                               )}
                             </button>
@@ -337,7 +339,7 @@ export function ContractTemplateListPage() {
                                 className="w-full flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50"
                               >
                                 <Trash2 className="w-4 h-4" />
-                                Xóa mẫu
+                                {t('tpl_menu_delete')}
                               </button>
                             )}
                           </div>
@@ -354,7 +356,7 @@ export function ContractTemplateListPage() {
           {data && data.pagination.totalPages > 1 && (
             <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
               <p className="text-sm text-slate-500">
-                Hiển thị {data.data.length} / {data.pagination.total} mẫu
+                {t('tpl_pagination_showing', { shown: data.data.length, total: data.pagination.total })}
               </p>
               <div className="flex items-center gap-2">
                 <button
@@ -364,10 +366,10 @@ export function ContractTemplateListPage() {
                   disabled={page === 1}
                   className="px-3 py-1 text-sm border border-slate-200 rounded hover:bg-slate-50 disabled:opacity-50"
                 >
-                  Trước
+                  {t('page_prev')}
                 </button>
                 <span className="text-sm text-slate-600">
-                  Trang {page} / {data.pagination.totalPages}
+                  {t('pagination_page', { current: page, total: data.pagination.totalPages })}
                 </span>
                 <button
                   onClick={() =>
@@ -380,7 +382,7 @@ export function ContractTemplateListPage() {
                   disabled={page === data.pagination.totalPages}
                   className="px-3 py-1 text-sm border border-slate-200 rounded hover:bg-slate-50 disabled:opacity-50"
                 >
-                  Sau
+                  {t('page_next')}
                 </button>
               </div>
             </div>

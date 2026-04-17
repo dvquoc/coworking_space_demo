@@ -6,16 +6,25 @@ import viNav from './locales/vi/nav.json'
 import viAuth from './locales/vi/auth.json'
 import viReports from './locales/vi/reports.json'
 import viDashboard from './locales/vi/dashboard.json'
+import viContracts from './locales/vi/contracts.json'
+import viCrm from './locales/vi/crm.json'
+import viInvoices from './locales/vi/invoices.json'
 import enCommon from './locales/en/common.json'
 import enNav from './locales/en/nav.json'
 import enAuth from './locales/en/auth.json'
 import enReports from './locales/en/reports.json'
 import enDashboard from './locales/en/dashboard.json'
+import enContracts from './locales/en/contracts.json'
+import enCrm from './locales/en/crm.json'
+import enInvoices from './locales/en/invoices.json'
 import koCommon from './locales/ko/common.json'
 import koNav from './locales/ko/nav.json'
 import koAuth from './locales/ko/auth.json'
 import koReports from './locales/ko/reports.json'
 import koDashboard from './locales/ko/dashboard.json'
+import koContracts from './locales/ko/contracts.json'
+import koCrm from './locales/ko/crm.json'
+import koInvoices from './locales/ko/invoices.json'
 
 const STORAGE_KEY = 'coworking_preferred_locale'
 
@@ -31,9 +40,9 @@ i18n
   .use(initReactI18next)
   .init({
     resources: {
-      vi: { common: viCommon, nav: viNav, auth: viAuth, reports: viReports, dashboard: viDashboard },
-      en: { common: enCommon, nav: enNav, auth: enAuth, reports: enReports, dashboard: enDashboard },
-      ko: { common: koCommon, nav: koNav, auth: koAuth, reports: koReports, dashboard: koDashboard },
+      vi: { common: viCommon, nav: viNav, auth: viAuth, reports: viReports, dashboard: viDashboard, contracts: viContracts, crm: viCrm, invoices: viInvoices },
+      en: { common: enCommon, nav: enNav, auth: enAuth, reports: enReports, dashboard: enDashboard, contracts: enContracts, crm: enCrm, invoices: enInvoices },
+      ko: { common: koCommon, nav: koNav, auth: koAuth, reports: koReports, dashboard: koDashboard, contracts: koContracts, crm: koCrm, invoices: koInvoices },
     },
     lng: detectLanguage(),
     fallbackLng: 'vi',

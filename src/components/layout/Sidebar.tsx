@@ -25,6 +25,8 @@ import {
   Calculator,
   Wallet,
   Package,
+  Target,
+  Megaphone,
 } from 'lucide-react'
 import { useAuthStore } from '../../stores/authStore'
 
@@ -171,6 +173,29 @@ const navItems: NavItem[] = [
         path: '/pricing/calculator',
         labelKey: 'pricing_calculator',
         icon: <Calculator className="w-4 h-4" />,
+      },
+    ],
+  },
+  {
+    path: '/crm/leads',
+    labelKey: 'crm',
+    icon: <Target className="w-5 h-5" />,
+    roles: ['admin', 'manager', 'sale'],
+    subItems: [
+      {
+        path: '/crm/leads',
+        labelKey: 'crm_leads',
+        icon: <Users className="w-4 h-4" />,
+      },
+      {
+        path: '/crm/leads/kanban',
+        labelKey: 'crm_kanban',
+        icon: <LayoutGrid className="w-4 h-4" />,
+      },
+      {
+        path: '/crm/campaigns',
+        labelKey: 'crm_campaigns',
+        icon: <Megaphone className="w-4 h-4" />,
       },
     ],
   },

@@ -24,5 +24,9 @@
   "pricing_calculator": "Price Calculator",
   "maintenance": "Maintenance",
   "inventory": "Inventory",
-  "reports": "Reports"
+  "reports": "Reports",
+  "crm": "CRM",
+  "crm_leads": "Lead List",
+  "crm_kanban": "Kanban Pipeline",
+  "crm_campaigns": "Campaigns"
 }

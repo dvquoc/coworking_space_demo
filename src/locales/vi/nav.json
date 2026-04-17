@@ -24,5 +24,9 @@
   "pricing_calculator": "Tính giá",
   "maintenance": "Bảo trì",
   "inventory": "Quản lý tài sản",
-  "reports": "Báo cáo"
+  "reports": "Báo cáo",
+  "crm": "CRM",
+  "crm_leads": "Danh sách Lead",
+  "crm_kanban": "Pipeline Kanban",
+  "crm_campaigns": "Campaigns"
 }

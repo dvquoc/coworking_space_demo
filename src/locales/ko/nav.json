@@ -24,5 +24,9 @@
   "pricing_calculator": "가격 계산기",
   "maintenance": "유지보수",
   "inventory": "자산 관리",
-  "reports": "보고서"
+  "reports": "보고서",
+  "crm": "CRM",
+  "crm_leads": "리드 목록",
+  "crm_kanban": "칸반 파이프라인",
+  "crm_campaigns": "캠페인"
 }

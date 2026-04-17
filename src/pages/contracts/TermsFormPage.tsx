@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft,
@@ -43,6 +44,7 @@ const initialFormData: FormData = {
 }
 
 export function TermsFormPage() {
+  const { t } = useTranslation('contracts')
   const { id } = useParams<{ id: string }>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -95,16 +97,16 @@ export function TermsFormPage() {
     const newErrors: Partial<Record<keyof FormData, string>> = {}
 
     if (!formData.title.trim()) {
-      newErrors.title = 'Vui lòng nhập tiêu đề'
+      newErrors.title = t('terms_err_title_required')
     }
     if (!formData.usageRulesContent.trim()) {
-      newErrors.usageRulesContent = 'Vui lòng nhập quy định sử dụng'
+      newErrors.usageRulesContent = t('terms_err_usage_required')
     }
     if (!formData.liabilityContent.trim()) {
-      newErrors.liabilityContent = 'Vui lòng nhập trách nhiệm các bên'
+      newErrors.liabilityContent = t('terms_err_liability_required')
     }
     if (formData.applicableSpaceTypes.length === 0) {
-      newErrors.applicableSpaceTypes = 'Vui lòng chọn ít nhất một loại không gian'
+      newErrors.applicableSpaceTypes = t('terms_err_space_types_required')
     }
 
     setErrors(newErrors)
@@ -176,11 +178,11 @@ export function TermsFormPage() {
     return (
       <>
         <Header
-          title={isEdit ? 'Chỉnh sửa điều khoản' : 'Tạo điều khoản mới'}
-          subtitle="Đang tải..."
+          title={isEdit ? t('terms_form_edit_title') : t('terms_form_create_title')}
+          subtitle={t('loading')}
         />
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="text-center text-slate-500">Đang tải...</div>
+          <div className="text-center text-slate-500">{t('loading')}</div>
         </main>
       </>
     )
@@ -189,7 +191,7 @@ export function TermsFormPage() {
   return (
     <>
       <Header
-        title={isEdit ? 'Chỉnh sửa điều khoản' : cloneId ? 'Nhân bản điều khoản' : 'Tạo điều khoản mới'}
+        title={isEdit ? t('terms_form_edit_title') : cloneId ? t('terms_form_clone_title') : t('terms_form_create_title')}
         subtitle={isEdit ? existingTerms?.termsCode : undefined}
       />
 
@@ -199,7 +201,7 @@ export function TermsFormPage() {
           className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
-          Quay lại danh sách
+          {t('btn_back_list')}
         </button>
 
         <div className="grid grid-cols-3 gap-6">
@@ -208,20 +210,20 @@ export function TermsFormPage() {
             {/* Basic Info */}
             <div className="bg-white rounded-xl border border-slate-200 p-6">
               <h2 className="text-lg font-semibold text-slate-900 mb-6">
-                Thông tin cơ bản
+                {t('terms_basic_info')}
               </h2>
 
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Tiêu đề <span className="text-rose-500">*</span>
+                    {t('terms_label_title')} <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
                     name="title"
                     value={formData.title}
                     onChange={handleChange}
-                    placeholder="VD: Điều khoản sử dụng Hot Desk"
+                    placeholder={t('terms_title_placeholder')}
                     className={`w-full px-4 py-2.5 border rounded-lg ${
                       errors.title ? 'border-rose-300' : 'border-slate-200'
                     }`}
@@ -233,7 +235,7 @@ export function TermsFormPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Áp dụng cho loại không gian <span className="text-rose-500">*</span>
+                    {t('terms_label_space_types')} <span className="text-rose-500">*</span>
                   </label>
                   <div className="flex flex-wrap gap-2">
                     {(Object.entries(SPACE_TYPE_LABELS) as [SpaceType, string][]).map(
@@ -264,7 +266,7 @@ export function TermsFormPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Ngày có hiệu lực
+                    {t('terms_label_effective_from')}
                   </label>
                   <input
                     type="date"
@@ -281,7 +283,7 @@ export function TermsFormPage() {
             <div className="bg-white rounded-xl border border-slate-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-slate-900">
-                  Nội dung điều khoản
+                  {t('terms_content_title')}
                 </h2>
                 <div className="flex border border-slate-200 rounded-lg overflow-hidden">
                   <button
@@ -310,10 +312,10 @@ export function TermsFormPage() {
               {/* Tabs */}
               <div className="flex border-b border-slate-200 mb-4">
                 {[
-                  { key: 'usage', label: 'Quy định sử dụng' },
-                  { key: 'liability', label: 'Trách nhiệm' },
-                  { key: 'privacy', label: 'Bảo mật' },
-                  { key: 'cancellation', label: 'Hủy dịch vụ' },
+                  { key: 'usage', label: t('terms_tab_usage') },
+                  { key: 'liability', label: t('terms_tab_liability') },
+                  { key: 'privacy', label: t('terms_tab_privacy') },
+                  { key: 'cancellation', label: t('terms_tab_cancellation') },
                 ].map((tab) => (
                   <button
                     key={tab.key}
@@ -334,7 +336,7 @@ export function TermsFormPage() {
                   value={getCurrentContent()}
                   onChange={(e) => setCurrentContent(e.target.value)}
                   rows={15}
-                  placeholder="Nhập nội dung (hỗ trợ Markdown)..."
+                  placeholder={t('terms_editor_placeholder')}
                   className="w-full px-4 py-3 border border-slate-200 rounded-lg font-mono text-sm"
                 />
               ) : (
@@ -346,7 +348,7 @@ export function TermsFormPage() {
 
               {(activeTab === 'usage' && errors.usageRulesContent) ||
               (activeTab === 'liability' && errors.liabilityContent) ? (
-                <p className="text-sm text-rose-500 mt-2">Vui lòng nhập nội dung</p>
+                <p className="text-sm text-rose-500 mt-2">{t('terms_err_content_required')}</p>
               ) : null}
             </div>
           </div>
@@ -354,7 +356,7 @@ export function TermsFormPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             <div className="bg-white rounded-xl border border-slate-200 p-6">
-              <h3 className="font-semibold text-slate-900 mb-4">Thao tác</h3>
+              <h3 className="font-semibold text-slate-900 mb-4">{t('terms_sidebar_actions')}</h3>
               <div className="space-y-3">
                 <button
                   onClick={handleSubmit}
@@ -363,26 +365,26 @@ export function TermsFormPage() {
                 >
                   <Save className="w-4 h-4" />
                   {createMutation.isPending || updateMutation.isPending
-                    ? 'Đang lưu...'
+                    ? t('btn_saving')
                     : isEdit
-                    ? 'Cập nhật'
-                    : 'Tạo mới'}
+                    ? t('terms_btn_update')
+                    : t('terms_btn_submit')}
                 </button>
                 <button
                   onClick={() => navigate('/contracts/terms')}
                   className="w-full px-4 py-2.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50"
                 >
-                  Hủy
+                  {t('btn_cancel')}
                 </button>
               </div>
             </div>
 
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-              <h3 className="font-semibold text-amber-800 mb-2">💡 Mẹo</h3>
+              <h3 className="font-semibold text-amber-800 mb-2">{t('terms_tips_title')}</h3>
               <ul className="text-sm text-amber-700 space-y-1">
-                <li>• Sử dụng # cho tiêu đề</li>
-                <li>• Sử dụng **text** để in đậm</li>
-                <li>• Sử dụng - để tạo danh sách</li>
+                <li>{t('terms_tip_heading')}</li>
+                <li>{t('terms_tip_bold')}</li>
+                <li>{t('terms_tip_list')}</li>
               </ul>
             </div>
           </div>

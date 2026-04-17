@@ -58,6 +58,9 @@ import {
 // Pricing & Promotions pages
 import { PromotionsPage, VouchersPage, PricingCalculatorPage, ServicePricingPage } from './pages/pricing'
 
+// CRM pages
+import { LeadListPage, LeadKanbanPage, LeadDetailsPage, CampaignListPage } from './pages/crm'
+
 // Error pages
 import NotFoundPage from './pages/NotFoundPage'
 import ForbiddenPage from './pages/ForbiddenPage'
@@ -181,6 +184,16 @@ function App() {
           <Route path="/pricing/promotions" element={<PromotionsPage />} />
           <Route path="/pricing/vouchers" element={<VouchersPage />} />
           <Route path="/pricing/calculator" element={<PricingCalculatorPage />} />
+        </Route>
+      </Route>
+
+      {/* CRM routes - Admin, Manager & Sale */}
+      <Route element={<ProtectedRoute allowedRoles={['admin', 'manager', 'sale']} />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/crm/leads" element={<LeadListPage />} />
+          <Route path="/crm/leads/kanban" element={<LeadKanbanPage />} />
+          <Route path="/crm/leads/:id" element={<LeadDetailsPage />} />
+          <Route path="/crm/campaigns" element={<CampaignListPage />} />
         </Route>
       </Route>
 

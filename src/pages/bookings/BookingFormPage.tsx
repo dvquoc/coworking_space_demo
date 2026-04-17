@@ -20,6 +20,16 @@ import { mockBuildings, mockFloors, mockSpaces, mockPricingRules } from '../../m
 import { mockBookingAddOns } from '../../mocks/pricingMocks'
 
 // ---- helpers ----
+function getDefaultDate() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function getDefaultTime(offsetMinutes = 0) {
+  const now = new Date()
+  now.setMinutes(now.getMinutes() + offsetMinutes)
+  return now.toTimeString().slice(0, 5)
+}
+
 function calcDurationMinutes(start: string, end: string) {
   if (!start || !end) return 0
   const [sh, sm] = start.split(':').map(Number)
@@ -78,9 +88,9 @@ export function BookingFormPage() {
   const [buildingId, setBuildingId] = useState('')
   const [floorId, setFloorId] = useState('')
   const [spaceId, setSpaceId] = useState('')
-  const [date, setDate] = useState('')
-  const [startTime, setStartTime] = useState('')
-  const [endTime, setEndTime] = useState('')
+  const [date, setDate] = useState(getDefaultDate)
+  const [startTime, setStartTime] = useState(() => getDefaultTime())
+  const [endTime, setEndTime] = useState(() => getDefaultTime(60))
   const [selectedAddOns, setSelectedAddOns] = useState<Record<string, number>>({}) // id -> quantity
   const [discountPercent, setDiscountPercent] = useState(0)
   const [notes, setNotes] = useState('')
@@ -88,6 +98,8 @@ export function BookingFormPage() {
 
   // Step 2 state
   const [paymentMethod, setPaymentMethod] = useState('')
+  const [sendInvoiceZalo, setSendInvoiceZalo] = useState(true)
+  const [sendInvoiceEmail, setSendInvoiceEmail] = useState(true)
   const [paymentSuccess, setPaymentSuccess] = useState(false)
 
   // Cascading selects
@@ -109,7 +121,9 @@ export function BookingFormPage() {
   }, 0)
   const subtotal = spacePrice + servicesPrice
   const discountAmount = subtotal * (discountPercent / 100)
-  const totalPrice = subtotal - discountAmount
+  const afterDiscount = subtotal - discountAmount
+  const taxAmount = afterDiscount * 0.1
+  const totalPrice = afterDiscount + taxAmount
 
   // Toggle/update add-ons
   const toggleAddOn = (id: string) => {
@@ -517,6 +531,10 @@ export function BookingFormPage() {
                       <span className="font-medium text-slate-700">{notes}</span>
                     </div>
                   )}
+                  <div className="flex justify-between text-slate-500">
+                    <span>VAT (10%)</span>
+                    <span className="font-medium text-slate-700">+{formatPrice(taxAmount)}</span>
+                  </div>
                   <div className="flex justify-between pt-2 border-t border-slate-100 font-bold text-base">
                     <span className="text-slate-700">Tổng cộng</span>
                     <span className="text-[#b11e29]">{formatPrice(totalPrice)}</span>
@@ -547,6 +565,37 @@ export function BookingFormPage() {
                 </div>
               </div>
 
+              {/* Gửi hóa đơn */}
+              <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
+                <h3 className="font-semibold text-slate-700 mb-4">Gửi hóa đơn</h3>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="accent-[#b11e29] w-4 h-4"
+                      checked={sendInvoiceZalo}
+                      onChange={e => setSendInvoiceZalo(e.target.checked)}
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-slate-700">Gửi hóa đơn qua Zalo</p>
+                      <p className="text-xs text-slate-400">Gửi thông báo và hóa đơn tới Zalo của khách hàng</p>
+                    </div>
+                  </label>
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="accent-[#b11e29] w-4 h-4"
+                      checked={sendInvoiceEmail}
+                      onChange={e => setSendInvoiceEmail(e.target.checked)}
+                    />
+                    <div>
+                      <p className="text-sm font-medium text-slate-700">Gửi hóa đơn qua Email</p>
+                      <p className="text-xs text-slate-400">Gửi hóa đơn đến email {customerEmail || '(chưa nhập email)'}</p>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
             </form>
           )}
         </div>
@@ -563,6 +612,7 @@ export function BookingFormPage() {
                     <span>Không gian: <span className="text-slate-700 font-medium">{formatPrice(spacePrice)}</span></span>
                     {servicesPrice > 0 && <span>Dịch vụ: <span className="text-slate-700 font-medium">{formatPrice(servicesPrice)}</span></span>}
                     {discountAmount > 0 && <span className="text-green-600">Giảm: <span className="font-medium">-{formatPrice(discountAmount)}</span></span>}
+                    <span>VAT 10%: <span className="text-slate-700 font-medium">+{formatPrice(taxAmount)}</span></span>
                   </div>
                   <div className="text-right">
                     <p className="text-xs text-slate-400">Tổng cộng</p>

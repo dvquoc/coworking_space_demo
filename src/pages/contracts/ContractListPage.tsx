@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   FileText,
@@ -26,11 +27,9 @@ import type {
   ContractListItem,
   ContractStatus,
 } from '../../types/contract'
-import {
-  CONTRACT_STATUS_LABELS,
-} from '../../types/contract'
 
 export function ContractListPage() {
+  const { t } = useTranslation('contracts')
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -97,7 +96,7 @@ export function ContractListPage() {
   }
 
   const handleActivateContract = async (contract: ContractListItem) => {
-    if (confirm(`Bạn có chắc muốn kích hoạt hợp đồng "${contract.contractCode}"?`)) {
+    if (confirm(t('confirm_activate', { code: contract.contractCode }))) {
       try {
         await activateMutation.mutateAsync({ id: contract.id })
       } catch (error) {
@@ -108,7 +107,7 @@ export function ContractListPage() {
   }
 
   const handleTerminateContract = async (contract: ContractListItem) => {
-    const reason = prompt('Nhập lý do chấm dứt hợp đồng:')
+    const reason = prompt(t('prompt_terminate'))
     if (reason) {
       try {
         await terminateMutation.mutateAsync({
@@ -148,7 +147,7 @@ export function ContractListPage() {
         className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full ${colorMap[status]}`}
       >
         <Icon className="w-3 h-3" />
-        {CONTRACT_STATUS_LABELS[status]}
+        {t(`status_${status}`)}
       </span>
     )
   }
@@ -171,24 +170,24 @@ export function ContractListPage() {
     }
     if (days <= 0) {
       return (
-        <span className="text-sm font-medium text-rose-600">Hết hạn</span>
+        <span className="text-sm font-medium text-rose-600">{t('days_expired')}</span>
       )
     }
     if (days <= 30) {
       return (
         <span className="text-sm font-medium text-amber-600">
-          {days} ngày
+          {t('days_remaining', { count: days })}
         </span>
       )
     }
-    return <span className="text-sm text-slate-600">{days} ngày</span>
+    return <span className="text-sm text-slate-600">{t('days_remaining', { count: days })}</span>
   }
 
   return (
     <>
       <Header
-        title="Quản lý hợp đồng"
-        subtitle="Danh sách và quản lý tất cả hợp đồng"
+        title={t('page_title')}
+        subtitle={t('page_subtitle')}
       />
 
       <main className="flex-1 overflow-y-auto p-6">
@@ -199,14 +198,14 @@ export function ContractListPage() {
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
           >
             <LayoutTemplate className="w-4 h-4" />
-            Thiết lập mẫu hợp đồng
+            {t('btn_template_setup')}
           </button>
           <button
             onClick={() => navigate('/contracts/new')}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Tạo hợp đồng
+            {t('btn_create')}
           </button>
         </div>
 
@@ -221,7 +220,7 @@ export function ContractListPage() {
                 <p className="text-2xl font-semibold text-slate-900">
                   {stats.total}
                 </p>
-                <p className="text-sm text-slate-500">Tổng số HĐ</p>
+                <p className="text-sm text-slate-500">{t('stat_total')}</p>
               </div>
             </div>
           </div>
@@ -234,7 +233,7 @@ export function ContractListPage() {
                 <p className="text-2xl font-semibold text-slate-900">
                   {stats.active}
                 </p>
-                <p className="text-sm text-slate-500">Đang hiệu lực</p>
+                <p className="text-sm text-slate-500">{t('stat_active')}</p>
               </div>
             </div>
           </div>
@@ -247,7 +246,7 @@ export function ContractListPage() {
                 <p className="text-2xl font-semibold text-slate-900">
                   {stats.expiring}
                 </p>
-                <p className="text-sm text-slate-500">Sắp hết hạn</p>
+                <p className="text-sm text-slate-500">{t('stat_expiring')}</p>
               </div>
             </div>
           </div>
@@ -260,7 +259,7 @@ export function ContractListPage() {
                 <p className="text-2xl font-semibold text-slate-900">
                   {stats.draft}
                 </p>
-                <p className="text-sm text-slate-500">Bản nháp</p>
+                <p className="text-sm text-slate-500">{t('stat_draft')}</p>
               </div>
             </div>
           </div>
@@ -274,7 +273,7 @@ export function ContractListPage() {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
-                placeholder="Tìm kiếm theo mã HĐ hoặc khách hàng..."
+                placeholder={t('search_placeholder')}
                 value={search}
                 onChange={(e) => updateParams({ search: e.target.value })}
                 className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
@@ -289,7 +288,7 @@ export function ContractListPage() {
               }
               className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
             >
-              <option value="">Tất cả tòa nhà</option>
+              <option value="">{t('filter_all_buildings')}</option>
               {mockBuildings.map((b) => (
                 <option key={b.id} value={b.id}>
                   {b.name}
@@ -304,7 +303,7 @@ export function ContractListPage() {
               disabled={!buildingFilter}
               className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <option value="">Tất cả tầng</option>
+              <option value="">{t('filter_all_floors')}</option>
               {availableFloors.map((f) => (
                 <option key={f.id} value={f.id}>
                   {f.floorName || `Tầng ${f.floorNumber}`}
@@ -318,13 +317,13 @@ export function ContractListPage() {
               onChange={(e) => updateParams({ status: e.target.value })}
               className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
             >
-              <option value="">Tất cả trạng thái</option>
-              <option value="draft">Nháp</option>
-              <option value="active">Đang hiệu lực</option>
-              <option value="expiring_soon">Sắp hết hạn</option>
-              <option value="expired">Hết hạn</option>
-              <option value="renewed">Đã gia hạn</option>
-              <option value="terminated">Đã chấm dứt</option>
+              <option value="">{t('filter_all_status')}</option>
+              <option value="draft">{t('status_draft')}</option>
+              <option value="active">{t('status_active')}</option>
+              <option value="expiring_soon">{t('status_expiring_soon')}</option>
+              <option value="expired">{t('status_expired')}</option>
+              <option value="renewed">{t('status_renewed')}</option>
+              <option value="terminated">{t('status_terminated')}</option>
             </select>
           </div>
         </div>
@@ -332,42 +331,42 @@ export function ContractListPage() {
         {/* Table */}
         <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
           {isLoading ? (
-            <div className="p-8 text-center text-slate-500">Đang tải...</div>
+            <div className="p-8 text-center text-slate-500">{t('loading')}</div>
           ) : error ? (
             <div className="p-8 text-center text-rose-500">
-              Đã xảy ra lỗi khi tải dữ liệu
+              {t('error_load')}
             </div>
           ) : !data?.data.length ? (
             <div className="p-8 text-center text-slate-500">
-              Chưa có hợp đồng nào
+              {t('empty')}
             </div>
           ) : (
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50">
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Mã HĐ
+                    {t('col_code')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Khách hàng
+                    {t('col_customer')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Tòa nhà / Space
+                    {t('col_location')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Thời hạn
+                    {t('col_duration')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Phí/tháng
+                    {t('col_monthly_fee')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Còn lại
+                    {t('col_remaining')}
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Trạng thái
+                    {t('col_status')}
                   </th>
                   <th className="px-4 py-3 text-right text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                    Thao tác
+                    {t('col_actions')}
                   </th>
                 </tr>
               </thead>
@@ -390,8 +389,8 @@ export function ContractListPage() {
                         </p>
                         <p className="text-xs text-slate-500">
                           {contract.customerType === 'company'
-                            ? 'Công ty'
-                            : 'Cá nhân'}
+                            ? t('customer_company')
+                            : t('customer_individual')}
                         </p>
                       </div>
                     </td>
@@ -434,7 +433,7 @@ export function ContractListPage() {
                       <div className="flex items-center gap-2">
                         {getStatusBadge(contract.status)}
                         {contract.autoRenewEnabled && (
-                          <span title="Tự động gia hạn">
+                          <span title={t('auto_renew_title')}>
                             <RefreshCw className="w-3 h-3 text-blue-500" />
                           </span>
                         )}
@@ -464,7 +463,7 @@ export function ContractListPage() {
                               className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                             >
                               <Eye className="w-4 h-4" />
-                              Xem chi tiết
+                              {t('menu_view')}
                             </button>
 
                             {contract.status === 'draft' && (
@@ -477,7 +476,7 @@ export function ContractListPage() {
                                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                                 >
                                   <Edit className="w-4 h-4" />
-                                  Chỉnh sửa
+                                  {t('menu_edit')}
                                 </button>
                                 <button
                                   onClick={(e) => {
@@ -487,7 +486,7 @@ export function ContractListPage() {
                                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-emerald-600 hover:bg-emerald-50"
                                 >
                                   <CheckCircle className="w-4 h-4" />
-                                  Kích hoạt
+                                  {t('menu_activate')}
                                 </button>
                               </>
                             )}
@@ -503,7 +502,7 @@ export function ContractListPage() {
                                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-blue-600 hover:bg-blue-50"
                                 >
                                   <RefreshCw className="w-4 h-4" />
-                                  Gia hạn
+                                  {t('menu_renew')}
                                 </button>
                                 <button
                                   onClick={(e) => {
@@ -513,7 +512,7 @@ export function ContractListPage() {
                                   className="w-full flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50"
                                 >
                                   <XCircle className="w-4 h-4" />
-                                  Chấm dứt
+                                  {t('menu_terminate')}
                                 </button>
                               </>
                             )}
@@ -531,7 +530,7 @@ export function ContractListPage() {
           {data && data.pagination.totalPages > 1 && (
             <div className="px-4 py-3 border-t border-slate-200 flex items-center justify-between">
               <p className="text-sm text-slate-500">
-                Hiển thị {data.data.length} / {data.pagination.total} hợp đồng
+                {t('pagination_showing', { shown: data.data.length, total: data.pagination.total })}
               </p>
               <div className="flex items-center gap-2">
                 <button
@@ -541,10 +540,10 @@ export function ContractListPage() {
                   disabled={page === 1}
                   className="px-3 py-1 text-sm border border-slate-200 rounded hover:bg-slate-50 disabled:opacity-50"
                 >
-                  Trước
+                  {t('page_prev')}
                 </button>
                 <span className="text-sm text-slate-600">
-                  Trang {page} / {data.pagination.totalPages}
+                  {t('pagination_page', { current: page, total: data.pagination.totalPages })}
                 </span>
                 <button
                   onClick={() =>
@@ -557,7 +556,7 @@ export function ContractListPage() {
                   disabled={page === data.pagination.totalPages}
                   className="px-3 py-1 text-sm border border-slate-200 rounded hover:bg-slate-50 disabled:opacity-50"
                 >
-                  Sau
+                  {t('page_next')}
                 </button>
               </div>
             </div>

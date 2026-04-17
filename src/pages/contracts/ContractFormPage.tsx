@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   FileText,
@@ -26,9 +27,9 @@ import type {
 } from '../../types/contract'
 
 const STEPS = [
-  { id: 1, label: 'Thông tin cơ bản', icon: FileText },
-  { id: 2, label: 'Giá trị hợp đồng', icon: DollarSign },
-  { id: 3, label: 'Xem trước & Xác nhận', icon: Check },
+  { id: 1, icon: FileText },
+  { id: 2, icon: DollarSign },
+  { id: 3, icon: Check },
 ]
 
 type FormData = {
@@ -73,6 +74,7 @@ const initialFormData: FormData = {
 }
 
 export function ContractFormPage() {
+  const { t } = useTranslation('contracts')
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const isEdit = Boolean(id)
@@ -145,16 +147,16 @@ export function ContractFormPage() {
     const newErrors: Partial<Record<keyof FormData, string>> = {}
 
     if (step === 1) {
-      if (!formData.templateId) newErrors.templateId = 'Vui lòng chọn mẫu hợp đồng'
-      if (!formData.customerId) newErrors.customerId = 'Vui lòng chọn khách hàng'
-      if (!formData.buildingId) newErrors.buildingId = 'Vui lòng chọn tòa nhà'
-      if (!formData.spaceId) newErrors.spaceId = 'Vui lòng chọn không gian'
-      if (!formData.startDate) newErrors.startDate = 'Vui lòng chọn ngày bắt đầu'
+      if (!formData.templateId) newErrors.templateId = t('err_select_template')
+      if (!formData.customerId) newErrors.customerId = t('err_select_customer')
+      if (!formData.buildingId) newErrors.buildingId = t('err_select_building')
+      if (!formData.spaceId) newErrors.spaceId = t('err_select_space')
+      if (!formData.startDate) newErrors.startDate = t('err_select_start_date')
     }
 
     if (step === 2) {
       if (!formData.monthlyFee || formData.monthlyFee <= 0) {
-        newErrors.monthlyFee = 'Phí hàng tháng phải lớn hơn 0'
+        newErrors.monthlyFee = t('err_monthly_fee_required')
       }
     }
 
@@ -223,11 +225,11 @@ export function ContractFormPage() {
     return (
       <>
         <Header
-          title="Chỉnh sửa hợp đồng"
-          subtitle="Đang tải..."
+          title={t('form_edit_title')}
+          subtitle={t('loading')}
         />
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="text-center text-slate-500">Đang tải...</div>
+          <div className="text-center text-slate-500">{t('loading')}</div>
         </main>
       </>
     )
@@ -236,7 +238,7 @@ export function ContractFormPage() {
   return (
     <>
       <Header
-        title={isEdit ? 'Chỉnh sửa hợp đồng' : 'Tạo hợp đồng mới'}
+        title={isEdit ? t('form_edit_title') : t('form_create_title')}
         subtitle={isEdit ? contract?.contractCode : undefined}
       />
 
@@ -246,7 +248,7 @@ export function ContractFormPage() {
           className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
-          Quay lại danh sách
+          {t('btn_back_list')}
         </button>
 
         {/* Stepper */}
@@ -273,7 +275,7 @@ export function ContractFormPage() {
                 >
                   {currentStep > step.id ? <Check className="w-5 h-5" /> : step.id}
                 </div>
-                <span className="font-medium hidden sm:block">{step.label}</span>
+                <span className="font-medium hidden sm:block">{[t('step1_label'), t('step2_label'), t('step3_label')][step.id - 1]}</span>
               </div>
               {index < STEPS.length - 1 && (
                 <div
@@ -294,12 +296,12 @@ export function ContractFormPage() {
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                   <FileText className="w-5 h-5" />
-                  Thông tin cơ bản
+                  {t('step1_label')}
                 </h2>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Mẫu hợp đồng <span className="text-rose-500">*</span>
+                    {t('form_section_template')} <span className="text-rose-500">*</span>
                   </label>
                   <select
                     name="templateId"
@@ -309,7 +311,7 @@ export function ContractFormPage() {
                       errors.templateId ? 'border-rose-300' : 'border-slate-200'
                     }`}
                   >
-                    <option value="">Chọn mẫu hợp đồng</option>
+                    <option value="">{t('select_template')}</option>
                     {templates?.data.map((template) => (
                       <option key={template.id} value={template.id}>
                         {template.name} (v{template.version})
@@ -324,7 +326,7 @@ export function ContractFormPage() {
                 <div className="p-4 bg-slate-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-3">
                     <User className="w-4 h-4 text-slate-500" />
-                    <span className="font-medium text-slate-700">Khách hàng</span>
+                    <span className="font-medium text-slate-700">{t('form_section_customer')}</span>
                     <span className="text-rose-500">*</span>
                   </div>
                   <select
@@ -343,7 +345,7 @@ export function ContractFormPage() {
                       errors.customerId ? 'border-rose-300' : 'border-slate-200'
                     }`}
                   >
-                    <option value="">Chọn khách hàng</option>
+                    <option value="">{t('select_customer')}</option>
                     {mockCustomers
                       .filter((c) => c.status === 'active')
                       .map((c) => (
@@ -360,7 +362,7 @@ export function ContractFormPage() {
                 <div className="p-4 bg-slate-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-3">
                     <Building2 className="w-4 h-4 text-slate-500" />
-                    <span className="font-medium text-slate-700">Địa điểm</span>
+                    <span className="font-medium text-slate-700">{t('form_section_location')}</span>
                     <span className="text-rose-500">*</span>
                   </div>
                   <select
@@ -382,7 +384,7 @@ export function ContractFormPage() {
                       errors.buildingId ? 'border-rose-300' : 'border-slate-200'
                     }`}
                   >
-                    <option value="">Chọn tòa nhà</option>
+                    <option value="">{t('select_building')}</option>
                     {mockBuildings.map((b) => (
                       <option key={b.id} value={b.id}>
                         {b.name}
@@ -396,7 +398,7 @@ export function ContractFormPage() {
                   {formData.buildingId && (
                     <div className="mt-3">
                       <label className="block text-sm text-slate-500 mb-1">
-                        Không gian <span className="text-rose-500">*</span>
+                        {t('label_space_select')} <span className="text-rose-500">*</span>
                       </label>
                       <select
                         name="spaceId"
@@ -418,7 +420,7 @@ export function ContractFormPage() {
                           errors.spaceId ? 'border-rose-300' : 'border-slate-200'
                         }`}
                       >
-                        <option value="">Chọn không gian</option>
+                        <option value="">{t('select_space')}</option>
                         {mockSpaces
                           .filter((s) => s.buildingId === formData.buildingId)
                           .map((s) => (
@@ -437,12 +439,12 @@ export function ContractFormPage() {
                 <div className="p-4 bg-slate-50 rounded-lg">
                   <div className="flex items-center gap-2 mb-3">
                     <Calendar className="w-4 h-4 text-slate-500" />
-                    <span className="font-medium text-slate-700">Thời hạn</span>
+                    <span className="font-medium text-slate-700">{t('form_section_duration')}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm text-slate-500 mb-1">
-                        Ngày bắt đầu <span className="text-rose-500">*</span>
+                        {t('label_start_date')} <span className="text-rose-500">*</span>
                       </label>
                       <input
                         type="date"
@@ -454,7 +456,7 @@ export function ContractFormPage() {
                     </div>
                     <div>
                       <label className="block text-sm text-slate-500 mb-1">
-                        Thời hạn (tháng)
+                        {t('label_duration_months')}
                       </label>
                       <select
                         name="durationMonths"
@@ -462,10 +464,10 @@ export function ContractFormPage() {
                         onChange={handleChange}
                         className="w-full px-3 py-2 border border-slate-200 rounded-lg"
                       >
-                        <option value="3">3 tháng</option>
-                        <option value="6">6 tháng</option>
-                        <option value="12">12 tháng</option>
-                        <option value="24">24 tháng</option>
+                        <option value="3">{t('duration_3m')}</option>
+                        <option value="6">{t('duration_6m')}</option>
+                        <option value="12">{t('duration_12m')}</option>
+                        <option value="24">{t('duration_24m')}</option>
                       </select>
                     </div>
                   </div>
@@ -478,13 +480,13 @@ export function ContractFormPage() {
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                   <DollarSign className="w-5 h-5" />
-                    Giá trị hợp đồng
+                    {t('step2_label')}
                 </h2>
 
                 <div className="grid grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Phí hàng tháng <span className="text-rose-500">*</span>
+                      {t('label_monthly_fee')} <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="number"
@@ -502,7 +504,7 @@ export function ContractFormPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
-                      Phí setup
+                      {t('label_setup_fee')}
                     </label>
                     <input
                       type="number"
@@ -516,11 +518,11 @@ export function ContractFormPage() {
                 </div>
 
                 <div className="p-4 bg-slate-50 rounded-lg">
-                  <h3 className="font-medium text-slate-700 mb-4">Tiền đặt cọc</h3>
+                  <h3 className="font-medium text-slate-700 mb-4">{t('label_deposit')}</h3>
                   <div className="grid grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm text-slate-500 mb-2">
-                        Số tháng đặt cọc
+                        {t('label_deposit_months')}
                       </label>
                       <select
                         name="depositMonths"
@@ -528,14 +530,14 @@ export function ContractFormPage() {
                         onChange={handleChange}
                         className="w-full px-4 py-2.5 border border-slate-200 rounded-lg"
                       >
-                        <option value="1">1 tháng</option>
-                        <option value="2">2 tháng</option>
-                        <option value="3">3 tháng</option>
+                        <option value="1">{t('deposit_1m')}</option>
+                        <option value="2">{t('deposit_2m')}</option>
+                        <option value="3">{t('deposit_3m')}</option>
                       </select>
                     </div>
                     <div>
                       <label className="block text-sm text-slate-500 mb-2">
-                        Tổng tiền đặt cọc
+                        {t('label_deposit_total')}
                       </label>
                       <div className="px-4 py-2.5 bg-white border border-slate-200 rounded-lg font-semibold">
                         {formatCurrency(formData.depositAmount)}
@@ -554,14 +556,14 @@ export function ContractFormPage() {
                       className="w-5 h-5 rounded border-slate-300 text-sky-600"
                     />
                     <span className="font-medium text-slate-700">
-                      Bật gia hạn tự động
+                      {t('label_auto_renewal_toggle')}
                     </span>
                   </label>
                   {formData.autoRenewalEnabled && (
                     <div className="mt-4 pl-8 grid grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm text-slate-500 mb-1">
-                          Thời hạn gia hạn
+                          {t('label_renewal_duration')}
                         </label>
                         <select
                           name="renewalDuration"
@@ -569,14 +571,14 @@ export function ContractFormPage() {
                           onChange={handleChange}
                           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
                         >
-                          <option value="3">3 tháng</option>
-                          <option value="6">6 tháng</option>
-                          <option value="12">12 tháng</option>
+                          <option value="3">{t('duration_3m')}</option>
+                          <option value="6">{t('duration_6m')}</option>
+                          <option value="12">{t('duration_12m')}</option>
                         </select>
                       </div>
                       <div>
                         <label className="block text-sm text-slate-500 mb-1">
-                          Giá khi gia hạn
+                          {t('label_renewal_pricing')}
                         </label>
                         <select
                           name="renewalPricing"
@@ -584,9 +586,9 @@ export function ContractFormPage() {
                           onChange={handleChange}
                           className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
                         >
-                          <option value="same">Giữ nguyên</option>
-                          <option value="current_rate">Theo bảng giá</option>
-                          <option value="custom">Tùy chỉnh</option>
+                          <option value="same">{t('renewal_pricing_same')}</option>
+                          <option value="current_rate">{t('renewal_pricing_current_short')}</option>
+                          <option value="custom">{t('renewal_pricing_custom')}</option>
                         </select>
                       </div>
                     </div>
@@ -595,7 +597,7 @@ export function ContractFormPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Ghi chú
+                    {t('label_notes')}
                   </label>
                   <textarea
                     name="customNotes"
@@ -603,7 +605,7 @@ export function ContractFormPage() {
                     onChange={handleChange}
                     rows={3}
                     className="w-full px-4 py-2.5 border border-slate-200 rounded-lg"
-                    placeholder="Ghi chú cho hợp đồng..."
+                    placeholder={t('notes_placeholder')}
                   />
                 </div>
               </div>
@@ -614,53 +616,53 @@ export function ContractFormPage() {
               <div className="space-y-6">
                 <h2 className="text-lg font-semibold text-slate-900 flex items-center gap-2">
                   <Check className="w-5 h-5" />
-                  Xem trước & Xác nhận
+                  {t('step3_label')}
                 </h2>
 
                 <div className="p-4 bg-slate-50 rounded-lg">
-                  <h3 className="font-medium text-slate-700 mb-3">Chi tiết hợp đồng</h3>
+                  <h3 className="font-medium text-slate-700 mb-3">{t('preview_details_title')}</h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-slate-500">Không gian:</span>{' '}
+                      <span className="text-slate-500">{t('preview_space')}</span>{' '}
                       <span className="text-slate-900">
-                        {formData.spaceName || 'Chưa chọn'}
+                        {formData.spaceName || t('preview_not_selected')}
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-500">Thời hạn:</span>{' '}
+                      <span className="text-slate-500">{t('preview_duration')}</span>{' '}
                       <span className="text-slate-900">
-                        {formData.durationMonths} tháng
+                        {t('months_unit', { count: formData.durationMonths })}
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-500">Khách hàng:</span>{' '}
+                      <span className="text-slate-500">{t('preview_customer')}</span>{' '}
                       <span className="text-slate-900">{formData.customerName}</span>
                     </div>
                     <div>
-                      <span className="text-slate-500">Tòa nhà:</span>{' '}
+                      <span className="text-slate-500">{t('preview_building')}</span>{' '}
                       <span className="text-slate-900">{formData.buildingName}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
-                  <h3 className="font-medium text-emerald-800 mb-3">Tài chính</h3>
+                  <h3 className="font-medium text-emerald-800 mb-3">{t('preview_finance_title')}</h3>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-emerald-700">Phí hàng tháng</span>
+                      <span className="text-emerald-700">{t('label_monthly_fee')}</span>
                       <span className="font-medium text-emerald-900">
                         {formatCurrency(formData.monthlyFee)}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-emerald-700">Tiền đặt cọc</span>
+                      <span className="text-emerald-700">{t('label_deposit')}</span>
                       <span className="font-medium text-emerald-900">
                         {formatCurrency(formData.depositAmount)}
                       </span>
                     </div>
                     {formData.setupFee > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-emerald-700">Phí setup</span>
+                        <span className="text-emerald-700">{t('label_setup_fee')}</span>
                         <span className="font-medium text-emerald-900">
                           {formatCurrency(formData.setupFee)}
                         </span>
@@ -668,7 +670,7 @@ export function ContractFormPage() {
                     )}
                     <div className="border-t border-emerald-200 pt-2 mt-2">
                       <div className="flex justify-between text-base">
-                        <span className="font-medium text-emerald-800">Tổng giá trị HĐ</span>
+                        <span className="font-medium text-emerald-800">{t('label_total_value')}</span>
                         <span className="font-bold text-emerald-900">
                           {formatCurrency(
                             formData.monthlyFee * formData.durationMonths + formData.setupFee
@@ -688,7 +690,7 @@ export function ContractFormPage() {
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50"
               >
                 <ArrowLeft className="w-4 h-4" />
-                {currentStep === 1 ? 'Hủy' : 'Quay lại'}
+                {currentStep === 1 ? t('btn_cancel') : t('btn_prev')}
               </button>
 
               {currentStep < 3 ? (
@@ -696,7 +698,7 @@ export function ContractFormPage() {
                   onClick={handleNext}
                   className="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700"
                 >
-                  Tiếp theo
+                  {t('btn_next')}
                   <ArrowRight className="w-4 h-4" />
                 </button>
               ) : (
@@ -707,10 +709,10 @@ export function ContractFormPage() {
                 >
                   <Save className="w-4 h-4" />
                   {createMutation.isPending || updateMutation.isPending
-                    ? 'Đang lưu...'
+                    ? t('btn_saving')
                     : isEdit
-                    ? 'Cập nhật hợp đồng'
-                    : 'Tạo hợp đồng'}
+                    ? t('btn_update')
+                    : t('btn_submit')}
                 </button>
               )}
             </div>

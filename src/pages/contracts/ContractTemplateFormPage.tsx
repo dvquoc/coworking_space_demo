@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   FileText,
@@ -24,43 +25,43 @@ import type { CreateContractTemplateRequest } from '../../types/contract'
 
 // Template sections configuration
 const TEMPLATE_SECTIONS = [
-  { id: 'header', label: 'Tiêu đề', icon: FileText, placeholder: '{{contractCode}}, {{signedDate}}' },
-  { id: 'partyLessor', label: 'Bên cho thuê', icon: Building2, placeholder: '{{companyName}}, {{companyTaxCode}}' },
-  { id: 'partyLessee', label: 'Bên thuê', icon: Users, placeholder: '{{customerName}}, {{customerId}}' },
-  { id: 'service', label: 'Dịch vụ', icon: Layers, placeholder: '{{spaceType}}, {{buildingName}}, {{duration}}' },
-  { id: 'pricing', label: 'Giá trị hợp đồng', icon: DollarSign, placeholder: '{{monthlyFee}}, {{deposit}}' },
-  { id: 'usageRules', label: 'Quy định sử dụng', icon: ScrollText, placeholder: '{{operatingHours}}' },
-  { id: 'liability', label: 'Trách nhiệm', icon: Shield, placeholder: '' },
-  { id: 'termination', label: 'Chấm dứt', icon: XCircle, placeholder: '' },
-  { id: 'signature', label: 'Chữ ký', icon: PenTool, placeholder: '{{companyRepName}}, {{customerName}}' },
+  { id: 'header', icon: FileText, placeholder: '{{contractCode}}, {{signedDate}}' },
+  { id: 'partyLessor', icon: Building2, placeholder: '{{companyName}}, {{companyTaxCode}}' },
+  { id: 'partyLessee', icon: Users, placeholder: '{{customerName}}, {{customerId}}' },
+  { id: 'service', icon: Layers, placeholder: '{{spaceType}}, {{buildingName}}, {{duration}}' },
+  { id: 'pricing', icon: DollarSign, placeholder: '{{monthlyFee}}, {{deposit}}' },
+  { id: 'usageRules', icon: ScrollText, placeholder: '{{operatingHours}}' },
+  { id: 'liability', icon: Shield, placeholder: '' },
+  { id: 'termination', icon: XCircle, placeholder: '' },
+  { id: 'signature', icon: PenTool, placeholder: '{{companyRepName}}, {{customerName}}' },
 ] as const
 
 type SectionKey = typeof TEMPLATE_SECTIONS[number]['id']
 
 // Common placeholders for reference
 const COMMON_PLACEHOLDERS = [
-  { key: '{{contractCode}}', description: 'Mã hợp đồng' },
-  { key: '{{signedDate}}', description: 'Ngày ký' },
-  { key: '{{startDate}}', description: 'Ngày bắt đầu' },
-  { key: '{{endDate}}', description: 'Ngày kết thúc' },
-  { key: '{{duration}}', description: 'Số tháng thuê' },
-  { key: '{{customerName}}', description: 'Tên khách hàng' },
-  { key: '{{customerType}}', description: 'Cá nhân / Doanh nghiệp' },
-  { key: '{{customerId}}', description: 'CCCD / MST' },
-  { key: '{{customerAddress}}', description: 'Địa chỉ khách hàng' },
-  { key: '{{companyName}}', description: 'Tên công ty Cobi' },
-  { key: '{{companyTaxCode}}', description: 'MST công ty' },
-  { key: '{{companyAddress}}', description: 'Địa chỉ công ty' },
-  { key: '{{companyRepName}}', description: 'Người đại diện' },
-  { key: '{{buildingName}}', description: 'Tên tòa nhà' },
-  { key: '{{buildingAddress}}', description: 'Địa chỉ tòa nhà' },
-  { key: '{{spaceType}}', description: 'Loại không gian' },
-  { key: '{{spaceName}}', description: 'Tên không gian' },
-  { key: '{{monthlyFee}}', description: 'Giá thuê tháng' },
-  { key: '{{setupFee}}', description: 'Phí setup' },
-  { key: '{{deposit}}', description: 'Tiền đặt cọc' },
-  { key: '{{totalValue}}', description: 'Tổng giá trị' },
-  { key: '{{operatingHours}}', description: 'Giờ hoạt động' },
+  { key: '{{contractCode}}', labelKey: 'ph_contract_code' },
+  { key: '{{signedDate}}', labelKey: 'ph_signed_date' },
+  { key: '{{startDate}}', labelKey: 'ph_start_date' },
+  { key: '{{endDate}}', labelKey: 'ph_end_date' },
+  { key: '{{duration}}', labelKey: 'ph_duration' },
+  { key: '{{customerName}}', labelKey: 'ph_customer_name' },
+  { key: '{{customerType}}', labelKey: 'ph_customer_type' },
+  { key: '{{customerId}}', labelKey: 'ph_customer_id' },
+  { key: '{{customerAddress}}', labelKey: 'ph_customer_address' },
+  { key: '{{companyName}}', labelKey: 'ph_company_name' },
+  { key: '{{companyTaxCode}}', labelKey: 'ph_company_tax' },
+  { key: '{{companyAddress}}', labelKey: 'ph_company_address' },
+  { key: '{{companyRepName}}', labelKey: 'ph_rep_name' },
+  { key: '{{buildingName}}', labelKey: 'ph_building_name' },
+  { key: '{{buildingAddress}}', labelKey: 'ph_building_address' },
+  { key: '{{spaceType}}', labelKey: 'ph_space_type' },
+  { key: '{{spaceName}}', labelKey: 'ph_space_name' },
+  { key: '{{monthlyFee}}', labelKey: 'ph_monthly_fee' },
+  { key: '{{setupFee}}', labelKey: 'ph_setup_fee' },
+  { key: '{{deposit}}', labelKey: 'ph_deposit' },
+  { key: '{{totalValue}}', labelKey: 'ph_total_value' },
+  { key: '{{operatingHours}}', labelKey: 'ph_operating_hours' },
 ]
 
 // Default template content
@@ -164,6 +165,7 @@ const initialFormData: FormData = {
 }
 
 export function ContractTemplateFormPage() {
+  const { t } = useTranslation('contracts')
   const { id } = useParams<{ id: string }>()
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
@@ -228,16 +230,28 @@ export function ContractTemplateFormPage() {
     }))
   }
 
+  const sectionLabels: Record<SectionKey, string> = {
+    header: t('tpl_section_header'),
+    partyLessor: t('tpl_section_lessor'),
+    partyLessee: t('tpl_section_lessee'),
+    service: t('tpl_section_service'),
+    pricing: t('tpl_section_pricing'),
+    usageRules: t('tpl_section_usage_rules'),
+    liability: t('tpl_section_liability'),
+    termination: t('tpl_section_termination'),
+    signature: t('tpl_section_signature'),
+  }
+
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {}
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Vui lòng nhập tên mẫu'
+      newErrors.name = t('tpl_err_name_required')
     }
 
     // Validate at least header section has content
     if (!formData.sections.header.trim()) {
-      newErrors.header = 'Vui lòng nhập nội dung phần tiêu đề'
+      newErrors.header = t('tpl_err_header_required')
     }
 
     setErrors(newErrors)
@@ -334,11 +348,11 @@ export function ContractTemplateFormPage() {
     return (
       <>
         <Header
-          title={isEdit ? 'Chỉnh sửa mẫu hợp đồng' : 'Tạo mẫu hợp đồng mới'}
-          subtitle="Đang tải..."
+          title={isEdit ? t('tpl_form_edit_title') : t('tpl_form_create_title')}
+          subtitle={t('loading')}
         />
         <main className="flex-1 overflow-y-auto p-6">
-          <div className="text-center text-slate-500">Đang tải...</div>
+          <div className="text-center text-slate-500">{t('loading')}</div>
         </main>
       </>
     )
@@ -347,7 +361,7 @@ export function ContractTemplateFormPage() {
   return (
     <>
       <Header
-        title={isEdit ? 'Chỉnh sửa mẫu hợp đồng' : isClone ? 'Nhân bản mẫu hợp đồng' : 'Tạo mẫu hợp đồng mới'}
+        title={isEdit ? t('tpl_form_edit_title') : isClone ? t('tpl_form_clone_title') : t('tpl_form_create_title')}
         subtitle={isEdit ? existingTemplate?.templateCode : undefined}
       />
 
@@ -360,7 +374,7 @@ export function ContractTemplateFormPage() {
             className="inline-flex items-center gap-2 text-sm text-slate-600 hover:text-slate-900 mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
-            Quay lại danh sách
+            {t('btn_back_list')}
           </button>
 
           <div className="grid grid-cols-3 gap-6">
@@ -368,12 +382,12 @@ export function ContractTemplateFormPage() {
             <div className="col-span-1 space-y-6">
               {/* Basic Info Card */}
               <div className="bg-white rounded-xl border border-slate-200 p-6">
-                <h2 className="text-lg font-semibold text-slate-900 mb-6">Thông tin cơ bản</h2>
+                <h2 className="text-lg font-semibold text-slate-900 mb-6">{t('tpl_basic_info')}</h2>
 
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                      Tên mẫu <span className="text-rose-500">*</span>
+                      {t('tpl_label_name')} <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -383,20 +397,20 @@ export function ContractTemplateFormPage() {
                       className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 ${
                         errors.name ? 'border-rose-300' : 'border-slate-300'
                       }`}
-                      placeholder="Ví dụ: Hợp đồng Dedicated Desk"
+                      placeholder={t('tpl_name_placeholder')}
                     />
                     {errors.name && <p className="text-sm text-rose-500 mt-1">{errors.name}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Mô tả</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">{t('tpl_label_description')}</label>
                     <textarea
                       name="description"
                       value={formData.description}
                       onChange={handleChange}
                       rows={3}
                       className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none"
-                      placeholder="Mô tả ngắn về mẫu hợp đồng..."
+                      placeholder={t('tpl_description_placeholder')}
                     />
                   </div>
 
@@ -410,7 +424,7 @@ export function ContractTemplateFormPage() {
                       className="w-4 h-4 text-sky-600 border-slate-300 rounded focus:ring-sky-500"
                     />
                     <label htmlFor="isDefault" className="text-sm text-slate-700">
-                      Đặt làm mẫu mặc định
+                      {t('tpl_label_is_default')}
                     </label>
                   </div>
                 </div>
@@ -418,7 +432,7 @@ export function ContractTemplateFormPage() {
 
               {/* Section Tabs */}
               <div className="bg-white rounded-xl border border-slate-200 p-4">
-                <h3 className="text-sm font-medium text-slate-700 mb-3">Các phần của hợp đồng</h3>
+                <h3 className="text-sm font-medium text-slate-700 mb-3">{t('tpl_sections_title')}</h3>
                 <div className="space-y-1">
                   {TEMPLATE_SECTIONS.map((section) => {
                     const Icon = section.icon
@@ -434,7 +448,7 @@ export function ContractTemplateFormPage() {
                         }`}
                       >
                         <Icon className="w-4 h-4" />
-                        {section.label}
+                        {sectionLabels[section.id]}
                       </button>
                     )
                   })}
@@ -448,7 +462,7 @@ export function ContractTemplateFormPage() {
                   onClick={() => setShowPlaceholders(!showPlaceholders)}
                   className="w-full flex items-center justify-between text-sm font-medium text-slate-700"
                 >
-                  <span>Placeholders</span>
+                  <span>{t('tpl_placeholders_title')}</span>
                   <span className={`transition ${showPlaceholders ? 'rotate-180' : ''}`}>▼</span>
                 </button>
                 {showPlaceholders && (
@@ -461,7 +475,7 @@ export function ContractTemplateFormPage() {
                         className="w-full flex items-center justify-between px-2 py-1.5 text-xs rounded hover:bg-slate-100 text-left"
                       >
                         <code className="text-sky-600">{p.key}</code>
-                        <span className="text-slate-500">{p.description}</span>
+                          <span className="text-slate-500">{t(p.labelKey)}</span>
                       </button>
                     ))}
                   </div>
@@ -476,10 +490,10 @@ export function ContractTemplateFormPage() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2 className="text-lg font-semibold text-slate-900">
-                      {TEMPLATE_SECTIONS.find((s) => s.id === activeSection)?.label}
+                      {sectionLabels[activeSection]}
                     </h2>
                     <p className="text-sm text-slate-500 mt-1">
-                      Placeholders phổ biến:{' '}
+                      {t('tpl_common_placeholders')}{' '}
                       <span className="text-sky-600">
                         {TEMPLATE_SECTIONS.find((s) => s.id === activeSection)?.placeholder}
                       </span>
@@ -495,7 +509,7 @@ export function ContractTemplateFormPage() {
                     }`}
                   >
                     <Eye className="w-4 h-4" />
-                    {showPreview ? 'Ẩn preview' : 'Xem preview'}
+                    {showPreview ? t('tpl_btn_hide_preview') : t('tpl_btn_show_preview')}
                   </button>
                 </div>
 
@@ -505,14 +519,14 @@ export function ContractTemplateFormPage() {
                   onChange={(e) => handleSectionChange(activeSection, e.target.value)}
                   rows={12}
                   className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 font-mono text-sm resize-none"
-                  placeholder="Nhập nội dung HTML/Markdown với placeholders..."
+                  placeholder={t('tpl_editor_placeholder')}
                 />
                 {errors[activeSection] && (
                   <p className="text-sm text-rose-500 mt-1">{errors[activeSection]}</p>
                 )}
 
                 <div className="flex items-center gap-2 mt-3">
-                  <span className="text-xs text-slate-500">Thêm nhanh:</span>
+                  <span className="text-xs text-slate-500">{t('tpl_quick_add')}</span>
                   {COMMON_PLACEHOLDERS.slice(0, 5).map((p) => (
                     <button
                       key={p.key}
@@ -529,7 +543,7 @@ export function ContractTemplateFormPage() {
               {/* Preview Card */}
               {showPreview && (
                 <div className="bg-white rounded-xl border border-slate-200 p-6">
-                  <h2 className="text-lg font-semibold text-slate-900 mb-4">Xem trước hợp đồng</h2>
+                  <h2 className="text-lg font-semibold text-slate-900 mb-4">{t('tpl_preview_title')}</h2>
                   <div
                     className="prose prose-sm max-w-none p-6 bg-slate-50 rounded-lg border border-slate-200"
                     dangerouslySetInnerHTML={{ __html: generatePreview() }}
@@ -544,7 +558,7 @@ export function ContractTemplateFormPage() {
                   onClick={() => navigate('/contracts/templates')}
                   className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50"
                 >
-                  Hủy
+                    {t('btn_cancel')}
                 </button>
                 <button
                   type="submit"
@@ -553,10 +567,10 @@ export function ContractTemplateFormPage() {
                 >
                   <Save className="w-4 h-4" />
                   {createMutation.isPending || updateMutation.isPending
-                    ? 'Đang lưu...'
+                    ? t('btn_saving')
                     : isEdit
-                    ? 'Cập nhật'
-                    : 'Tạo mẫu'}
+                    ? t('tpl_btn_update')
+                    : t('tpl_btn_submit')}
                 </button>
               </div>
             </div>
