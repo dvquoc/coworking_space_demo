@@ -13,8 +13,10 @@ import {
   Clock,
   AlertTriangle,
   Ban,
+  LayoutTemplate,
 } from 'lucide-react'
 import Header from '../../components/layout/Header'
+import { mockBuildings, mockFloors } from '../../mocks/propertyMocks'
 import {
   useContracts,
   useActivateContract,
@@ -35,7 +37,14 @@ export function ContractListPage() {
   // State from URL params
   const search = searchParams.get('search') || ''
   const statusFilter = (searchParams.get('status') || '') as ContractStatus | ''
+  const buildingFilter = searchParams.get('building') || ''
+  const floorFilter = searchParams.get('floor') || ''
   const page = parseInt(searchParams.get('page') || '1', 10)
+
+  const availableFloors = useMemo(
+    () => (buildingFilter ? mockFloors.filter((f) => f.buildingId === buildingFilter) : []),
+    [buildingFilter]
+  )
 
   const [openMenuId, setOpenMenuId] = useState<string | null>(null)
 
@@ -184,7 +193,14 @@ export function ContractListPage() {
 
       <main className="flex-1 overflow-y-auto p-6">
         {/* Action Bar */}
-        <div className="flex items-center justify-end mb-6">
+        <div className="flex items-center justify-end gap-3 mb-6">
+          <button
+            onClick={() => navigate('/contracts/templates')}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+          >
+            <LayoutTemplate className="w-4 h-4" />
+            Thiết lập mẫu hợp đồng
+          </button>
           <button
             onClick={() => navigate('/contracts/new')}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors"
@@ -264,6 +280,37 @@ export function ContractListPage() {
                 className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
+
+            {/* Building Filter */}
+            <select
+              value={buildingFilter}
+              onChange={(e) =>
+                updateParams({ building: e.target.value, floor: undefined })
+              }
+              className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500"
+            >
+              <option value="">Tất cả tòa nhà</option>
+              {mockBuildings.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
+
+            {/* Floor Filter */}
+            <select
+              value={floorFilter}
+              onChange={(e) => updateParams({ floor: e.target.value })}
+              disabled={!buildingFilter}
+              className="px-3 py-2 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              <option value="">Tất cả tầng</option>
+              {availableFloors.map((f) => (
+                <option key={f.id} value={f.id}>
+                  {f.floorName || `Tầng ${f.floorNumber}`}
+                </option>
+              ))}
+            </select>
 
             {/* Status Filter */}
             <select

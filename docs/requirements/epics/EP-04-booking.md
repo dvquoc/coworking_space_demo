@@ -1,4 +1,23 @@
-# EP-04 – Booking & Reservation
+## Booking Flow (Không duyệt)
+
+```mermaid
+flowchart TD
+  A[Quản lý vào trang Đặt chỗ] --> B[Chọn khách hàng (mới hoặc đã lưu)]
+  B --> C[Chọn ngày, giờ bắt đầu/kết thúc]
+  C --> D[Chọn tòa nhà → tầng → không gian]
+  D --> E{Kiểm tra lịch trùng}
+  E -- Trùng lịch --> F[Lỗi: Không gian đã được đặt]
+  E -- Không trùng --> G[Chọn dịch vụ sử dụng thêm]
+  G --> H[Áp dụng ưu đãi/giảm giá]
+  H --> I[Chọn phương thức thanh toán]
+  I --> J[Thanh toán]
+  J --> K{Thanh toán thành công?}
+  K -- Không --> L[Hủy booking]
+  K -- Có --> M[Hệ thống tạo booking, set chỗ cho khách]
+  M --> N[Hoàn thành quy trình]
+```
+
+# EP-04 – Booking & Reservation (No Approval)
 
 ## Thông tin chung
 
@@ -6,123 +25,114 @@
 |--------|---------|
 | ID | EP-04 |
 | Người tạo | BA |
-| Ngày tạo | 16/04/2026 |
+| Ngày tạo | 17/04/2026 |
 | Trạng thái | Draft |
 | Phase | Phase 1 - Core Operations |
 | Độ ưu tiên | Must have |
 
-## Mô tả
+## Mục tiêu & Phạm vi
 
-Quản lý đặt chỗ (booking/reservation) cho không gian làm việc (Hot desk, Dedicated desk, Private office) và phòng họp (Meeting rooms, Conference rooms). Hỗ trợ đặt theo giờ/ngày/tuần/tháng với conflict detection. 
+Quản lý đặt chỗ (booking/reservation) cho các loại hình:
+- Hot Desk
+- Meeting Room
+- Training Room
+- Event Room
 
-**Phase 1 Extended**: Bổ sung **customer self-service booking** (khách tự đặt online), **approval workflow** (Manager duyệt booking), **deposit/prepayment** requirement, và **instant vs request** modes. Hỗ trợ **hybrid model**: cả staff-assisted và customer self-booking.
+**Quy trình đơn giản, KHÔNG cần duyệt:**
+- Bước 1: Tạo booking (nhập thông tin khách, chọn không gian, thời gian, dịch vụ, ưu đãi...)
+- Bước 2: Thanh toán (chọn phương thức, xác nhận thanh toán)
+- Sau khi thanh toán thành công, hệ thống tự động hóa đơn và hoàn thành hóa dơn, booking và set chỗ cho khách hàng (Card, Face ID...)
 
-Phase 1 làm **basic booking**, recurring bookings để Phase 2.
+**Áp dụng:**
+- Quản lý/staff thao tác trên admin dashboard
+- Có thể mở rộng cho customer portal (tự đặt, tự thanh toán)
+
+**Không làm:**
+- Không có bước duyệt/approval
+- Không có recurring booking (để Phase 2)
+
+## Tổng quan quy trình
+
+1. Quản lý vào trang Đặt chỗ
+2. Chọn khách hàng (mới hoặc đã lưu)
+3. Chọn ngày, giờ bắt đầu/kết thúc
+4. Chọn tòa nhà → tầng → không gian
+5. Hệ thống kiểm tra lịch trùng (conflict detection)
+  - Nếu trùng: Báo lỗi, không cho đặt
+  - Nếu không trùng: Tiếp tục
+6. Chọn dịch vụ sử dụng thêm (nếu có)
+7. Áp dụng ưu đãi/giảm giá (nếu có)
+8. Chọn phương thức thanh toán và tiến hành thanh toán
+9. Nếu thanh toán thành công: Hệ thống tự động hoàn thành booking và set chỗ cho khách
+10. Nếu thanh toán thất bại: Hủy booking
 
 ## Features thuộc Epic này
 
-### Phase 1 - Basic Features
+### Phase 1 - Basic Features (No Approval)
 
 | ID | Tên | Mô tả ngắn | Trạng thái |
 |----|-----|------------|------------|
-| F-24 | Tạo booking (Create Booking) - Staff | Staff book space cho customer theo time slot | Draft |
-| F-24B | Customer self-service booking | Customer tự đặt space qua portal | Draft |
-| F-24C | Booking approval workflow | Manager approve/reject bookings | Draft |
-| F-24D | Instant vs Request-to-book modes | Config per space: auto-confirm hoặc cần duyệt | Draft |
-| F-24E | Deposit/Prepayment requirement | Require deposit (30%, 50%, 100%) khi book | Draft |
-| F-25 | Calendar view | Xem availability của spaces theo ngày/tuần/tháng | Draft |
-| F-26 | Conflict detection | Prevent double-booking | Draft |
-| F-27 | Booking management | View, edit, cancel bookings | Draft |
-| F-28 | Booking status tracking | Pending/Approved/Confirmed/Completed/Cancelled | Draft |
+| F-24 | Tạo booking | Nhập thông tin khách, chọn không gian, thời gian, dịch vụ, ưu đãi | Draft |
+| F-25 | Kiểm tra lịch trùng | Prevent double-booking, báo lỗi nếu trùng | Draft |
+| F-26 | Thanh toán booking | Chọn phương thức, xác nhận thanh toán | Draft |
+| F-27 | Quản lý bookings | Xem, sửa, hủy bookings | Draft |
+| F-28 | Theo dõi trạng thái booking | pending/confirmed/completed/cancelled | Draft |
+| F-29 | Calendar view | Xem lịch availability của spaces | Draft |
 
 ### Phase 2 - Advanced Features
-- F-29: Recurring bookings (daily/weekly/monthly patterns)
-- F-30: Drag-drop rescheduling trên calendar
-- F-31: Booking notifications (email/SMS reminders)
-- F-32: Walk-in quick booking
-- F-33: Booking analytics & reports
+- Recurring bookings (daily/weekly/monthly patterns)
+- Drag-drop rescheduling trên calendar
+- Booking notifications (email/SMS reminders)
+- Walk-in quick booking
+- Booking analytics & reports
 
 ## Data Models
 
-### Booking
+
+### Booking (Data Model)
 ```typescript
 interface Booking {
   id: string;
   bookingCode: string;          // Auto-gen: "BK-20260416-001"
-  
-// Space Info
+  // Space Info
   buildingId: string;
   floorId: string;
-  spaceId: string;              // FK to Space (from EP-02)
-  spaceType: SpaceType;         // Denormalized for query performance
-  
+  spaceId: string;
+  spaceType: SpaceType;
   // Customer Info
-  customerId: string;           // FK to Customer (from EP-03)
-  contactPerson?: string;       // Nếu khác với customer name
+  customerId: string;
+  contactPerson?: string;
   contactPhone?: string;
-  
   // Time
-  startTime: Date;              // ISO datetime
+  startTime: Date;
   endTime: Date;
-  duration: number;             // Minutes
+  duration: number;
   bookingType: 'hourly' | 'daily' | 'weekly' | 'monthly';
-  
   // Pricing
-  pricePerUnit: number;         // Giá theo booking type
-  totalPrice: number;           // Calculated
-  discountPercent?: number;     // Nếu có discount
-  finalPrice: number;           // After discount
-  
+  pricePerUnit: number;
+  totalPrice: number;
+  discountPercent?: number;
+  finalPrice: number;
   // Status
   status: BookingStatus;
-  paymentStatus: 'unpaid' | 'partial' | 'paid';
-  
-  // NEW: Self-service & Approval (F-24B, F-24C)
-  bookingSource: 'staff' | 'customer_portal' | 'api';  // Tracking origin
-  requiresApproval: boolean;    // Does this booking need manager approval?
-  approvedBy?: string;          // Staff ID who approved
-  approvedAt?: Date;
-  rejectedBy?: string;          // Staff ID who rejected
-  rejectedAt?: Date;
-  rejectionReason?: string;
-  
-  // NEW: Deposit (F-24E)
-  depositRequired: boolean;
-  depositPercent: number;       // 30, 50, 100
-  depositAmount: number;        // Calculated
-  depositPaid: boolean;
-  depositInvoiceId?: string;    // Link to deposit invoice (EP-06)
-  
-  // NEW: Terms & Conditions Acceptance (for short-term bookings without formal contract)
-  termsAccepted: boolean;       // Customer tick "I agree to T&C"
-  termsVersion?: string;        // Version of T&C accepted (e.g., "1.0")
-  acceptanceLogId?: string;     // FK to AcceptanceLog (EP-05)
-  
+  paymentStatus: 'unpaid' | 'paid';
+  // Source
+  bookingSource: 'staff' | 'customer_portal';
   // Metadata
-  notes?: string;               // Special requests
-  createdBy: string;            // Staff ID or customer ID
+  notes?: string;
+  createdBy: string;
   createdAt: Date;
   updatedAt: Date;
   cancelledAt?: Date;
   cancelReason?: string;
-  
-  // Future: Recurring (Phase 2)
-  isRecurring?: boolean;
-  recurrenceRule?: string;      // iCal RRULE format
-  parentBookingId?: string;     // FK nếu là child của recurring booking
 }
 
 enum BookingStatus {
-  PENDING = 'pending',              // Mới tạo, chưa confirm
-  PENDING_PAYMENT = 'pending_payment',  // NEW: Chờ thanh toán deposit
-  AWAITING_APPROVAL = 'awaiting_approval',  // NEW: Chờ Manager duyệt
-  APPROVED = 'approved',            // NEW: Đã duyệt, chờ payment
-  REJECTED = 'rejected',            // NEW: Bị reject
-  CONFIRMED = 'confirmed',          // Đã confirm (paid + approved if needed)
-  IN_PROGRESS = 'in_progress',      // Đang sử dụng (checked-in)
-  COMPLETED = 'completed',          // Đã hoàn thành
-  CANCELLED = 'cancelled',          // Đã hủy
-  NO_SHOW = 'no_show'               // Không đến (future)
+  PENDING = 'pending',          // Mới tạo, chờ thanh toán
+  CONFIRMED = 'confirmed',      // Đã thanh toán, đã giữ chỗ
+  IN_PROGRESS = 'in_progress',  // Đang sử dụng (checked-in)
+  COMPLETED = 'completed',      // Đã hoàn thành
+  CANCELLED = 'cancelled',      // Đã hủy
 }
 ```
 
@@ -163,42 +173,43 @@ interface SpaceBookingConfig {
 }
 ```
 
+
 ## User Stories
 
-### US-24: Tạo booking mới
-> Là **Manager/Sale**, tôi muốn **book space cho customer** để **reserve chỗ cho họ**
+### US-24: Tạo booking mới (Không duyệt)
+> Là **Quản lý/Staff**, tôi muốn **tạo booking cho khách** để **đặt chỗ nhanh chóng, không cần duyệt**
 
 **Acceptance Criteria**:
+- [ ] Chọn khách hàng (mới hoặc đã lưu)
 - [ ] Chọn building → floor → space
-- [ ] Chọn customer (search by name/email)
 - [ ] Chọn ngày + time slot (start time, end time)
 - [ ] Hệ thống tự tính duration và price (dựa vào pricing rules EP-02)
 - [ ] Check conflict: Nếu space đã booked trong time slot → show error
+- [ ] Chọn dịch vụ sử dụng thêm (nếu có)
+- [ ] Áp dụng ưu đãi/giảm giá (nếu có)
 - [ ] Nhập notes (optional)
-- [ ] Click "Create Booking" → booking saved với status "pending"
-- [ ] Auto-generate booking code
+- [ ] Click "Tạo booking" → chuyển sang bước thanh toán
 
-### US-25: Xem calendar availability
-> Là **Manager**, tôi muốn **xem calendar của tất cả spaces** để **biết spaces nào available**
+### US-25: Thanh toán booking
+> Là **Quản lý/Staff**, tôi muốn **thanh toán cho booking** để **xác nhận đặt chỗ**
 
 **Acceptance Criteria**:
-- [ ] Calendar view theo ngày/tuần/tháng
-- [ ] Filter by building, floor, space type
-- [ ] Color-coded: Green (available), Red (booked), Yellow (maintenance)
-- [ ] Click vào time slot → quick create booking
-- [ ] Hover space → tooltip hiển thị booking details
+- [ ] Chọn phương thức thanh toán (VNPay, MoMo, ZaloPay, tiền mặt...)
+- [ ] Xác nhận thanh toán
+- [ ] Nếu thanh toán thành công → booking chuyển trạng thái "confirmed", set chỗ cho khách
+- [ ] Nếu thanh toán thất bại → booking bị hủy
 
-### US-26: Conflict detection
+### US-26: Kiểm tra lịch trùng
 > Là **System**, tôi muốn **prevent double-booking** để **tránh conflicts**
 
 **Acceptance Criteria**:
-- [ ] Khi create/edit booking, query existing bookings cho space đó
+- [ ] Khi tạo/sửa booking, query existing bookings cho space đó
 - [ ] Check overlap: `(requestedStart < existingEnd) AND (requestedEnd > existingStart)`
-- [ ] Nếu overlap → show error "This space is already booked from [time] to [time]"
+- [ ] Nếu overlap → show error "Không gian đã được đặt từ [time] đến [time]"
 - [ ] Suggest alternative time slots (nếu có)
 
 ### US-27: Quản lý bookings
-> Là **Manager**, tôi muốn **xem/sửa/hủy bookings** để **điều chỉnh khi cần**
+> Là **Quản lý/Staff**, tôi muốn **xem/sửa/hủy bookings** để **điều chỉnh khi cần**
 
 **Acceptance Criteria**:
 - [ ] List tất cả bookings với filter: date range, status, customer, space
@@ -207,13 +218,12 @@ interface SpaceBookingConfig {
 - [ ] Cancel booking: nhập cancel reason, update status
 - [ ] Export bookings to Excel (future)
 
-### US-28: Track booking status
-> Là **Manager**, tôi muốn **theo dõi trạng thái booking** để **biết bookings nào pending/confirmed/completed**
+### US-28: Theo dõi trạng thái booking
+> Là **Quản lý/Staff**, tôi muốn **theo dõi trạng thái booking** để **biết bookings nào pending/confirmed/completed/cancelled**
 
 **Acceptance Criteria**:
 - [ ] Booking list hiển thị status với color badge
 - [ ] Filter by status
-- [ ] Pending → Confirmed: Manager manually confirm
 - [ ] Confirmed → In Progress: Auto-change khi check-in (EP-13)
 - [ ] In Progress → Completed: Auto-change khi endTime passed
 - [ ] Cancelled bookings không xóa khỏi database (soft delete)
@@ -472,13 +482,14 @@ WHERE space_id = ?
 - Cannot book space with status "maintenance" hoặc "inactive"
 - Cannot book for suspended customers
 
+
 ### Business Rules
 - **Booking code format**: `BK-YYYYMMDD-XXX` (XXX = sequential number per day)
-- **Price calculation**: Fetch pricing rule từ EP-02, calculate based on duration
+- **Price calculation**: Lấy rule từ EP-02, tính theo duration, dịch vụ, ưu đãi
 - **Status transitions**:
-  - `pending` → `confirmed` (manual by manager)
-  - `confirmed` → `in_progress` (auto on check-in from EP-13)
-  - `in_progress` → `completed` (auto when endTime passed)
+  - `pending` → `confirmed` (ngay khi thanh toán thành công)
+  - `confirmed` → `in_progress` (auto on check-in từ EP-13)
+  - `in_progress` → `completed` (auto khi endTime passed)
   - Any → `cancelled` (manual cancel)
 - **Soft delete**: Cancelled bookings không xóa khỏi DB (set status + cancel reason)
 

@@ -12,6 +12,8 @@ import {
   DollarSign,
 } from 'lucide-react'
 import Header from '../../components/layout/Header'
+import { mockBuildings, mockSpaces, mockPricingRules } from '../../mocks/propertyMocks'
+import { mockCustomers } from '../../mocks/customerMocks'
 import {
   useContract,
   useContractTemplates,
@@ -330,14 +332,11 @@ export function ContractFormPage() {
                     value={formData.customerId}
                     onChange={(e) => {
                       const selected = e.target.value
-                      const customers: Record<string, string> = {
-                        'cust-001': 'Công ty TNHH ABC',
-                        'cust-002': 'Startup XYZ',
-                      }
+                      const customer = mockCustomers.find((c) => c.id === selected)
                       setFormData((prev) => ({
                         ...prev,
                         customerId: selected,
-                        customerName: customers[selected] || '',
+                        customerName: customer?.fullName || '',
                       }))
                     }}
                     className={`w-full px-4 py-2.5 border rounded-lg ${
@@ -345,8 +344,13 @@ export function ContractFormPage() {
                     }`}
                   >
                     <option value="">Chọn khách hàng</option>
-                    <option value="cust-001">Công ty TNHH ABC</option>
-                    <option value="cust-002">Startup XYZ</option>
+                    {mockCustomers
+                      .filter((c) => c.status === 'active')
+                      .map((c) => (
+                        <option key={c.id} value={c.id}>
+                          {c.fullName} ({c.customerCode})
+                        </option>
+                      ))}
                   </select>
                   {errors.customerId && (
                     <p className="text-sm text-rose-500 mt-1">{errors.customerId}</p>
@@ -364,14 +368,14 @@ export function ContractFormPage() {
                     value={formData.buildingId}
                     onChange={(e) => {
                       const selected = e.target.value
-                      const buildings: Record<string, string> = {
-                        'bld-001': 'CoWo Tower A',
-                        'bld-002': 'CoWo Tower B',
-                      }
+                      const building = mockBuildings.find((b) => b.id === selected)
                       setFormData((prev) => ({
                         ...prev,
                         buildingId: selected,
-                        buildingName: buildings[selected] || '',
+                        buildingName: building?.name || '',
+                        spaceId: '',
+                        spaceName: '',
+                        monthlyFee: 0,
                       }))
                     }}
                     className={`w-full px-4 py-2.5 border rounded-lg ${
@@ -379,11 +383,54 @@ export function ContractFormPage() {
                     }`}
                   >
                     <option value="">Chọn tòa nhà</option>
-                    <option value="bld-001">CoWo Tower A</option>
-                    <option value="bld-002">CoWo Tower B</option>
+                    {mockBuildings.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
                   </select>
                   {errors.buildingId && (
                     <p className="text-sm text-rose-500 mt-1">{errors.buildingId}</p>
+                  )}
+
+                  {formData.buildingId && (
+                    <div className="mt-3">
+                      <label className="block text-sm text-slate-500 mb-1">
+                        Không gian <span className="text-rose-500">*</span>
+                      </label>
+                      <select
+                        name="spaceId"
+                        value={formData.spaceId}
+                        onChange={(e) => {
+                          const selected = e.target.value
+                          const space = mockSpaces.find((s) => s.id === selected)
+                          const pricing = space
+                            ? mockPricingRules.find((r) => r.spaceType === space.type)
+                            : undefined
+                          setFormData((prev) => ({
+                            ...prev,
+                            spaceId: selected,
+                            spaceName: space?.name || '',
+                            monthlyFee: pricing?.pricePerMonth ?? prev.monthlyFee,
+                          }))
+                        }}
+                        className={`w-full px-4 py-2.5 border rounded-lg ${
+                          errors.spaceId ? 'border-rose-300' : 'border-slate-200'
+                        }`}
+                      >
+                        <option value="">Chọn không gian</option>
+                        {mockSpaces
+                          .filter((s) => s.buildingId === formData.buildingId)
+                          .map((s) => (
+                            <option key={s.id} value={s.id}>
+                              {s.name} ({s.type.replace('_', ' ')})
+                            </option>
+                          ))}
+                      </select>
+                      {errors.spaceId && (
+                        <p className="text-sm text-rose-500 mt-1">{errors.spaceId}</p>
+                      )}
+                    </div>
                   )}
                 </div>
 

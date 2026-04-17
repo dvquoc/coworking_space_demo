@@ -16,6 +16,8 @@ import {
   List,
   FileStack,
   ScrollText,
+  Calendar,
+  CirclePlus,
 } from 'lucide-react'
 import { useAuthStore } from '../../stores/authStore'
 
@@ -82,6 +84,11 @@ const navItems: NavItem[] = [
         icon: <List className="w-4 h-4" />,
       },
       {
+        path: '/contracts/new',
+        label: 'Tạo hợp đồng',
+        icon: <CirclePlus className="w-4 h-4" />,
+      },
+      {
         path: '/contracts/templates',
         label: 'Mẫu hợp đồng',
         icon: <FileStack className="w-4 h-4" />,
@@ -90,6 +97,34 @@ const navItems: NavItem[] = [
         path: '/contracts/terms',
         label: 'Điều khoản T&C',
         icon: <ScrollText className="w-4 h-4" />,
+      },
+    ],
+  },
+  {
+    path: '/bookings',
+    label: 'Đặt chỗ',
+    icon: <Calendar className="w-5 h-5" />,
+    roles: ['admin', 'manager', 'sale'],
+    subItems: [
+      {
+        path: '/bookings',
+        label: 'Danh sách đặt chỗ',
+        icon: <List className="w-4 h-4" />,
+      },
+      {
+        path: '/bookings/status',
+        label: 'Theo dõi trạng thái',
+        icon: <FileText className="w-4 h-4" />,
+      },
+      {
+        path: '/bookings/new',
+        label: 'Tạo mới',
+        icon: <CirclePlus className="w-4 h-4" />,
+      },
+      {
+        path: '/bookings/calendar',
+        label: 'Xem lịch & Tạo',
+        icon: <LayoutGrid className="w-4 h-4" />,
       },
     ],
   },
@@ -139,9 +174,11 @@ export default function Sidebar() {
   }
 
   const isSubItemActive = (path: string) => {
-    // Exact match for /contracts, startsWith for others
     if (path === '/contracts') {
-      return location.pathname === '/contracts' || location.pathname.startsWith('/contracts/') && !location.pathname.startsWith('/contracts/templates') && !location.pathname.startsWith('/contracts/terms')
+      return location.pathname === '/contracts' || (location.pathname.startsWith('/contracts/') && !location.pathname.startsWith('/contracts/new') && !location.pathname.startsWith('/contracts/templates') && !location.pathname.startsWith('/contracts/terms'))
+    }
+    if (path === '/bookings') {
+      return location.pathname === '/bookings' || (location.pathname.startsWith('/bookings/') && !location.pathname.startsWith('/bookings/status') && !location.pathname.startsWith('/bookings/new') && !location.pathname.startsWith('/bookings/calendar'))
     }
     return location.pathname === path || location.pathname.startsWith(path + '/')
   }

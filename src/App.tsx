@@ -34,6 +34,15 @@ import { FloorsPage } from './pages/properties/FloorsPage'
 import { SpacesPage } from './pages/properties/SpacesPage'
 import { PricingPage } from './pages/properties/PricingPage'
 
+// Booking management pages
+import {
+  BookingListPage,
+  BookingFormPage,
+  BookingCalendarPage,
+  BookingDetailPage,
+  BookingStatusPage,
+} from './pages/bookings'
+
 // Contract management pages
 import {
   ContractListPage,
@@ -64,6 +73,7 @@ function App() {
           <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
         </Route>
       </Route>
+
 
       {/* Protected routes with DashboardLayout */}
       <Route element={<ProtectedRoute allowedRoles={['admin', 'manager', 'sale', 'accountant', 'maintenance', 'investor']} />}>
@@ -121,6 +131,18 @@ function App() {
           <Route path="/properties/floors" element={<FloorsPage />} />
           <Route path="/properties/spaces" element={<SpacesPage />} />
           <Route path="/properties/pricing" element={<PricingPage />} />
+        </Route>
+      </Route>
+
+      {/* Booking management routes - Admin, Manager & Sale */}
+      <Route element={<ProtectedRoute allowedRoles={['admin', 'manager', 'sale']} />}>
+        <Route element={<DashboardLayout />}>
+          <Route path="/bookings" element={<BookingListPage />} />
+          <Route path="/bookings/calendar" element={<BookingCalendarPage />} />
+          <Route path="/bookings/status" element={<BookingStatusPage />} />
+          <Route path="/bookings/new" element={<BookingFormPage />} />
+          <Route path="/bookings/:id" element={<BookingDetailPage />} />
+          <Route path="/bookings/:id/edit" element={<BookingFormPage />} />
         </Route>
       </Route>
 

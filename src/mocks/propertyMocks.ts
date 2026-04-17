@@ -66,7 +66,7 @@ export const mockSpaces: Space[] = [
   },
   {
     id: 's2',
-    buildingId: '1',
+    buildingId: '2',
     floorId: 'f1',
     name: 'Meeting Room 101',
     type: 'meeting_room' as SpaceType,
