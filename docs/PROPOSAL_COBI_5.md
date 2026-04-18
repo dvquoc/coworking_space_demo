@@ -161,15 +161,15 @@ Dự án được chia thành **3 giai đoạn** (phase), triển khai trong **1
 
 | Giai đoạn | Thời gian | Nền tảng | Báo giá (VNĐ) |
 |-----------|-----------|----------|---------------|
-| **Phase 1** — Vận hành cốt lõi | 5 tháng | 🖥️ Web App | **1.25 – 1.80 tỷ** |
-| **Phase 2** — Mở rộng & Mobile | 3 tháng | 📱 Mobile App khách thuê + Web | **480 – 680 triệu** |
-| **Phase 3** — Nâng cao & Hoàn thiện | 2 tháng | 🖥️ Web App | **170 – 250 triệu** |
+| **Phase 1** — Vận hành cốt lõi | 5 tháng | 🖥️ Web App | **1.10 – 1.58 tỷ** |
+| **Phase 2** — Mở rộng & Mobile | 3 tháng | 📱 Mobile App khách thuê + Web | **420 – 580 triệu** |
+| **Phase 3** — Nâng cao & Hoàn thiện | 2 tháng | 🖥️ Web App | **150 – 220 triệu** |
 
 ### 5.2 Tổng báo giá
 
 | | Min (VNĐ) | Max (VNĐ) |
 |--|-----------|----------|
-| **Cả 3 giai đoạn** | **1.90 tỷ** | **2.75 tỷ** |
+| **Cả 3 giai đoạn** | **1.67 tỷ** | **2.38 tỷ** |
 
 > **Bao gồm**: Phát triển phần mềm, hosting (staging + production), tích hợp thanh toán, testing, deployment, đào tạo sử dụng.
 

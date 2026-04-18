@@ -4,7 +4,7 @@
 > **Dự án**: Hệ thống quản lý vận hành Coworking Space  
 > **Khách hàng**: Cobi  
 > **Ngày lập**: 18/04/2026  
-> **Phiên bản**: 1.0 — Margin 10%  
+> **Phiên bản**: 1.0  
 > **Tính chất**: Tài liệu đề xuất dự án
 
 ---
