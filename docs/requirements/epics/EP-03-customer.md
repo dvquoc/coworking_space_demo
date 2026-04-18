@@ -13,15 +13,23 @@
 
 ## Mô tả
 
-Quản lý thông tin khách hàng đã/đang sử dụng dịch vụ Coworking Space của Cobi. Hỗ trợ **2 loại khách hàng**:
+Quản lý thông tin khách hàng đã/đang sử dụng dịch vụ Coworking Space của Cobi. Hỗ trợ **3 loại khách hàng**:
 
 1. **Khách hàng cá nhân (Individual)**: Cá nhân thuê desk/space
 2. **Khách hàng công ty (Company)**: Doanh nghiệp thuê Private Office/Dedicated Desk cho team
+3. **Thành viên công ty (Company Member)**: Cá nhân thuộc một công ty, được công ty chỉ định sử dụng space. Khi tạo phải chọn công ty.
 
 **Đối với khách hàng công ty**:
 - Lưu thông tin công ty (company name, MST, industry, company size)
 - Quản lý danh sách nhân viên công ty (CompanyEmployee) được quyền sử dụng space
 - Track contract/booking theo công ty, nhưng nhân viên có thể check-in riêng
+
+**Đối với thành viên công ty (Company Member)**:
+- Là khách hàng cá nhân nhưng thuộc về một công ty đã tồn tại trong hệ thống
+- Khi tạo bắt buộc chọn công ty (companyId)
+- Có thông tin cá nhân (firstName, lastName, email, phone) giống Individual
+- Được liên kết với Company → có thể truy cập space/dịch vụ của công ty
+- Credit wallet riêng (không dùng chung ví của công ty)
 
 Bao gồm thông tin cá nhân/công ty, lịch sử sử dụng, và trạng thái khách hàng (active/inactive). Phân biệt với **Leads (EP-12)** - EP-03 chỉ quản lý customers đã convert (đã ký contract hoặc đã booking).
 
@@ -53,7 +61,7 @@ interface Customer {
   customerCode: string;         // Auto-generated: "CUS-0001"
   
   // Customer Type (PRIMARY CLASSIFICATION)
-  customerType: 'individual' | 'company';
+  customerType: 'individual' | 'company' | 'company_member';
   
   // ===== FOR INDIVIDUAL CUSTOMERS =====
   // Personal Info
@@ -63,8 +71,8 @@ interface Customer {
   dateOfBirth?: Date;
   nationalId?: string;          // CCCD/CMND
   
-  // ===== FOR COMPANY CUSTOMERS =====
-  // Company Reference (if customerType = 'company')
+  // ===== FOR COMPANY / COMPANY MEMBER CUSTOMERS =====
+  // Company Reference (if customerType = 'company' or 'company_member')
   companyId?: string;           // FK to Company
   
   // Primary Contact Person (for company customers)
@@ -246,7 +254,7 @@ interface CustomerContact {
 > Là **Sale/Manager**, tôi muốn **tạo hồ sơ khách hàng khi họ đăng ký** để **lưu trữ thông tin và theo dõi**
 
 **Acceptance Criteria**:
-- [ ] Chọn customer type: **Individual** or **Company**
+- [ ] Chọn customer type: **Individual**, **Company**, hoặc **Company Member**
 - [ ] **If Individual**:
   - Nhập: firstName, lastName, email, phone, CCCD/CMND, address
   - Auto-generate fullName từ firstName + lastName
@@ -255,6 +263,11 @@ interface CustomerContact {
   - Nhập: registeredAddress, companyEmail, companyPhone
   - Nhập contact person: contactPersonName, contactPersonTitle
   - Auto-create Company record → link customerId to companyId
+- [ ] **If Company Member**:
+  - Chọn Company từ danh sách công ty đã tồn tại (bắt buộc)
+  - Nhập: firstName, lastName, email, phone, CCCD/CMND
+  - Auto-generate fullName từ firstName + lastName
+  - Link companyId từ Company đã chọn
 - [ ] Auto-generate customer code (CUS-0001, CUS-0002, ...)
 - [ ] Validate email unique (không trùng với customer khác)
 - [ ] Set default status = "active"
@@ -267,7 +280,7 @@ interface CustomerContact {
 - [ ] Table hiển thị: Customer Code, Name, Email, Phone, Type, Status, Created Date
 - [ ] Pagination (20 customers/page)
 - [ ] Search by name, email, phone, company name
-- [ ] Filter by status (active/inactive), type (individual/corporate)
+- [ ] Filter by status (active/inactive), type (individual/company/company_member)
 - [ ] Sort by created date, name
 - [ ] Click row → navigate to customer details
 

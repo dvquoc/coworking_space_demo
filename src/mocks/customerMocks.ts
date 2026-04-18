@@ -240,6 +240,49 @@ export const mockCustomers: CustomerListItem[] = [
     rewardBalance: 0,
     createdAt: '2025-07-01T09:00:00Z',
   },
+  // Company member customers
+  {
+    id: 'cus-013',
+    customerCode: 'CUS-0013',
+    customerType: 'company_member',
+    fullName: 'Lê Văn Khoa',
+    email: 'khoa.le@abc-tech.vn',
+    phone: '0912233445',
+    status: 'active',
+    tags: [],
+    companyName: 'ABC Technology Co., Ltd',
+    creditBalance: 500,
+    rewardBalance: 0,
+    createdAt: '2026-03-10T09:00:00Z',
+  },
+  {
+    id: 'cus-014',
+    customerCode: 'CUS-0014',
+    customerType: 'company_member',
+    fullName: 'Trần Minh Tuấn',
+    email: 'tuan.tm@xyz-marketing.vn',
+    phone: '0923344556',
+    status: 'active',
+    tags: ['new'],
+    companyName: 'XYZ Marketing Agency',
+    creditBalance: 200,
+    rewardBalance: 100,
+    createdAt: '2026-04-01T10:00:00Z',
+  },
+  {
+    id: 'cus-015',
+    customerCode: 'CUS-0015',
+    customerType: 'company_member',
+    fullName: 'Phạm Thị Lan',
+    email: 'lan.pt@globalfinance.vn',
+    phone: '0934455667',
+    status: 'active',
+    tags: ['premium'],
+    companyName: 'Global Finance Corp',
+    creditBalance: 3000,
+    rewardBalance: 500,
+    createdAt: '2026-03-15T08:00:00Z',
+  },
 ]
 
 // ========== MOCK CUSTOMER DETAILS ==========
@@ -366,6 +409,44 @@ export const mockCustomerDetails: Record<string, CustomerDetails> = {
         createdBy: 'system',
       },
     ],
+  },
+  'cus-013': {
+    id: 'cus-013',
+    customerCode: 'CUS-0013',
+    customerType: 'company_member',
+    firstName: 'Lê Văn',
+    lastName: 'Khoa',
+    fullName: 'Lê Văn Khoa',
+    email: 'khoa.le@abc-tech.vn',
+    phone: '0912233445',
+    address: '456 Lê Lai, Quận 1, TP.HCM',
+    companyId: 'com-001',
+    company: mockCompanies[0],
+    tags: [],
+    status: 'active',
+    accountManager: 'staff-001',
+    accountManagerInfo: { id: 'staff-001', name: 'Lê Thị Hương' },
+    notes: 'Thành viên công ty ABC Technology, developer.',
+    createdAt: '2026-03-10T09:00:00Z',
+    updatedAt: '2026-04-10T09:00:00Z',
+    createdBy: 'staff-001',
+    createdByInfo: { id: 'staff-001', name: 'Lê Thị Hương' },
+    stats: {
+      totalBookings: 8,
+      activeContracts: 0,
+      totalSpent: 5000000,
+      outstandingBalance: 0,
+    },
+    creditBalance: 500,
+    rewardBalance: 0,
+    creditSummary: {
+      creditBalance: 500,
+      rewardBalance: 0,
+      totalBalance: 500,
+      expiringWithin7Days: 0,
+      activeRewardsCount: 0,
+    },
+    activeRewards: [],
   },
 }
 
@@ -881,9 +962,14 @@ export const mockCustomerAPI = {
     const newId = `cus-${String(mockCustomers.length + 1).padStart(3, '0')}`
     const newCode = `CUS-${String(mockCustomers.length + 1).padStart(4, '0')}`
     
-    const fullName = data.customerType === 'individual'
-      ? `${data.firstName || ''} ${data.lastName || ''}`.trim()
-      : data.companyName || ''
+    const fullName = data.customerType === 'company'
+      ? data.companyName || ''
+      : `${data.firstName || ''} ${data.lastName || ''}`.trim()
+    
+    // For company_member, find the linked company
+    const linkedCompany = data.companyId
+      ? mockCompanies.find(c => c.id === data.companyId)
+      : undefined
     
     const newCustomer: CustomerDetails = {
       id: newId,
@@ -896,6 +982,8 @@ export const mockCustomerAPI = {
       phone: data.phone,
       alternativePhone: data.alternativePhone,
       address: data.address,
+      companyId: data.companyId,
+      company: linkedCompany,
       tags: data.tags || [],
       status: 'active',
       notes: data.notes,
@@ -931,7 +1019,9 @@ export const mockCustomerAPI = {
       phone: data.phone,
       status: 'active',
       tags: data.tags || [],
-      companyName: data.customerType === 'company' ? data.companyName : undefined,
+      companyName: data.customerType === 'company' ? data.companyName
+        : data.customerType === 'company_member' && linkedCompany ? linkedCompany.companyName
+        : undefined,
       creditBalance: 0,
       rewardBalance: 0,
       createdAt: new Date().toISOString(),

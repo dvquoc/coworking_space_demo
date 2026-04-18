@@ -6,6 +6,7 @@ import {
   Search, 
   Building2, 
   User, 
+  UserCheck,
   MoreHorizontal,
   Eye,
   Edit,
@@ -65,12 +66,13 @@ export function CustomerListPage() {
 
   // Stats
   const stats = useMemo(() => {
-    if (!data?.items) return { total: 0, active: 0, individual: 0, company: 0, totalCredit: 0 }
+    if (!data?.items) return { total: 0, active: 0, individual: 0, company: 0, companyMember: 0, totalCredit: 0 }
     return {
       total: data.pagination.totalItems,
       active: data.items.filter(c => c.status === 'active').length,
       individual: data.items.filter(c => c.customerType === 'individual').length,
       company: data.items.filter(c => c.customerType === 'company').length,
+      companyMember: data.items.filter(c => c.customerType === 'company_member').length,
       totalCredit: data.items.reduce((sum, c) => sum + c.creditBalance + c.rewardBalance, 0),
     }
   }, [data])
@@ -140,6 +142,14 @@ export function CustomerListPage() {
         </span>
       )
     }
+    if (type === 'company_member') {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-700">
+          <UserCheck className="w-3 h-3" />
+          TV Công ty
+        </span>
+      )
+    }
     return (
       <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-slate-100 text-slate-600">
         <User className="w-3 h-3" />
@@ -158,7 +168,7 @@ export function CustomerListPage() {
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
               <div className="flex items-center justify-between">
                 <div>
@@ -211,6 +221,20 @@ export function CustomerListPage() {
                 </div>
                 <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                   <Building2 className="w-6 h-6 text-blue-600" />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-600">TV Công ty</p>
+                  <p className="text-2xl font-semibold text-slate-900 mt-1">
+                    {stats.companyMember}
+                  </p>
+                </div>
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                  <UserCheck className="w-6 h-6 text-purple-600" />
                 </div>
               </div>
             </div>
@@ -277,6 +301,7 @@ export function CustomerListPage() {
                   <option value="">Tất cả loại</option>
                   <option value="individual">Cá nhân</option>
                   <option value="company">Công ty</option>
+                  <option value="company_member">TV Công ty</option>
                 </select>
               </div>
             </div>

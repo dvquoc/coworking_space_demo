@@ -14,6 +14,7 @@ import {
   CheckCircle2,
   FileText,
   Users,
+  UserCheck,
   Clock,
   TrendingUp,
   AlertCircle,
@@ -158,6 +159,8 @@ export function CustomerDetailsPage() {
                 <div className="w-20 h-20 bg-slate-200 rounded-full flex items-center justify-center">
                   {customer.customerType === 'company' ? (
                     <Building2 className="w-8 h-8 text-slate-500" />
+                  ) : customer.customerType === 'company_member' ? (
+                    <UserCheck className="w-8 h-8 text-purple-500" />
                   ) : (
                     <span className="text-2xl font-semibold text-slate-600">
                       {customer.fullName.split(' ').map(n => n[0]).join('').slice(0, 2)}
@@ -172,6 +175,11 @@ export function CustomerDetailsPage() {
                     {customer.customerType === 'company' && (
                       <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
                         CÔNG TY
+                      </span>
+                    )}
+                    {customer.customerType === 'company_member' && (
+                      <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-700">
+                        TV CÔNG TY
                       </span>
                     )}
                   </div>
@@ -248,21 +256,21 @@ export function CustomerDetailsPage() {
                   className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 flex items-center gap-1"
                 >
                   <CirclePlus className="w-4 h-4" />
-                  Nạp
-                </button>
-                <button
-                  onClick={() => navigate(`/credits?customerId=${customerId}`)}
-                  className="px-3 py-1.5 border border-slate-300 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-50 flex items-center gap-1"
-                >
-                  <Clock className="w-4 h-4" />
-                  Lịch sử
+                  Nạp Credit
                 </button>
                 <button
                   onClick={() => { setGiftAmount(''); setGiftSource('promotion'); setGiftExpiry(''); setGiftDesc(''); setGiftSuccess(false); setShowGift(true) }}
                   className="px-3 py-1.5 border border-purple-300 text-purple-700 rounded-lg text-sm font-semibold hover:bg-purple-50 flex items-center gap-1"
                 >
                   <Gift className="w-4 h-4" />
-                  Tặng
+                  Tặng Credit
+                </button>
+                <button
+                  onClick={() => navigate(`/credits?customerId=${customerId}`)}
+                  className="px-3 py-1.5 border border-slate-300 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-50 flex items-center gap-1"
+                >
+                  <Clock className="w-4 h-4" />
+                  Xem lịch sử giao dịch
                 </button>
               </div>
             </div>
@@ -564,7 +572,7 @@ function OverviewTab({ customer }: { customer: NonNullable<ReturnType<typeof use
       <div>
         <h3 className="font-semibold text-slate-900 mb-4">Thông tin khách hàng</h3>
         <div className="space-y-3">
-          {customer.customerType === 'individual' ? (
+          {(customer.customerType === 'individual' || customer.customerType === 'company_member') ? (
             <>
               <InfoRow label="Họ tên" value={customer.fullName} />
               {customer.dateOfBirth && (
@@ -572,6 +580,9 @@ function OverviewTab({ customer }: { customer: NonNullable<ReturnType<typeof use
               )}
               {customer.nationalId && (
                 <InfoRow label="CCCD/CMND" value={customer.nationalId} masked />
+              )}
+              {customer.customerType === 'company_member' && customer.company && (
+                <InfoRow label="Thuộc công ty" value={customer.company.companyName} icon={<Building2 className="w-4 h-4" />} />
               )}
             </>
           ) : (

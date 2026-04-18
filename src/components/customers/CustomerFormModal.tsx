@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import { X, User, Building2 } from 'lucide-react'
+import { X, User, Building2, UserCheck } from 'lucide-react'
 import { useCreateCustomer, useUpdateCustomer, useCustomer } from '../../hooks/useCustomers'
 import { TagSelect } from './TagChip'
+import { mockCompanies } from '../../mocks/customerMocks'
 import type { CustomerType, CompanySize, CreateCustomerRequest } from '../../types/customer'
 
 interface CustomerFormModalProps {
@@ -57,6 +58,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
           companyEmail: existingCustomer.company?.companyEmail,
           companyPhone: existingCustomer.company?.companyPhone,
           website: existingCustomer.company?.website,
+          companyId: existingCustomer.companyId,
         })
       } else {
         setCustomerType('individual')
@@ -94,9 +96,12 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
       newErrors.phone = 'Số điện thoại không hợp lệ'
     }
     
-    if (customerType === 'individual') {
+    if (customerType === 'individual' || customerType === 'company_member') {
       if (!formData.firstName) newErrors.firstName = 'Họ là bắt buộc'
       if (!formData.lastName) newErrors.lastName = 'Tên là bắt buộc'
+      if (customerType === 'company_member' && !formData.companyId) {
+        newErrors.companyId = 'Vui lòng chọn công ty'
+      }
     } else {
       if (!formData.companyName) newErrors.companyName = 'Tên công ty là bắt buộc'
       if (!formData.taxCode) newErrors.taxCode = 'Mã số thuế là bắt buộc'
@@ -164,7 +169,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Loại khách hàng
                   </label>
-                  <div className="flex gap-4">
+                  <div className="flex gap-3">
                     <button
                       type="button"
                       onClick={() => setCustomerType('individual')}
@@ -189,12 +194,24 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                       <Building2 className="w-5 h-5" />
                       <span className="font-medium">Công ty</span>
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => setCustomerType('company_member')}
+                      className={`flex-1 flex items-center justify-center gap-2 p-4 rounded-xl border-2 transition-colors ${
+                        customerType === 'company_member'
+                          ? 'border-[#b11e29] bg-[#b11e29]/5 text-[#b11e29]'
+                          : 'border-slate-200 hover:border-slate-300 text-slate-600'
+                      }`}
+                    >
+                      <UserCheck className="w-5 h-5" />
+                      <span className="font-medium text-sm">TV Công ty</span>
+                    </button>
                   </div>
                 </div>
               )}
               
-              {/* Individual Fields */}
-              {customerType === 'individual' && (
+              {/* Individual / Company Member Fields */}
+              {(customerType === 'individual' || customerType === 'company_member') && (
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
@@ -259,6 +276,35 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                     </div>
                   </div>
                 </>
+              )}
+
+              {/* Company Selector (for company_member) */}
+              {customerType === 'company_member' && (
+                <div className="p-4 bg-purple-50 rounded-xl">
+                  <h3 className="font-medium text-purple-900 mb-3">Thuộc công ty</h3>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">
+                      Chọn công ty <span className="text-rose-500">*</span>
+                    </label>
+                    <select
+                      value={formData.companyId || ''}
+                      onChange={(e) => handleChange('companyId', e.target.value)}
+                      className={`w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] ${
+                        errors.companyId ? 'border-rose-500' : 'border-slate-300'
+                      }`}
+                    >
+                      <option value="">-- Chọn công ty --</option>
+                      {mockCompanies.filter(c => c.status === 'active').map(company => (
+                        <option key={company.id} value={company.id}>
+                          {company.companyName} ({company.companyCode})
+                        </option>
+                      ))}
+                    </select>
+                    {errors.companyId && (
+                      <p className="mt-1 text-sm text-rose-500">{errors.companyId}</p>
+                    )}
+                  </div>
+                </div>
               )}
               
               {/* Company Fields */}

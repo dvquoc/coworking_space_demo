@@ -2,7 +2,7 @@
 
 // ========== ENUMS & BASIC TYPES ==========
 
-export type CustomerType = 'individual' | 'company'
+export type CustomerType = 'individual' | 'company' | 'company_member'
 export type CustomerStatus = 'active' | 'inactive' | 'suspended'
 export type CompanySize = 'startup' | 'sme' | 'enterprise'
 export type EmployeeType = 'representative' | 'admin' | 'regular'
@@ -322,6 +322,9 @@ export interface CreateCustomerRequest {
   website?: string
   contactPersonName?: string
   contactPersonTitle?: string
+  
+  // Company Member fields
+  companyId?: string              // FK to Company (required for company_member)
   
   // Common fields
   email: string
