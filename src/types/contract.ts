@@ -212,6 +212,26 @@ export interface AcceptanceLog {
   }
 }
 
+// ========== CONTRACT INCLUDED ITEMS ==========
+
+export interface ContractAmenity {
+  id: string
+  name: string
+  icon?: string
+}
+
+export interface ContractAsset {
+  id: string
+  name: string
+  quantity: number
+}
+
+export interface ContractService {
+  id: string
+  name: string
+  monthlyFee: number
+}
+
 // ========== PLACEHOLDER DATA ==========
 
 export interface PlaceholderData {
@@ -435,6 +455,12 @@ export interface CreateContractRequest {
   setupFee?: number
   depositAmount: number
   customNotes?: string
+  selectedAmenities?: string[]
+  selectedAssets?: ContractAsset[]
+  selectedServices?: string[]
+  notifyCustomerDays?: number
+  notifyManagementDays?: number
+  renewalPreparationDays?: number
   autoRenewalSettings?: {
     enabled: boolean
     renewalDuration?: number

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
@@ -11,10 +11,17 @@ import {
   User,
   Calendar,
   DollarSign,
+  Wifi,
+  Package,
+  ConciergeBell,
+  Bell,
+  Plus,
+  Minus,
 } from 'lucide-react'
 import Header from '../../components/layout/Header'
 import { mockBuildings, mockSpaces, mockPricingRules } from '../../mocks/propertyMocks'
 import { mockCustomers } from '../../mocks/customerMocks'
+import { mockAmenities, mockAssets, mockServices } from '../../mocks/contractMocks'
 import {
   useContract,
   useContractTemplates,
@@ -24,6 +31,7 @@ import {
 import type {
   CreateContractRequest,
   RenewalPricing,
+  ContractAsset,
 } from '../../types/contract'
 
 const STEPS = [
@@ -46,6 +54,12 @@ type FormData = {
   depositAmount: number
   depositMonths: number
   setupFee: number
+  selectedAmenities: string[]
+  selectedAssets: ContractAsset[]
+  selectedServices: string[]
+  notifyCustomerDays: number
+  notifyManagementDays: number
+  renewalPreparationDays: number
   autoRenewalEnabled: boolean
   renewalDuration: number
   renewalPricing: RenewalPricing
@@ -67,6 +81,12 @@ const initialFormData: FormData = {
   depositAmount: 0,
   depositMonths: 2,
   setupFee: 0,
+  selectedAmenities: [],
+  selectedAssets: [],
+  selectedServices: [],
+  notifyCustomerDays: 30,
+  notifyManagementDays: 45,
+  renewalPreparationDays: 60,
   autoRenewalEnabled: false,
   renewalDuration: 6,
   renewalPricing: 'same',
@@ -104,6 +124,12 @@ export function ContractFormPage() {
         depositAmount: contract.depositAmount,
         depositMonths: Math.round(contract.depositAmount / contract.monthlyFee) || 2,
         setupFee: contract.setupFee || 0,
+        selectedAmenities: [],
+        selectedAssets: [],
+        selectedServices: [],
+        notifyCustomerDays: contract.autoRenewalSettings?.notifyDaysBefore || 30,
+        notifyManagementDays: 45,
+        renewalPreparationDays: 60,
         autoRenewalEnabled: contract.autoRenewalSettings?.enabled || false,
         renewalDuration: contract.autoRenewalSettings?.renewalDuration || 6,
         renewalPricing: contract.autoRenewalSettings?.renewalPricing || 'same',
@@ -142,6 +168,49 @@ export function ContractFormPage() {
       setErrors((prev) => ({ ...prev, [name]: undefined }))
     }
   }
+
+  const toggleAmenity = (id: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectedAmenities: prev.selectedAmenities.includes(id)
+        ? prev.selectedAmenities.filter((a) => a !== id)
+        : [...prev.selectedAmenities, id],
+    }))
+  }
+
+  const toggleService = (id: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectedServices: prev.selectedServices.includes(id)
+        ? prev.selectedServices.filter((s) => s !== id)
+        : [...prev.selectedServices, id],
+    }))
+  }
+
+  const toggleAsset = (id: string, name: string) => {
+    setFormData((prev) => {
+      const exists = prev.selectedAssets.find((a) => a.id === id)
+      if (exists) {
+        return { ...prev, selectedAssets: prev.selectedAssets.filter((a) => a.id !== id) }
+      }
+      return { ...prev, selectedAssets: [...prev.selectedAssets, { id, name, quantity: 1 }] }
+    })
+  }
+
+  const updateAssetQty = (id: string, delta: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      selectedAssets: prev.selectedAssets.map((a) =>
+        a.id === id ? { ...a, quantity: Math.max(1, a.quantity + delta) } : a
+      ),
+    }))
+  }
+
+  const totalServiceFee = useMemo(() => {
+    return mockServices
+      .filter((s) => formData.selectedServices.includes(s.id))
+      .reduce((sum, s) => sum + s.monthlyFee, 0)
+  }, [formData.selectedServices])
 
   const validateStep = (step: number): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {}
@@ -188,6 +257,12 @@ export function ContractFormPage() {
       depositAmount: formData.depositAmount,
       setupFee: formData.setupFee || undefined,
       customNotes: formData.customNotes || undefined,
+      selectedAmenities: formData.selectedAmenities.length > 0 ? formData.selectedAmenities : undefined,
+      selectedAssets: formData.selectedAssets.length > 0 ? formData.selectedAssets : undefined,
+      selectedServices: formData.selectedServices.length > 0 ? formData.selectedServices : undefined,
+      notifyCustomerDays: formData.notifyCustomerDays,
+      notifyManagementDays: formData.notifyManagementDays,
+      renewalPreparationDays: formData.renewalPreparationDays,
       autoRenewalSettings: formData.autoRenewalEnabled
         ? {
             enabled: true,
@@ -557,6 +632,185 @@ export function ContractFormPage() {
                   </div>
                 </div>
 
+                {/* Amenities */}
+                <div className="p-4 bg-slate-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Wifi className="w-4 h-4 text-blue-500" />
+                    <h3 className="font-medium text-slate-700">{t('label_amenities')}</h3>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {mockAmenities.map((am) => (
+                      <label
+                        key={am.id}
+                        className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${
+                          formData.selectedAmenities.includes(am.id)
+                            ? 'border-sky-500 bg-sky-50 text-sky-700'
+                            : 'border-slate-200 hover:border-slate-300 text-slate-600'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          className="accent-sky-600 w-4 h-4"
+                          checked={formData.selectedAmenities.includes(am.id)}
+                          onChange={() => toggleAmenity(am.id)}
+                        />
+                        <span>{am.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Assets */}
+                <div className="p-4 bg-slate-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Package className="w-4 h-4 text-orange-500" />
+                    <h3 className="font-medium text-slate-700">{t('label_assets')}</h3>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {mockAssets.map((asset) => {
+                      const selected = formData.selectedAssets.find((a) => a.id === asset.id)
+                      return (
+                        <div
+                          key={asset.id}
+                          className={`flex items-center justify-between p-2.5 rounded-lg border text-sm transition-all ${
+                            selected
+                              ? 'border-orange-400 bg-orange-50'
+                              : 'border-slate-200 hover:border-slate-300'
+                          }`}
+                        >
+                          <label className="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0">
+                            <input
+                              type="checkbox"
+                              className="accent-orange-600 w-4 h-4 shrink-0"
+                              checked={!!selected}
+                              onChange={() => toggleAsset(asset.id, asset.name)}
+                            />
+                            <span className="text-slate-700 truncate">{asset.name}</span>
+                          </label>
+                          {selected && (
+                            <div className="flex items-center gap-1.5 ml-2 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => updateAssetQty(asset.id, -1)}
+                                className="w-6 h-6 flex items-center justify-center rounded bg-slate-200 hover:bg-slate-300 text-slate-600"
+                              >
+                                <Minus className="w-3 h-3" />
+                              </button>
+                              <span className="w-6 text-center font-medium text-slate-700">{selected.quantity}</span>
+                              <button
+                                type="button"
+                                onClick={() => updateAssetQty(asset.id, 1)}
+                                className="w-6 h-6 flex items-center justify-center rounded bg-slate-200 hover:bg-slate-300 text-slate-600"
+                              >
+                                <Plus className="w-3 h-3" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* Services */}
+                <div className="p-4 bg-slate-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-3">
+                    <ConciergeBell className="w-4 h-4 text-emerald-500" />
+                    <h3 className="font-medium text-slate-700">{t('label_services')}</h3>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {mockServices.map((svc) => (
+                      <label
+                        key={svc.id}
+                        className={`flex items-center justify-between p-2.5 rounded-lg border cursor-pointer text-sm transition-all ${
+                          formData.selectedServices.includes(svc.id)
+                            ? 'border-emerald-400 bg-emerald-50'
+                            : 'border-slate-200 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <input
+                            type="checkbox"
+                            className="accent-emerald-600 w-4 h-4"
+                            checked={formData.selectedServices.includes(svc.id)}
+                            onChange={() => toggleService(svc.id)}
+                          />
+                          <span className="text-slate-700">{svc.name}</span>
+                        </div>
+                        <span className="text-slate-500 font-medium">{formatCurrency(svc.monthlyFee)}/{t('month_short')}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {totalServiceFee > 0 && (
+                    <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between text-sm">
+                      <span className="text-slate-500">{t('label_service_total')}</span>
+                      <span className="font-semibold text-emerald-700">{formatCurrency(totalServiceFee)}/{t('month_short')}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Notification Days */}
+                <div className="p-4 bg-slate-50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Bell className="w-4 h-4 text-amber-500" />
+                    <h3 className="font-medium text-slate-700">{t('label_notification_section')}</h3>
+                  </div>
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-sm text-slate-500 mb-1">
+                        {t('label_notify_customer_days')}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          name="notifyCustomerDays"
+                          value={formData.notifyCustomerDays}
+                          onChange={handleChange}
+                          min={7}
+                          max={180}
+                          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                        />
+                        <span className="text-sm text-slate-400 shrink-0">{t('unit_days')}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-slate-500 mb-1">
+                        {t('label_notify_management_days')}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          name="notifyManagementDays"
+                          value={formData.notifyManagementDays}
+                          onChange={handleChange}
+                          min={7}
+                          max={180}
+                          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                        />
+                        <span className="text-sm text-slate-400 shrink-0">{t('unit_days')}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm text-slate-500 mb-1">
+                        {t('label_renewal_preparation_days')}
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          name="renewalPreparationDays"
+                          value={formData.renewalPreparationDays}
+                          onChange={handleChange}
+                          min={14}
+                          max={180}
+                          className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm"
+                        />
+                        <span className="text-sm text-slate-400 shrink-0">{t('unit_days')}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-3">{t('notify_hint')}</p>
+                </div>
+
                 <div className="p-4 border border-slate-200 rounded-lg">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
@@ -679,15 +933,89 @@ export function ContractFormPage() {
                         </span>
                       </div>
                     )}
+                    {totalServiceFee > 0 && (
+                      <div className="flex justify-between">
+                        <span className="text-emerald-700">{t('label_services')}</span>
+                        <span className="font-medium text-emerald-900">
+                          +{formatCurrency(totalServiceFee)}/{t('month_short')}
+                        </span>
+                      </div>
+                    )}
                     <div className="border-t border-emerald-200 pt-2 mt-2">
                       <div className="flex justify-between text-base">
                         <span className="font-medium text-emerald-800">{t('label_total_value')}</span>
                         <span className="font-bold text-emerald-900">
                           {formatCurrency(
-                            formData.monthlyFee * formData.durationMonths + formData.setupFee
+                            (formData.monthlyFee + totalServiceFee) * formData.durationMonths + formData.setupFee
                           )}
                         </span>
                       </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Preview: Amenities / Assets / Services */}
+                {(formData.selectedAmenities.length > 0 || formData.selectedAssets.length > 0 || formData.selectedServices.length > 0) && (
+                  <div className="p-4 bg-slate-50 rounded-lg space-y-3">
+                    <h3 className="font-medium text-slate-700">{t('preview_included_title')}</h3>
+                    {formData.selectedAmenities.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-slate-400 uppercase mb-1">{t('label_amenities')}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {formData.selectedAmenities.map((id) => {
+                            const am = mockAmenities.find((a) => a.id === id)
+                            return am ? (
+                              <span key={id} className="text-xs bg-sky-100 text-sky-700 px-2 py-1 rounded-full">{am.name}</span>
+                            ) : null
+                          })}
+                        </div>
+                      </div>
+                    )}
+                    {formData.selectedAssets.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-slate-400 uppercase mb-1">{t('label_assets')}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {formData.selectedAssets.map((a) => (
+                            <span key={a.id} className="text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded-full">
+                              {a.name} ×{a.quantity}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {formData.selectedServices.length > 0 && (
+                      <div>
+                        <p className="text-xs font-semibold text-slate-400 uppercase mb-1">{t('label_services')}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {formData.selectedServices.map((id) => {
+                            const svc = mockServices.find((s) => s.id === id)
+                            return svc ? (
+                              <span key={id} className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+                                {svc.name} ({formatCurrency(svc.monthlyFee)})
+                              </span>
+                            ) : null
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Preview: Notification settings */}
+                <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <h3 className="font-medium text-amber-800 mb-3">{t('label_notification_section')}</h3>
+                  <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div>
+                      <span className="text-amber-600">{t('label_notify_customer_days')}</span>
+                      <p className="font-medium text-amber-900">{formData.notifyCustomerDays} {t('unit_days')}</p>
+                    </div>
+                    <div>
+                      <span className="text-amber-600">{t('label_notify_management_days')}</span>
+                      <p className="font-medium text-amber-900">{formData.notifyManagementDays} {t('unit_days')}</p>
+                    </div>
+                    <div>
+                      <span className="text-amber-600">{t('label_renewal_preparation_days')}</span>
+                      <p className="font-medium text-amber-900">{formData.renewalPreparationDays} {t('unit_days')}</p>
                     </div>
                   </div>
                 </div>

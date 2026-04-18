@@ -19,7 +19,47 @@ import type {
   ContractDashboardStats,
   ExpiringContract,
   RenewalQueueItem,
+  ContractAmenity,
+  ContractAsset,
+  ContractService,
 } from '../types/contract'
+
+// ========== MOCK AMENITIES / ASSETS / SERVICES ==========
+
+export const mockAmenities: ContractAmenity[] = [
+  { id: 'am-01', name: 'WiFi tốc độ cao' },
+  { id: 'am-02', name: 'Điều hòa' },
+  { id: 'am-03', name: 'Hệ thống chiếu sáng' },
+  { id: 'am-04', name: 'Bãi đỗ xe' },
+  { id: 'am-05', name: 'Thang máy' },
+  { id: 'am-06', name: 'An ninh 24/7' },
+  { id: 'am-07', name: 'Phòng họp chung' },
+  { id: 'am-08', name: 'Pantry / Bếp chung' },
+  { id: 'am-09', name: 'Khu vực giải trí' },
+  { id: 'am-10', name: 'Phòng tắm / WC riêng' },
+]
+
+export const mockAssets: ContractAsset[] = [
+  { id: 'as-01', name: 'Bàn làm việc', quantity: 1 },
+  { id: 'as-02', name: 'Ghế công thái học', quantity: 1 },
+  { id: 'as-03', name: 'Tủ locker', quantity: 1 },
+  { id: 'as-04', name: 'Màn hình phụ', quantity: 1 },
+  { id: 'as-05', name: 'Bảng trắng', quantity: 1 },
+  { id: 'as-06', name: 'Máy in chung', quantity: 1 },
+  { id: 'as-07', name: 'Điện thoại bàn', quantity: 1 },
+  { id: 'as-08', name: 'Đèn bàn', quantity: 1 },
+]
+
+export const mockServices: ContractService[] = [
+  { id: 'sv-01', name: 'Dọn vệ sinh hàng ngày', monthlyFee: 500000 },
+  { id: 'sv-02', name: 'Giặt ủi', monthlyFee: 300000 },
+  { id: 'sv-03', name: 'Nước uống & cà phê', monthlyFee: 200000 },
+  { id: 'sv-04', name: 'In ấn (100 trang/tháng)', monthlyFee: 150000 },
+  { id: 'sv-05', name: 'Nhận thư / bưu phẩm', monthlyFee: 100000 },
+  { id: 'sv-06', name: 'Hỗ trợ IT', monthlyFee: 500000 },
+  { id: 'sv-07', name: 'Dịch vụ lễ tân', monthlyFee: 1000000 },
+  { id: 'sv-08', name: 'Đăng ký địa chỉ kinh doanh', monthlyFee: 2000000 },
+]
 
 // ========== MOCK CONTRACT TEMPLATES ==========
 
