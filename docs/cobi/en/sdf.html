@@ -1,9 +1,38 @@
-# ESTIMATED COST From POPOPLUS
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESTIMATED COST - Cobi</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        :root { --primary: #b11e29; --bg: #f8fafc; --text: #1e293b; --border: #e2e8f0; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; line-height: 1.6; color: var(--text); background: var(--bg); margin: 0; padding: 2rem 1rem; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 3rem; border-radius: 12px; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); }
+        h1, h2, h3, h4 { color: var(--primary); margin-top: 1.5em; }
+        h1 { font-size: 2.2rem; border-bottom: 2px solid #fecdd3; padding-bottom: 0.5rem; margin-top: 0; }
+        h2 { font-size: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.95rem; }
+        th, td { border: 1px solid var(--border); padding: 12px 16px; text-align: left; }
+        th { background: #f1f5f9; font-weight: 600; color: #0f172a; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        blockquote { border-left: 4px solid var(--primary); background: #fff1f2; margin: 1.5rem 0; padding: 1rem 1.5rem; border-radius: 0 8px 8px 0; color: #475569; }
+        code { background: #f1f5f9; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: ui-monospace, monospace; font-size: 0.9em; color: #ef4444; }
+        pre { background: #f1f5f9; color: #1e293b; padding: 1.5rem; border-radius: 8px; overflow-x: auto; margin: 1.5rem 0; border: 1px solid #e2e8f0; }
+        pre code { background: none; color: inherit; padding: 0; }
+        ul, ol { padding-left: 1.5rem; margin-bottom: 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        @media (max-width: 768px) { .container { padding: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <div class="container" id="content"></div>
+    <script type="text/markdown" id="md-content">
+# ESTIMATED COST
 # Coworking Space Management Software — Cobi
 
 > **Project**: Coworking Space Operations Management System  
 > **Client**: Cobi  
-> **Vendor**: POPOPLUS  
 > **Date**: 18/04/2026  
 > **Validity**: 30 days from issue date  
 > **Version**: 1.0
@@ -204,3 +233,9 @@
 > **Total Investment**: **2.00 – 2.45 billion VND** for the complete system  
 > **Duration**: 10 months (Phase 1 required, Phase 2-3 expansion)  
 > **Warranty**: 6 months free per Phase
+    </script>
+    <script>
+        document.getElementById('content').innerHTML = marked.parse(document.getElementById('md-content').textContent);
+    </script>
+</body>
+</html>

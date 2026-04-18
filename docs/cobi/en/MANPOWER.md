@@ -1,8 +1,9 @@
-# PROJECT MANPOWER
+# PROJECT MANPOWER From POPOPLUS
 # Coworking Space Management Software — Cobi
 
 > **Project**: Coworking Space Operations Management System  
 > **Client**: Cobi  
+> **Vendor**: POPOPLUS  
 > **Date**: 18/04/2026  
 > **Version**: 1.0
 
