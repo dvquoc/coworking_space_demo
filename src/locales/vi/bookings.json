@@ -6,6 +6,8 @@
   "page_title_calendar": "Đặt Chỗ theo lịch",
   "page_subtitle_calendar": "Kiểm tra lịch trùng trước khi đặt chỗ",
   "page_title_status": "Theo Dõi Trạng Thái",
+  "page_subtitle_status": "Theo dõi trạng thái booking từ khách hàng hoặc admin theo thời gian thực",
+
 
   "status_pending": "Chờ thanh toán",
   "status_confirmed": "Đã xác nhận",

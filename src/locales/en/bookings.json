@@ -6,6 +6,7 @@
   "page_title_calendar": "Calendar Booking",
   "page_subtitle_calendar": "Check schedule conflicts before booking",
   "page_title_status": "Status Tracking",
+  "page_subtitle_status": "Track booking status in real-time by customer or admin.",
 
   "status_pending": "Pending Payment",
   "status_confirmed": "Confirmed",

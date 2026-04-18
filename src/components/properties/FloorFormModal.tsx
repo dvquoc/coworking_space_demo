@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useCreateFloor, useUpdateFloor, useBuildings } from '../../hooks/useProperties'
 import type { Floor, FloorStatus } from '../../types/property'
 
@@ -10,6 +11,7 @@ interface FloorFormModalProps {
 }
 
 export function FloorFormModal({ isOpen, onClose, floor }: FloorFormModalProps) {
+  const { t } = useTranslation('properties')
   const [formData, setFormData] = useState({
     buildingId: '',
     floorNumber: 1,
@@ -72,7 +74,7 @@ export function FloorFormModal({ isOpen, onClose, floor }: FloorFormModalProps) 
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200">
           <h2 className="text-xl font-semibold text-slate-900">
-            {floor ? 'Edit Floor' : 'Add New Floor'}
+            {floor ? t('modal_edit_floor') : t('modal_add_floor')}
           </h2>
           <button
             onClick={onClose}
@@ -88,7 +90,7 @@ export function FloorFormModal({ isOpen, onClose, floor }: FloorFormModalProps) 
             {/* Building */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Building <span className="text-rose-500">*</span>
+                {t('label_building')} <span className="text-rose-500">*</span>
               </label>
               <select
                 required
@@ -96,7 +98,7 @@ export function FloorFormModal({ isOpen, onClose, floor }: FloorFormModalProps) 
                 onChange={(e) => setFormData({ ...formData, buildingId: e.target.value })}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
               >
-                <option value="">Select Building</option>
+                <option value="">{t('placeholder_select_building')}</option>
                 {buildings?.map(b => (
                   <option key={b.id} value={b.id}>{b.name}</option>
                 ))}
@@ -107,30 +109,30 @@ export function FloorFormModal({ isOpen, onClose, floor }: FloorFormModalProps) 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Floor Number <span className="text-rose-500">*</span>
+                  {t('label_floor_number')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="number"
                   required
                   value={formData.floorNumber}
                   onChange={(e) => setFormData({ ...formData, floorNumber: parseInt(e.target.value) || 0 })}
-                  placeholder="1, 2, 3... or -1 for B1"
+                  placeholder={t('placeholder_floor_number')}
                   className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
                 />
                 <p className="text-xs text-slate-500 mt-1">
-                  Use negative numbers for basement (e.g., -1 = B1)
+                  {t('hint_basement')}
                 </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Floor Name (Optional)
+                  {t('label_floor_name')}
                 </label>
                 <input
                   type="text"
                   value={formData.floorName}
                   onChange={(e) => setFormData({ ...formData, floorName: e.target.value })}
-                  placeholder="e.g., Ground Floor, Mezzanine"
+                  placeholder={t('placeholder_floor_name')}
                   className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
                 />
               </div>
@@ -139,7 +141,7 @@ export function FloorFormModal({ isOpen, onClose, floor }: FloorFormModalProps) 
             {/* Area */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Area (m²) <span className="text-rose-500">*</span>
+                {t('label_area')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="number"
@@ -155,15 +157,15 @@ export function FloorFormModal({ isOpen, onClose, floor }: FloorFormModalProps) 
             {/* Status */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Status <span className="text-rose-500">*</span>
+                {t('label_status')} <span className="text-rose-500">*</span>
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as FloorStatus })}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
+                <option value="active">{t('status_active')}</option>
+                <option value="inactive">{t('status_inactive')}</option>
               </select>
             </div>
           </div>
@@ -175,7 +177,7 @@ export function FloorFormModal({ isOpen, onClose, floor }: FloorFormModalProps) 
               onClick={onClose}
               className="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-100 transition-colors font-medium"
             >
-              Cancel
+              {t('btn_cancel')}
             </button>
             <button
               type="submit"
@@ -183,10 +185,10 @@ export function FloorFormModal({ isOpen, onClose, floor }: FloorFormModalProps) 
               className="px-5 py-2.5 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {createMutation.isPending || updateMutation.isPending
-                ? 'Saving...'
+                ? t('btn_saving')
                 : floor
-                ? 'Update Floor'
-                : 'Create Floor'}
+                ? t('btn_update_floor')
+                : t('btn_create_floor')}
             </button>
           </div>
         </form>

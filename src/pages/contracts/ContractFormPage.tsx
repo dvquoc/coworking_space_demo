@@ -365,38 +365,42 @@ export function ContractFormPage() {
                     <span className="font-medium text-slate-700">{t('form_section_location')}</span>
                     <span className="text-rose-500">*</span>
                   </div>
-                  <select
-                    name="buildingId"
-                    value={formData.buildingId}
-                    onChange={(e) => {
-                      const selected = e.target.value
-                      const building = mockBuildings.find((b) => b.id === selected)
-                      setFormData((prev) => ({
-                        ...prev,
-                        buildingId: selected,
-                        buildingName: building?.name || '',
-                        spaceId: '',
-                        spaceName: '',
-                        monthlyFee: 0,
-                      }))
-                    }}
-                    className={`w-full px-4 py-2.5 border rounded-lg ${
-                      errors.buildingId ? 'border-rose-300' : 'border-slate-200'
-                    }`}
-                  >
-                    <option value="">{t('select_building')}</option>
-                    {mockBuildings.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.buildingId && (
-                    <p className="text-sm text-rose-500 mt-1">{errors.buildingId}</p>
-                  )}
-
-                  {formData.buildingId && (
-                    <div className="mt-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm text-slate-500 mb-1">
+                        {t('select_building')} <span className="text-rose-500">*</span>
+                      </label>
+                      <select
+                        name="buildingId"
+                        value={formData.buildingId}
+                        onChange={(e) => {
+                          const selected = e.target.value
+                          const building = mockBuildings.find((b) => b.id === selected)
+                          setFormData((prev) => ({
+                            ...prev,
+                            buildingId: selected,
+                            buildingName: building?.name || '',
+                            spaceId: '',
+                            spaceName: '',
+                            monthlyFee: 0,
+                          }))
+                        }}
+                        className={`w-full px-4 py-2.5 border rounded-lg ${
+                          errors.buildingId ? 'border-rose-300' : 'border-slate-200'
+                        }`}
+                      >
+                        <option value="">{t('select_building')}</option>
+                        {mockBuildings.map((b) => (
+                          <option key={b.id} value={b.id}>
+                            {b.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.buildingId && (
+                        <p className="text-sm text-rose-500 mt-1">{errors.buildingId}</p>
+                      )}
+                    </div>
+                    <div>
                       <label className="block text-sm text-slate-500 mb-1">
                         {t('label_space_select')} <span className="text-rose-500">*</span>
                       </label>
@@ -421,19 +425,25 @@ export function ContractFormPage() {
                         }`}
                       >
                         <option value="">{t('select_space')}</option>
-                        {mockSpaces
-                          .filter((s) => s.buildingId === formData.buildingId)
-                          .map((s) => (
-                            <option key={s.id} value={s.id}>
-                              {s.name} ({s.type.replace('_', ' ')})
-                            </option>
-                          ))}
+                        {formData.buildingId
+                          ? mockSpaces
+                              .filter((s) => s.buildingId === formData.buildingId)
+                              .map((s) => (
+                                <option key={s.id} value={s.id}>
+                                  {s.name} ({s.type.replace('_', ' ')})
+                                </option>
+                              ))
+                          : mockSpaces.map((s) => (
+                              <option key={s.id} value={s.id}>
+                                {s.name} ({s.type.replace('_', ' ')})
+                              </option>
+                            ))}
                       </select>
                       {errors.spaceId && (
                         <p className="text-sm text-rose-500 mt-1">{errors.spaceId}</p>
                       )}
                     </div>
-                  )}
+                  </div>
                 </div>
 
                 <div className="p-4 bg-slate-50 rounded-lg">
@@ -696,7 +706,7 @@ export function ContractFormPage() {
               {currentStep < 3 ? (
                 <button
                   onClick={handleNext}
-                  className="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700"
+                  className="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-[#b11e29] rounded-lg hover:bg-[#8f1820]"
                 >
                   {t('btn_next')}
                   <ArrowRight className="w-4 h-4" />
@@ -705,7 +715,7 @@ export function ContractFormPage() {
                 <button
                   onClick={handleSubmit}
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-6 py-2 text-sm font-medium text-white bg-[#b11e29] rounded-lg hover:bg-[#8f1820] disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   {createMutation.isPending || updateMutation.isPending

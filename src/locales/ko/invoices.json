@@ -21,6 +21,8 @@
   "tab_cancelled": "취소",
 
   "search_placeholder": "코드, 고객 검색...",
+  "filter_all_sources": "전체 출처",
+  "btn_create_invoice": "청구서 생성",
 
   "col_invoice_code": "청구서 코드",
   "col_customer": "고객",
@@ -91,5 +93,30 @@
   "pay_notes_label": "메모",
   "pay_notes_placeholder": "거래 ID, 영수증...",
   "pay_success_title": "결제 기록 완료!",
-  "pay_success_message": "{{code}} 결제 상태가 업데이트되었습니다."
+  "pay_success_message": "{{code}} 결제 상태가 업데이트되었습니다.",
+
+  "create_title": "새 청구서 생성",
+  "create_source": "출처",
+  "create_customer": "고객",
+  "create_select_customer": "-- 고객 선택 --",
+  "create_select_booking": "연결된 예약",
+  "create_select_contract": "연결된 계약",
+  "create_pick_customer_first": "-- 먼저 고객을 선택하세요 --",
+  "create_select_option": "-- 선택 --",
+  "create_invoice_type": "청구서 유형",
+  "create_deposit_percent": "보증금 비율",
+  "create_invoice_date": "발행일",
+  "create_due_date": "만기일",
+  "create_items_title": "서비스 항목",
+  "create_add_item": "항목 추가",
+  "create_item_desc_placeholder": "서비스 설명...",
+  "create_discount": "할인 (₫)",
+  "create_tax_percent": "부가세 (%)",
+  "create_deposit_note": "보증금 {{percent}}%",
+  "create_notes_placeholder": "청구서 메모...",
+  "create_submit": "생성 & 결제",
+  "create_err_customer": "고객을 선택해주세요",
+  "create_err_source": "연결 출처를 선택해주세요",
+  "create_err_due_date": "만기일을 선택해주세요",
+  "create_err_items": "최소 1개의 유효한 항목이 필요합니다"
 }

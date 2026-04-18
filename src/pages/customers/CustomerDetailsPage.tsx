@@ -11,6 +11,7 @@ import {
   Edit,
   Ban,
   CheckCircle,
+  CheckCircle2,
   FileText,
   Users,
   Clock,
@@ -19,13 +20,14 @@ import {
   Wallet,
   Gift,
   CirclePlus,
+  X,
 } from 'lucide-react'
 import Header from '../../components/layout/Header'
 import { useCustomer, useCustomerBookings, useCustomerContracts, useCustomerInvoices } from '../../hooks/useCustomers'
 import { TagChip } from '../../components/customers/TagChip'
 import { CustomerFormModal } from '../../components/customers/CustomerFormModal'
 import { EmployeesTab } from '../../components/customers/EmployeesTab'
-import type { CustomerBooking, CustomerContract, CustomerInvoice } from '../../types/customer'
+import type { CustomerBooking, CustomerContract, CustomerInvoice, CreditRewardSource } from '../../types/customer'
 
 type TabType = 'overview' | 'bookings' | 'contracts' | 'invoices' | 'employees'
 
@@ -36,6 +38,20 @@ export function CustomerDetailsPage() {
   
   const activeTab = (searchParams.get('tab') || 'overview') as TabType
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  
+  // Top-up modal state
+  const [showTopUp, setShowTopUp] = useState(false)
+  const [topUpAmount, setTopUpAmount] = useState('')
+  const [topUpMethod, setTopUpMethod] = useState<'cash' | 'bank_transfer' | 'card'>('cash')
+  const [topUpSuccess, setTopUpSuccess] = useState(false)
+
+  // Gift reward modal state
+  const [showGift, setShowGift] = useState(false)
+  const [giftAmount, setGiftAmount] = useState('')
+  const [giftSource, setGiftSource] = useState<CreditRewardSource>('promotion')
+  const [giftExpiry, setGiftExpiry] = useState('')
+  const [giftDesc, setGiftDesc] = useState('')
+  const [giftSuccess, setGiftSuccess] = useState(false)
   
   const { data: customer, isLoading, error } = useCustomer(customerId || '')
   const { data: bookings } = useCustomerBookings(customerId || '', activeTab === 'bookings' ? undefined : undefined)
@@ -227,15 +243,24 @@ export function CustomerDetailsPage() {
               </div>
               {/* Actions */}
               <div className="flex flex-col items-end gap-1 md:flex-row md:items-center md:gap-2 mt-2 md:mt-0">
-                <button className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 flex items-center gap-1">
+                <button
+                  onClick={() => { setTopUpAmount(''); setTopUpMethod('cash'); setTopUpSuccess(false); setShowTopUp(true) }}
+                  className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 flex items-center gap-1"
+                >
                   <CirclePlus className="w-4 h-4" />
                   Nạp
                 </button>
-                <button className="px-3 py-1.5 border border-slate-300 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-50 flex items-center gap-1">
+                <button
+                  onClick={() => navigate(`/credits?customerId=${customerId}`)}
+                  className="px-3 py-1.5 border border-slate-300 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-50 flex items-center gap-1"
+                >
                   <Clock className="w-4 h-4" />
                   Lịch sử
                 </button>
-                <button className="px-3 py-1.5 border border-purple-300 text-purple-700 rounded-lg text-sm font-semibold hover:bg-purple-50 flex items-center gap-1">
+                <button
+                  onClick={() => { setGiftAmount(''); setGiftSource('promotion'); setGiftExpiry(''); setGiftDesc(''); setGiftSuccess(false); setShowGift(true) }}
+                  className="px-3 py-1.5 border border-purple-300 text-purple-700 rounded-lg text-sm font-semibold hover:bg-purple-50 flex items-center gap-1"
+                >
                   <Gift className="w-4 h-4" />
                   Tặng
                 </button>
@@ -299,6 +324,234 @@ export function CustomerDetailsPage() {
         onClose={() => setIsEditModalOpen(false)}
         customerId={customerId}
       />
+
+      {/* Top-up Credit Modal */}
+      {showTopUp && customer && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <h2 className="font-semibold text-slate-800">Nạp Credit</h2>
+              <button onClick={() => setShowTopUp(false)} className="p-2 hover:bg-slate-100 rounded-lg">
+                <X className="w-4 h-4 text-slate-500" />
+              </button>
+            </div>
+
+            {topUpSuccess ? (
+              <div className="p-10 flex flex-col items-center gap-3">
+                <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
+                  <CheckCircle2 className="w-7 h-7 text-green-600" />
+                </div>
+                <p className="font-semibold text-slate-800 text-lg">Nạp thành công!</p>
+                <p className="text-sm text-slate-500 text-center">
+                  Đã nạp <strong className="text-amber-700">{Number(topUpAmount).toLocaleString('vi-VN')} Credit</strong> cho <strong>{customer.fullName}</strong>
+                </p>
+                <button onClick={() => setShowTopUp(false)}
+                  className="mt-2 px-6 py-2 bg-[#b11e29] text-white rounded-lg text-sm font-medium hover:bg-[#8f1820]">
+                  Đóng
+                </button>
+              </div>
+            ) : (
+              <div className="p-6 space-y-4">
+                {/* Customer info */}
+                <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                  <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
+                    <span className="text-sm font-semibold text-slate-600">
+                      {customer.fullName.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-800">{customer.fullName}</p>
+                    <p className="text-xs text-slate-500">Số dư hiện tại: <span className="font-semibold text-amber-700">{(customer.creditBalance || 0).toLocaleString('vi-VN')} Credit</span></p>
+                  </div>
+                </div>
+
+                {/* Amount */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">Số Credit nạp</label>
+                  <input
+                    type="number"
+                    min={100}
+                    max={50000}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
+                    placeholder="Nhập số credit (100 - 50.000)"
+                    value={topUpAmount}
+                    onChange={e => setTopUpAmount(e.target.value)}
+                  />
+                  {Number(topUpAmount) > 0 && (
+                    <p className="text-xs text-[#b11e29] font-semibold mt-1.5">
+                      Tương đương: {(Number(topUpAmount) * 1000).toLocaleString('vi-VN')} VNĐ
+                      <span className="font-normal text-slate-400 ml-1">(1 Credit = 1.000 VNĐ)</span>
+                    </p>
+                  )}
+                  {Number(topUpAmount) > 0 && (
+                    <p className="text-xs text-green-600 mt-0.5">
+                      Số dư sau nạp: {((customer.creditBalance || 0) + Number(topUpAmount)).toLocaleString('vi-VN')} Credit
+                    </p>
+                  )}
+                </div>
+
+                {/* Payment method */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-600 mb-2">Phương thức thanh toán</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      ['cash', 'Tiền mặt'],
+                      ['bank_transfer', 'Chuyển khoản'],
+                      ['card', 'Thẻ'],
+                    ] as const).map(([id, label]) => (
+                      <label key={id} className={`flex items-center justify-center gap-1.5 p-2.5 rounded-lg border cursor-pointer text-sm font-medium transition-all
+                        ${topUpMethod === id ? 'border-[#b11e29] bg-[#b11e29]/5 text-[#b11e29]' : 'border-slate-200 text-slate-600 hover:border-slate-300'}`}>
+                        <input type="radio" name="topup_method" value={id} className="sr-only"
+                          checked={topUpMethod === id} onChange={() => setTopUpMethod(id)} />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 pt-2">
+                  <button onClick={() => setShowTopUp(false)}
+                    className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-50">
+                    Hủy
+                  </button>
+                  <button onClick={() => setTopUpSuccess(true)}
+                    disabled={!topUpAmount || Number(topUpAmount) < 100 || Number(topUpAmount) > 50000}
+                    className="flex-1 py-2.5 bg-[#b11e29] text-white rounded-xl text-sm font-semibold hover:bg-[#8f1820] disabled:opacity-40 disabled:cursor-not-allowed">
+                    {Number(topUpAmount) >= 100 ? `Nạp ${Number(topUpAmount).toLocaleString('vi-VN')} Credit` : 'Nạp Credit'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Gift Credit Reward Modal */}
+      {showGift && customer && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <h2 className="font-semibold text-slate-800">Tặng Credit Reward</h2>
+              <button onClick={() => setShowGift(false)} className="p-2 hover:bg-slate-100 rounded-lg">
+                <X className="w-4 h-4 text-slate-500" />
+              </button>
+            </div>
+
+            {giftSuccess ? (
+              <div className="p-10 flex flex-col items-center gap-3">
+                <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
+                  <Gift className="w-7 h-7 text-purple-600" />
+                </div>
+                <p className="font-semibold text-slate-800 text-lg">Tặng thành công!</p>
+                <p className="text-sm text-slate-500 text-center">
+                  Đã tặng <strong className="text-purple-700">{Number(giftAmount).toLocaleString('vi-VN')} Credit</strong> reward cho <strong>{customer.fullName}</strong>
+                </p>
+                <button onClick={() => setShowGift(false)}
+                  className="mt-2 px-6 py-2 bg-[#b11e29] text-white rounded-lg text-sm font-medium hover:bg-[#8f1820]">
+                  Đóng
+                </button>
+              </div>
+            ) : (
+              <div className="p-6 space-y-4">
+                {/* Customer info */}
+                <div className="flex items-center gap-3 p-3 bg-purple-50/60 rounded-xl">
+                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                    <Gift className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-800">{customer.fullName}</p>
+                    <p className="text-xs text-slate-500">Reward hiện tại: <span className="font-semibold text-purple-700">{(customer.rewardBalance || 0).toLocaleString('vi-VN')} Credit</span></p>
+                  </div>
+                </div>
+
+                {/* Amount */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">Số Credit tặng</label>
+                  <input
+                    type="number"
+                    min={1}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
+                    placeholder="Nhập số credit reward"
+                    value={giftAmount}
+                    onChange={e => setGiftAmount(e.target.value)}
+                  />
+                  {Number(giftAmount) > 0 && (
+                    <p className="text-xs text-purple-600 font-semibold mt-1.5">
+                      Tương đương: {(Number(giftAmount) * 1000).toLocaleString('vi-VN')} VNĐ
+                    </p>
+                  )}
+                </div>
+
+                {/* Source */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-600 mb-2">Nguồn tặng</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {([
+                      ['promotion', 'Khuyến mãi'],
+                      ['referral', 'Giới thiệu'],
+                      ['birthday', 'Sinh nhật'],
+                      ['loyalty', 'Khách thân thiết'],
+                      ['compensation', 'Bồi thường'],
+                    ] as [CreditRewardSource, string][]).map(([id, label]) => (
+                      <label key={id} className={`flex items-center justify-center p-2 rounded-lg border cursor-pointer text-xs font-medium transition-all
+                        ${giftSource === id ? 'border-purple-400 bg-purple-50 text-purple-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'}`}>
+                        <input type="radio" name="gift_source" value={id} className="sr-only"
+                          checked={giftSource === id} onChange={() => setGiftSource(id)} />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Expiry date */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">
+                    Ngày hết hạn <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
+                    value={giftExpiry}
+                    onChange={e => setGiftExpiry(e.target.value)}
+                  />
+                  {giftExpiry && (
+                    <p className="text-xs text-slate-500 mt-1">
+                      Hết hạn sau {Math.ceil((new Date(giftExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} ngày
+                    </p>
+                  )}
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">Mô tả</label>
+                  <textarea
+                    rows={2}
+                    className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30 resize-none"
+                    placeholder="VD: Thưởng giới thiệu khách hàng mới"
+                    value={giftDesc}
+                    onChange={e => setGiftDesc(e.target.value)}
+                  />
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 pt-2">
+                  <button onClick={() => setShowGift(false)}
+                    className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-50">
+                    Hủy
+                  </button>
+                  <button onClick={() => setGiftSuccess(true)}
+                    disabled={!giftAmount || Number(giftAmount) < 1 || !giftExpiry}
+                    className="flex-1 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed">
+                    {Number(giftAmount) >= 1 ? `Tặng ${Number(giftAmount).toLocaleString('vi-VN')} Credit` : 'Tặng Credit'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }

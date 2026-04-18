@@ -142,7 +142,7 @@ export function ContractTemplateListPage() {
           <div className="flex items-center justify-end mb-6">
           <button
             onClick={() => navigate('/contracts/templates/new')}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#b11e29] rounded-lg hover:bg-[#8f1820] transition-colors"
           >
             <Plus className="w-4 h-4" />
             {t('tpl_btn_create')}

@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import { Layers, Plus, Search, Building2 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import Header from '../../components/layout/Header'
 import { useFloors, useBuildings, useDeleteFloor } from '../../hooks/useProperties'
 import { FloorFormModal } from '../../components/properties/FloorFormModal'
 import type { Floor } from '../../types/property'
 
 export function FloorsPage() {
+  const { t } = useTranslation('properties')
   const [search, setSearch] = useState('')
   const [buildingFilter, setBuildingFilter] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -56,7 +58,7 @@ export function FloorsPage() {
   })()
 
   const formatFloorLabel = (floorNumber: number) =>
-    floorNumber < 0 ? `B${Math.abs(floorNumber)}` : `Tầng ${floorNumber}`
+    floorNumber < 0 ? t('basement_label', { number: Math.abs(floorNumber) }) : t('floor_label', { number: floorNumber })
 
   const handleEdit = (floor: Floor) => {
     setEditingFloor(floor)
@@ -64,7 +66,7 @@ export function FloorsPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this floor? This action cannot be undone.')) {
+    if (confirm(t('confirm_delete_floor'))) {
       try {
         await deleteMutation.mutateAsync(id)
       } catch (error) {
@@ -81,8 +83,8 @@ export function FloorsPage() {
   return (
     <>
       <Header 
-        title="Floors Management" 
-        subtitle="Quản lý các tầng trong tòa nhà"
+        title={t('floors_title')} 
+        subtitle={t('floors_subtitle')}
       />
       
       <main className="flex-1 overflow-y-auto p-6">
@@ -90,25 +92,25 @@ export function FloorsPage() {
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-              <p className="text-sm text-slate-600">Total Floors</p>
+              <p className="text-sm text-slate-600">{t('stat_total_floors')}</p>
               <p className="text-2xl font-semibold text-slate-900 mt-1">
                 {floors?.length || 0}
               </p>
             </div>
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-              <p className="text-sm text-slate-600">Buildings</p>
+              <p className="text-sm text-slate-600">{t('stat_buildings')}</p>
               <p className="text-2xl font-semibold text-slate-900 mt-1">
                 {buildings?.length || 0}
               </p>
             </div>
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-              <p className="text-sm text-slate-600">Total Area</p>
+              <p className="text-sm text-slate-600">{t('stat_total_area')}</p>
               <p className="text-2xl font-semibold text-slate-900 mt-1">
                 {floors?.reduce((sum, f) => sum + f.area, 0).toLocaleString() || 0} m²
               </p>
             </div>
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-              <p className="text-sm text-slate-600">Avg Floor Area</p>
+              <p className="text-sm text-slate-600">{t('stat_avg_floor_area')}</p>
               <p className="text-2xl font-semibold text-slate-900 mt-1">
                 {floors && floors.length > 0
                   ? Math.round(floors.reduce((sum, f) => sum + f.area, 0) / floors.length).toLocaleString()
@@ -122,13 +124,13 @@ export function FloorsPage() {
             {/* Header */}
             <div className="p-6 border-b border-slate-200">
               <div className="flex items-center justify-between gap-4 mb-4">
-                <h2 className="text-lg font-semibold text-slate-900">All Floors</h2>
+                <h2 className="text-lg font-semibold text-slate-900">{t('heading_all_floors')}</h2>
                 <button 
                   onClick={() => setIsModalOpen(true)}
                   className="px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821] transition-colors flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
-                  Add Floor
+                  {t('btn_add_floor')}
                 </button>
               </div>
 
@@ -138,7 +140,7 @@ export function FloorsPage() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Search floors..."
+                    placeholder={t('search_floors')}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
@@ -149,7 +151,7 @@ export function FloorsPage() {
                   onChange={(e) => setBuildingFilter(e.target.value)}
                   className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
                 >
-                  <option value="">All Buildings</option>
+                  <option value="">{t('filter_all_buildings')}</option>
                   {buildings?.map(b => (
                     <option key={b.id} value={b.id}>{b.name}</option>
                   ))}
@@ -165,13 +167,13 @@ export function FloorsPage() {
               </div>
             ) : error ? (
               <div className="p-12 text-center text-rose-500">
-                Error loading floors: {error.message}
+                {t('error_loading_floors')}: {error.message}
               </div>
             ) : !filteredFloors || filteredFloors.length === 0 ? (
               <div className="p-12 text-center text-slate-500">
                 <Layers className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-                <p className="text-lg font-medium">No floors found</p>
-                <p className="text-sm mt-1">Add floors to organize your building spaces</p>
+                <p className="text-lg font-medium">{t('empty_floors_title')}</p>
+                <p className="text-sm mt-1">{t('empty_floors_desc')}</p>
               </div>
             ) : (
               <div className="divide-y divide-slate-100">
@@ -187,7 +189,7 @@ export function FloorsPage() {
                         {building.address}
                       </span>
                       <span className="ml-auto text-xs text-slate-500">
-                        {buildingFloors.length} tầng ·{' '}
+                        {t('floor_count', { count: buildingFloors.length })} ·{' '}
                         {buildingFloors.reduce((sum, f) => sum + f.area, 0).toLocaleString()} m²
                       </span>
                     </div>
@@ -196,12 +198,12 @@ export function FloorsPage() {
                     <table className="w-full">
                       <thead className="border-b border-slate-100">
                         <tr>
-                          <th className="pl-14 pr-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Tầng</th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Tên</th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Diện tích</th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Spaces</th>
-                          <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Trạng thái</th>
-                          <th className="px-4 py-2 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                          <th className="pl-14 pr-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_floor')}</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_name')}</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_area')}</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_spaces')}</th>
+                          <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_status')}</th>
+                          <th className="px-4 py-2 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_actions')}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
@@ -243,14 +245,14 @@ export function FloorsPage() {
                                   onClick={() => handleEdit(floor)}
                                   className="px-3 py-1.5 text-xs text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                 >
-                                  Edit
+                                  {t('btn_edit')}
                                 </button>
                                 <button
                                   onClick={() => handleDelete(floor.id)}
                                   disabled={deleteMutation.isPending}
                                   className="px-3 py-1.5 text-xs text-rose-600 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-50"
                                 >
-                                  Delete
+                                  {t('btn_delete')}
                                 </button>
                               </div>
                             </td>

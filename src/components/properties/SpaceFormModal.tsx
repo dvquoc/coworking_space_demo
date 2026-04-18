@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X, FileText, FileCheck } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useCreateSpace, useUpdateSpace, useBuildings, useFloors } from '../../hooks/useProperties'
 import type { Space, SpaceType, SpaceStatus } from '../../types/property'
 import { requiresContract } from '../../types/property'
@@ -10,33 +11,34 @@ interface SpaceFormModalProps {
   space?: Space | null
 }
 
-const SPACE_TYPES: { value: string; label: string }[] = [
-  { value: 'hot_desk', label: 'Hot Desk' },
-  { value: 'dedicated_desk', label: 'Dedicated Desk' },
-  { value: 'private_office', label: 'Private Office' },
-  { value: 'open_space', label: 'Open Space' },
-  { value: 'meeting_room', label: 'Meeting Room' },
-  { value: 'conference_room', label: 'Conference Room' },
-  { value: 'training_room', label: 'Training Room' },
-  { value: 'event_space', label: 'Event Space' },
+const SPACE_TYPES: { value: string; labelKey: string }[] = [
+  { value: 'hot_desk', labelKey: 'space_type_hot_desk' },
+  { value: 'dedicated_desk', labelKey: 'space_type_dedicated_desk' },
+  { value: 'private_office', labelKey: 'space_type_private_office' },
+  { value: 'open_space', labelKey: 'space_type_open_space' },
+  { value: 'meeting_room', labelKey: 'space_type_meeting_room' },
+  { value: 'conference_room', labelKey: 'space_type_conference_room' },
+  { value: 'training_room', labelKey: 'space_type_training_room' },
+  { value: 'event_space', labelKey: 'space_type_event_space' },
 ]
 
-const COMMON_AMENITIES = [
-  'WiFi',
-  'Air Conditioning',
-  'Whiteboard',
-  'Projector',
-  'TV Screen',
-  'Video Conference',
-  'Coffee/Tea',
-  'Printer',
-  'Phone Booth',
-  'Standing Desk',
-  'Monitor',
-  'Kitchen Access',
+const COMMON_AMENITIES: { value: string; labelKey: string }[] = [
+  { value: 'WiFi', labelKey: 'amenity_wifi' },
+  { value: 'Air Conditioning', labelKey: 'amenity_ac' },
+  { value: 'Whiteboard', labelKey: 'amenity_whiteboard' },
+  { value: 'Projector', labelKey: 'amenity_projector' },
+  { value: 'TV Screen', labelKey: 'amenity_tv' },
+  { value: 'Video Conference', labelKey: 'amenity_video_conf' },
+  { value: 'Coffee/Tea', labelKey: 'amenity_coffee' },
+  { value: 'Printer', labelKey: 'amenity_printer' },
+  { value: 'Phone Booth', labelKey: 'amenity_phone_booth' },
+  { value: 'Standing Desk', labelKey: 'amenity_standing_desk' },
+  { value: 'Monitor', labelKey: 'amenity_monitor' },
+  { value: 'Kitchen Access', labelKey: 'amenity_kitchen' },
 ]
 
 export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) {
+  const { t } = useTranslation('properties')
   const [formData, setFormData] = useState({
     name: '',
     buildingId: '',
@@ -146,7 +148,7 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200">
           <h2 className="text-xl font-semibold text-slate-900">
-            {space ? 'Edit Space' : 'Add New Space'}
+            {space ? t('modal_edit_space') : t('modal_add_space')}
           </h2>
           <button
             onClick={onClose}
@@ -162,14 +164,14 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
             {/* Space Name */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Space Name <span className="text-rose-500">*</span>
+                {t('label_space_name')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Hot Desk Zone A, Meeting Room 301"
+                placeholder={t('placeholder_space_name')}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
               />
             </div>
@@ -177,15 +179,15 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
             {/* Type */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Space Type <span className="text-rose-500">*</span>
+                {t('label_space_type')} <span className="text-rose-500">*</span>
               </label>
               <select
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value as SpaceType })}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
               >
-                {SPACE_TYPES.map(({ value, label }) => (
-                  <option key={value} value={value}>{label}</option>
+                {SPACE_TYPES.map(({ value, labelKey }) => (
+                  <option key={value} value={value}>{t(labelKey)}</option>
                 ))}
               </select>
             </div>
@@ -193,7 +195,7 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
             {/* Contract Requirement */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-3">
-                Yêu cầu hợp đồng <span className="text-rose-500">*</span>
+                {t('label_contract_required')} <span className="text-rose-500">*</span>
               </label>
               <div className="flex gap-4">
                 <label 
@@ -213,8 +215,8 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
                   <div className="flex items-center gap-2">
                     <FileText className="w-5 h-5 text-indigo-600" />
                     <div>
-                      <p className="font-medium text-slate-900 text-sm">Hợp đồng chính thức</p>
-                      <p className="text-xs text-slate-500">Formal Contract (EP-05)</p>
+                      <p className="font-medium text-slate-900 text-sm">{t('contract_formal')}</p>
+                      <p className="text-xs text-slate-500">{t('contract_formal_desc')}</p>
                     </div>
                   </div>
                 </label>
@@ -236,16 +238,16 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
                   <div className="flex items-center gap-2">
                     <FileCheck className="w-5 h-5 text-emerald-600" />
                     <div>
-                      <p className="font-medium text-slate-900 text-sm">Điều khoản & Điều kiện</p>
-                      <p className="text-xs text-slate-500">Terms & Conditions (F-36)</p>
+                      <p className="font-medium text-slate-900 text-sm">{t('contract_tc')}</p>
+                      <p className="text-xs text-slate-500">{t('contract_tc_desc')}</p>
                     </div>
                   </div>
                 </label>
               </div>
               <p className="text-xs text-slate-500 mt-2">
                 {requiresContract(formData.type) 
-                  ? `💡 Loại "${SPACE_TYPES.find(t => t.value === formData.type)?.label}" thường yêu cầu hợp đồng chính thức`
-                  : `💡 Loại "${SPACE_TYPES.find(t => t.value === formData.type)?.label}" thường chỉ cần T&C`
+                  ? t('hint_contract_required', { type: t(SPACE_TYPES.find(st => st.value === formData.type)?.labelKey ?? '') })
+                  : t('hint_contract_not_required', { type: t(SPACE_TYPES.find(st => st.value === formData.type)?.labelKey ?? '') })
                 }
               </p>
             </div>
@@ -254,7 +256,7 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Building <span className="text-rose-500">*</span>
+                  {t('label_building')} <span className="text-rose-500">*</span>
                 </label>
                 <select
                   required
@@ -262,7 +264,7 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
                   onChange={(e) => setFormData({ ...formData, buildingId: e.target.value })}
                   className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
                 >
-                  <option value="">Select Building</option>
+                  <option value="">{t('placeholder_select_building')}</option>
                   {buildings?.map(b => (
                     <option key={b.id} value={b.id}>{b.name}</option>
                   ))}
@@ -271,7 +273,7 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Floor <span className="text-rose-500">*</span>
+                  {t('label_floor')} <span className="text-rose-500">*</span>
                 </label>
                 <select
                   required
@@ -280,10 +282,10 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
                   disabled={!formData.buildingId}
                   className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent disabled:bg-slate-100 disabled:cursor-not-allowed"
                 >
-                  <option value="">Select Floor</option>
+                  <option value="">{t('placeholder_select_floor')}</option>
                   {floors?.map(f => (
                     <option key={f.id} value={f.id}>
-                      Floor {f.floorNumber < 0 ? `B${Math.abs(f.floorNumber)}` : f.floorNumber}
+                      {f.floorNumber < 0 ? t('basement_label', { number: Math.abs(f.floorNumber) }) : t('floor_label', { number: f.floorNumber })}
                       {f.floorName ? ` - ${f.floorName}` : ''}
                     </option>
                   ))}
@@ -295,7 +297,7 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Capacity (người) <span className="text-rose-500">*</span>
+                  {t('label_capacity')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -310,7 +312,7 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Area (m²) <span className="text-rose-500">*</span>
+                  {t('label_area')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -327,21 +329,21 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
             {/* Amenities */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-3">
-                Amenities
+                {t('label_amenities')}
               </label>
               <div className="grid grid-cols-3 gap-2">
-                {COMMON_AMENITIES.map(amenity => (
+                {COMMON_AMENITIES.map(({ value, labelKey }) => (
                   <label
-                    key={amenity}
+                    key={value}
                     className="flex items-center gap-2 p-2 border border-slate-200 rounded-lg cursor-pointer hover:bg-slate-50 transition-colors"
                   >
                     <input
                       type="checkbox"
-                      checked={formData.amenities.includes(amenity)}
-                      onChange={() => handleAmenityToggle(amenity)}
+                      checked={formData.amenities.includes(value)}
+                      onChange={() => handleAmenityToggle(value)}
                       className="w-4 h-4 text-[#b11e29] rounded border-slate-300 focus:ring-2 focus:ring-[#b11e29]"
                     />
-                    <span className="text-sm text-slate-700">{amenity}</span>
+                    <span className="text-sm text-slate-700">{t(labelKey)}</span>
                   </label>
                 ))}
               </div>
@@ -350,30 +352,30 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
             {/* Status */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Status <span className="text-rose-500">*</span>
+                {t('label_status')} <span className="text-rose-500">*</span>
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as SpaceStatus })}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
               >
-                <option value="available">Available</option>
-                <option value="occupied">Occupied</option>
-                <option value="reserved">Reserved</option>
-                <option value="maintenance">Maintenance</option>
+                <option value="available">{t('status_available')}</option>
+                <option value="occupied">{t('status_occupied')}</option>
+                <option value="reserved">{t('status_reserved')}</option>
+                <option value="maintenance">{t('status_maintenance')}</option>
               </select>
             </div>
 
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Description (Optional)
+                {t('label_description')}
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={4}
-                placeholder="Additional information about this space..."
+                placeholder={t('placeholder_space_desc')}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent resize-none"
               />
             </div>
@@ -386,7 +388,7 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
               onClick={onClose}
               className="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-100 transition-colors font-medium"
             >
-              Cancel
+              {t('btn_cancel')}
             </button>
             <button
               type="submit"
@@ -394,10 +396,10 @@ export function SpaceFormModal({ isOpen, onClose, space }: SpaceFormModalProps) 
               className="px-5 py-2.5 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {createMutation.isPending || updateMutation.isPending
-                ? 'Saving...'
+                ? t('btn_saving')
                 : space
-                ? 'Update Space'
-                : 'Create Space'}
+                ? t('btn_update_space')
+                : t('btn_create_space')}
             </button>
           </div>
         </form>

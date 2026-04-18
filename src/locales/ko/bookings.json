@@ -6,6 +6,7 @@
   "page_title_calendar": "캘린더 예약",
   "page_subtitle_calendar": "예약 전 일정 충돌을 확인하세요",
   "page_title_status": "상태 추적",
+  "page_subtitle_status": "고객 또는 관리자에 의한 예약 상태를 실시간으로 추적합니다.",
 
   "status_pending": "결제 대기",
   "status_confirmed": "확인됨",

@@ -88,7 +88,7 @@ export function BookingStatusPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header title={t('page_title_status')} />
+      <Header title={t('page_title_status')} subtitle={t('page_subtitle_status')} />
       <div className="flex-1 overflow-auto p-6">
         <div className="max-w-5xl mx-auto space-y-6">
 

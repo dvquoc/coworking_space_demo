@@ -1,19 +1,20 @@
 import { useState } from 'react'
 import { LayoutGrid, Plus, Search, ChevronDown, ChevronRight, Building2, Layers, FileText } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import Header from '../../components/layout/Header'
 import { useSpaces, useBuildings, useFloors, useDeleteSpace } from '../../hooks/useProperties'
 import { SpaceFormModal } from '../../components/properties/SpaceFormModal'
 import type { Space, SpaceType, SpaceStatus } from '../../types/property'
 
-const SPACE_TYPE_LABELS: Record<SpaceType, string> = {
-  hot_desk: 'Hot Desk',
-  dedicated_desk: 'Dedicated Desk',
-  private_office: 'Private Office',
-  open_space: 'Open Space',
-  meeting_room: 'Meeting Room',
-  conference_room: 'Conference Room',
-  training_room: 'Training Room',
-  event_space: 'Event Space',
+const SPACE_TYPE_KEYS: Record<SpaceType, string> = {
+  hot_desk: 'space_type_hot_desk',
+  dedicated_desk: 'space_type_dedicated_desk',
+  private_office: 'space_type_private_office',
+  open_space: 'space_type_open_space',
+  meeting_room: 'space_type_meeting_room',
+  conference_room: 'space_type_conference_room',
+  training_room: 'space_type_training_room',
+  event_space: 'space_type_event_space',
 }
 
 const SPACE_TYPE_COLORS: Record<SpaceType, string> = {
@@ -28,6 +29,7 @@ const SPACE_TYPE_COLORS: Record<SpaceType, string> = {
 }
 
 export function SpacesPage() {
+  const { t } = useTranslation('properties')
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState<SpaceType | ''>('')
   const [statusFilter, setStatusFilter] = useState<SpaceStatus | ''>('')
@@ -54,7 +56,7 @@ export function SpacesPage() {
   }
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this space? This action cannot be undone.')) {
+    if (confirm(t('confirm_delete_space'))) {
       try {
         await deleteMutation.mutateAsync(id)
       } catch (error) {
@@ -111,15 +113,15 @@ export function SpacesPage() {
   })()
 
   const formatFloorLabel = (floorNumber: number, floorName?: string) => {
-    const num = floorNumber < 0 ? `B${Math.abs(floorNumber)}` : `Tầng ${floorNumber}`
+    const num = floorNumber < 0 ? t('basement_label', { number: Math.abs(floorNumber) }) : t('floor_label', { number: floorNumber })
     return floorName ? `${num} – ${floorName}` : num
   }
 
   return (
     <>
       <Header 
-        title="Spaces Management" 
-        subtitle="Quản lý không gian làm việc và Meeting Room"
+        title={t('spaces_title')} 
+        subtitle={t('spaces_subtitle')}
       />
       
       <main className="flex-1 overflow-y-auto p-6">
@@ -127,35 +129,35 @@ export function SpacesPage() {
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-              <p className="text-sm text-slate-600">Total Spaces</p>
+              <p className="text-sm text-slate-600">{t('stat_total_spaces')}</p>
               <p className="text-2xl font-semibold text-slate-900 mt-1">
                 {spaces?.length || 0}
               </p>
             </div>
 
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-              <p className="text-sm text-slate-600">Available</p>
+              <p className="text-sm text-slate-600">{t('stat_available')}</p>
               <p className="text-2xl font-semibold text-emerald-600 mt-1">
                 {spaces?.filter(s => s.status === 'available').length || 0}
               </p>
             </div>
 
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-              <p className="text-sm text-slate-600">Occupied</p>
+              <p className="text-sm text-slate-600">{t('stat_occupied')}</p>
               <p className="text-2xl font-semibold text-amber-600 mt-1">
                 {spaces?.filter(s => s.status === 'occupied').length || 0}
               </p>
             </div>
 
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-              <p className="text-sm text-slate-600">Requires Contract</p>
+              <p className="text-sm text-slate-600">{t('stat_requires_contract')}</p>
               <p className="text-2xl font-semibold text-indigo-600 mt-1">
                 {spaces?.filter(s => s.contractRequired).length || 0}
               </p>
             </div>
 
             <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-200">
-              <p className="text-sm text-slate-600">Total Capacity</p>
+              <p className="text-sm text-slate-600">{t('stat_total_capacity')}</p>
               <p className="text-2xl font-semibold text-slate-900 mt-1">
                 {spaces?.reduce((sum, s) => sum + s.capacity, 0) || 0}
               </p>
@@ -166,13 +168,13 @@ export function SpacesPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200">
             <div className="p-6 border-b border-slate-200">
               <div className="flex items-center justify-between gap-4 mb-4">
-                <h2 className="text-lg font-semibold text-slate-900">All Spaces</h2>
+                <h2 className="text-lg font-semibold text-slate-900">{t('heading_all_spaces')}</h2>
                 <button 
                   onClick={() => setIsModalOpen(true)}
                   className="px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821] transition-colors flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
-                  Add Space
+                  {t('btn_add_space')}
                 </button>
               </div>
 
@@ -182,7 +184,7 @@ export function SpacesPage() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Search spaces..."
+                    placeholder={t('search_spaces')}
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
@@ -194,7 +196,7 @@ export function SpacesPage() {
                   onChange={(e) => setBuildingFilter(e.target.value)}
                   className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
                 >
-                  <option value="">All Buildings</option>
+                  <option value="">{t('filter_all_buildings')}</option>
                   {buildings?.map(b => (
                     <option key={b.id} value={b.id}>{b.name}</option>
                   ))}
@@ -205,9 +207,9 @@ export function SpacesPage() {
                   onChange={(e) => setTypeFilter(e.target.value as SpaceType | '')}
                   className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
                 >
-                  <option value="">All Types</option>
-                  {Object.entries(SPACE_TYPE_LABELS).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
+                  <option value="">{t('filter_all_types')}</option>
+                  {Object.entries(SPACE_TYPE_KEYS).map(([value, key]) => (
+                    <option key={value} value={value}>{t(key)}</option>
                   ))}
                 </select>
 
@@ -216,11 +218,11 @@ export function SpacesPage() {
                   onChange={(e) => setStatusFilter(e.target.value as SpaceStatus | '')}
                   className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
                 >
-                  <option value="">All Status</option>
-                  <option value="available">Available</option>
-                  <option value="occupied">Occupied</option>
-                  <option value="reserved">Reserved</option>
-                  <option value="maintenance">Maintenance</option>
+                  <option value="">{t('filter_all_status')}</option>
+                  <option value="available">{t('status_available')}</option>
+                  <option value="occupied">{t('status_occupied')}</option>
+                  <option value="reserved">{t('status_reserved')}</option>
+                  <option value="maintenance">{t('status_maintenance')}</option>
                 </select>
               </div>
             </div>
@@ -229,17 +231,17 @@ export function SpacesPage() {
             {isLoading ? (
               <div className="p-12 text-center text-slate-500">
                 <div className="w-8 h-8 border-4 border-[#b11e29] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                Loading spaces...
+                {t('loading_spaces')}
               </div>
             ) : error ? (
               <div className="p-12 text-center text-rose-500">
-                Error loading spaces: {error.message}
+                {t('error_loading_spaces')}: {error.message}
               </div>
             ) : !spaces || spaces.length === 0 ? (
               <div className="p-12 text-center text-slate-500">
                 <LayoutGrid className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-                <p className="text-lg font-medium">No spaces found</p>
-                <p className="text-sm mt-1">Add spaces to start managing your properties</p>
+                <p className="text-lg font-medium">{t('empty_spaces_title')}</p>
+                <p className="text-sm mt-1">{t('empty_spaces_desc')}</p>
               </div>
             ) : (
               <div className="divide-y divide-slate-100">
@@ -252,7 +254,7 @@ export function SpacesPage() {
                       </div>
                       <span className="font-semibold text-slate-800 text-sm">{building.name}</span>
                       <span className="ml-auto text-xs text-slate-500">
-                        {buildingFloors.reduce((sum, f) => sum + f.spaces.length, 0)} spaces
+                        {t('space_count', { count: buildingFloors.reduce((sum, f) => sum + f.spaces.length, 0) })}
                       </span>
                     </div>
 
@@ -274,7 +276,7 @@ export function SpacesPage() {
                               {formatFloorLabel(floor.floorNumber, floor.floorName)}
                             </span>
                             <span className="text-xs text-slate-400 ml-1">
-                              ({floorSpaces.length} spaces)
+                              ({t('space_count', { count: floorSpaces.length })})
                             </span>
                             <span className="ml-auto text-slate-400">
                               {isCollapsed
@@ -289,12 +291,12 @@ export function SpacesPage() {
                             <table className="w-full">
                               <thead className="border-b border-slate-100">
                                 <tr>
-                                  <th className="pl-14 pr-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Space</th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Capacity</th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Area</th>
-                                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-                                  <th className="px-4 py-2 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                                  <th className="pl-14 pr-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_space')}</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_type')}</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_capacity')}</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_area')}</th>
+                                  <th className="px-4 py-2 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_status')}</th>
+                                  <th className="px-4 py-2 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('col_actions')}</th>
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-slate-100">
@@ -327,19 +329,19 @@ export function SpacesPage() {
                                     <td className="px-4 py-3">
                                       <div className="flex items-center gap-1.5">
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${SPACE_TYPE_COLORS[space.type]}`}>
-                                          {SPACE_TYPE_LABELS[space.type]}
+                                          {t(SPACE_TYPE_KEYS[space.type])}
                                         </span>
                                         {space.contractRequired && (
                                           <span 
                                             className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700"
-                                            title="Yêu cầu hợp đồng chính thức"
+                                            title={t('hint_contract_tooltip')}
                                           >
                                             <FileText className="w-3 h-3" />
                                           </span>
                                         )}
                                       </div>
                                     </td>
-                                    <td className="px-4 py-3 text-sm text-slate-600">{space.capacity} người</td>
+                                    <td className="px-4 py-3 text-sm text-slate-600">{space.capacity} {t('capacity_unit')}</td>
                                     <td className="px-4 py-3 text-sm text-slate-600">{space.area} m²</td>
                                     <td className="px-4 py-3">
                                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -360,14 +362,14 @@ export function SpacesPage() {
                                           onClick={() => handleEdit(space)}
                                           className="px-3 py-1.5 text-xs text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                         >
-                                          Edit
+                                          {t('btn_edit')}
                                         </button>
                                         <button
                                           onClick={() => handleDelete(space.id)}
                                           disabled={deleteMutation.isPending}
                                           className="px-3 py-1.5 text-xs text-rose-600 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-50"
                                         >
-                                          Delete
+                                          {t('btn_delete')}
                                         </button>
                                       </div>
                                     </td>

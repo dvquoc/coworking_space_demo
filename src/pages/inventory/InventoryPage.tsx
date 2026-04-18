@@ -4,6 +4,7 @@ import {
   AlertTriangle, Edit2, Trash2, ChevronDown,
   MapPin, RotateCcw,
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import Header from '../../components/layout/Header'
 import {
   useAssets,
@@ -28,42 +29,42 @@ import type {
 
 // ─── Config ───────────────────────────────────────────────────
 
-const CATEGORY_CFG: Record<AssetCategory, { label: string; badge: string }> = {
-  furniture:        { label: 'Nội thất',       badge: 'bg-amber-50 text-amber-700 border-amber-200' },
-  it_equipment:     { label: 'IT Equipment',   badge: 'bg-blue-50 text-blue-700 border-blue-200' },
-  appliance:        { label: 'Thiết bị điện',  badge: 'bg-purple-50 text-purple-700 border-purple-200' },
-  office_equipment: { label: 'Văn phòng',      badge: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-  pantry:           { label: 'Pantry',          badge: 'bg-green-50 text-green-700 border-green-200' },
-  other:            { label: 'Khác',            badge: 'bg-slate-100 text-slate-600 border-slate-200' },
+const CATEGORY_CFG: Record<AssetCategory, { labelKey: string; badge: string }> = {
+  furniture:        { labelKey: 'category_furniture',        badge: 'bg-amber-50 text-amber-700 border-amber-200' },
+  it_equipment:     { labelKey: 'category_it_equipment',     badge: 'bg-blue-50 text-blue-700 border-blue-200' },
+  appliance:        { labelKey: 'category_appliance',        badge: 'bg-purple-50 text-purple-700 border-purple-200' },
+  office_equipment: { labelKey: 'category_office_equipment', badge: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+  pantry:           { labelKey: 'category_pantry',           badge: 'bg-green-50 text-green-700 border-green-200' },
+  other:            { labelKey: 'category_other',            badge: 'bg-slate-100 text-slate-600 border-slate-200' },
 }
 
-const STATUS_CFG: Record<AssetStatus, { label: string; badge: string; dot: string }> = {
-  active:      { label: 'Đang dùng',   badge: 'bg-green-50 text-green-700 border-green-200',   dot: 'bg-green-500' },
-  available:   { label: 'Sẵn sàng',    badge: 'bg-slate-100 text-slate-600 border-slate-200',   dot: 'bg-slate-400' },
-  maintenance: { label: 'Bảo trì',     badge: 'bg-yellow-50 text-yellow-700 border-yellow-200', dot: 'bg-yellow-500' },
-  broken:      { label: 'Hỏng',        badge: 'bg-red-50 text-red-700 border-red-200',          dot: 'bg-red-500' },
-  retired:     { label: 'Thanh lý',    badge: 'bg-slate-50 text-slate-400 border-slate-200',    dot: 'bg-slate-300' },
+const STATUS_CFG: Record<AssetStatus, { labelKey: string; badge: string; dot: string }> = {
+  active:      { labelKey: 'status_active',      badge: 'bg-green-50 text-green-700 border-green-200',   dot: 'bg-green-500' },
+  available:   { labelKey: 'status_available',    badge: 'bg-slate-100 text-slate-600 border-slate-200',   dot: 'bg-slate-400' },
+  maintenance: { labelKey: 'status_maintenance',  badge: 'bg-yellow-50 text-yellow-700 border-yellow-200', dot: 'bg-yellow-500' },
+  broken:      { labelKey: 'status_broken',       badge: 'bg-red-50 text-red-700 border-red-200',          dot: 'bg-red-500' },
+  retired:     { labelKey: 'status_retired',      badge: 'bg-slate-50 text-slate-400 border-slate-200',    dot: 'bg-slate-300' },
 }
 
-const CONDITION_CFG: Record<AssetCondition, { label: string; badge: string }> = {
-  excellent: { label: 'Rất tốt',    badge: 'text-emerald-600' },
-  good:      { label: 'Tốt',        badge: 'text-blue-600' },
-  fair:      { label: 'Trung bình', badge: 'text-yellow-600' },
-  poor:      { label: 'Kém',        badge: 'text-orange-600' },
-  broken:    { label: 'Hỏng',       badge: 'text-red-600' },
+const CONDITION_CFG: Record<AssetCondition, { labelKey: string; badge: string }> = {
+  excellent: { labelKey: 'condition_excellent', badge: 'text-emerald-600' },
+  good:      { labelKey: 'condition_good',      badge: 'text-blue-600' },
+  fair:      { labelKey: 'condition_fair',       badge: 'text-yellow-600' },
+  poor:      { labelKey: 'condition_poor',       badge: 'text-orange-600' },
+  broken:    { labelKey: 'condition_broken',     badge: 'text-red-600' },
 }
 
-const MTYPE_CFG: Record<MaintenanceType, { label: string; badge: string }> = {
-  routine:    { label: 'Định kỳ',    badge: 'bg-blue-50 text-blue-700 border-blue-200' },
-  repair:     { label: 'Sửa chữa',  badge: 'bg-red-50 text-red-700 border-red-200' },
-  inspection: { label: 'Kiểm tra',  badge: 'bg-purple-50 text-purple-700 border-purple-200' },
+const MTYPE_CFG: Record<MaintenanceType, { labelKey: string; badge: string }> = {
+  routine:    { labelKey: 'mtype_routine',    badge: 'bg-blue-50 text-blue-700 border-blue-200' },
+  repair:     { labelKey: 'mtype_repair',     badge: 'bg-red-50 text-red-700 border-red-200' },
+  inspection: { labelKey: 'mtype_inspection', badge: 'bg-purple-50 text-purple-700 border-purple-200' },
 }
 
-const MSTATUS_CFG: Record<MaintenanceStatus, { label: string; badge: string }> = {
-  scheduled:   { label: 'Lên lịch',    badge: 'bg-slate-100 text-slate-600' },
-  in_progress: { label: 'Đang thực hiện', badge: 'bg-yellow-50 text-yellow-700' },
-  completed:   { label: 'Hoàn thành',  badge: 'bg-green-50 text-green-700' },
-  cancelled:   { label: 'Đã hủy',      badge: 'bg-red-50 text-red-600' },
+const MSTATUS_CFG: Record<MaintenanceStatus, { labelKey: string; badge: string }> = {
+  scheduled:   { labelKey: 'mstatus_scheduled',    badge: 'bg-slate-100 text-slate-600' },
+  in_progress: { labelKey: 'mstatus_in_progress',  badge: 'bg-yellow-50 text-yellow-700' },
+  completed:   { labelKey: 'mstatus_completed',     badge: 'bg-green-50 text-green-700' },
+  cancelled:   { labelKey: 'mstatus_cancelled',     badge: 'bg-red-50 text-red-600' },
 }
 
 // ─── Helpers ──────────────────────────────────────────────────
@@ -83,6 +84,7 @@ type MainTab = 'assets' | 'maintenance'
 // ─── Main Page ────────────────────────────────────────────────
 
 export default function InventoryPage() {
+  const { t } = useTranslation('inventory')
   const [tab, setTab] = useState<MainTab>('assets')
 
   // Asset filters
@@ -250,7 +252,7 @@ export default function InventoryPage() {
     await updateAsset.mutateAsync({ id: reportBrokenAsset.id, status: 'broken', condition: 'poor' })
     await createLog.mutateAsync({
       assetId: reportBrokenAsset.id, type: 'repair',
-      description: brokenReason || 'Báo hỏng, cần sửa chữa',
+      description: brokenReason || t('broken_default_reason'),
       cost: 0, status: 'scheduled', performedBy: 'Admin',
     })
     setReportBrokenAsset(null)
@@ -261,7 +263,7 @@ export default function InventoryPage() {
 
   return (
     <>
-      <Header title="Quản lý Tài sản" subtitle="Theo dõi tài sản, bảo trì và phân bổ" />
+      <Header title={t('page_title')} subtitle={t('page_subtitle')} />
 
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-7xl mx-auto space-y-6">
@@ -269,11 +271,11 @@ export default function InventoryPage() {
           {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
             {[
-              { label: 'Tổng tài sản', value: stats.total, color: 'text-slate-700', bg: 'bg-slate-50' },
-              { label: 'Đang dùng', value: stats.active, color: 'text-green-700', bg: 'bg-green-50' },
-              { label: 'Sẵn sàng', value: stats.available, color: 'text-blue-700', bg: 'bg-blue-50' },
-              { label: 'Bảo trì', value: stats.maintenance, color: 'text-yellow-700', bg: 'bg-yellow-50' },
-              { label: 'Hỏng', value: stats.broken, color: 'text-red-700', bg: 'bg-red-50' },
+              { label: t('stat_total'), value: stats.total, color: 'text-slate-700', bg: 'bg-slate-50' },
+              { label: t('stat_active'), value: stats.active, color: 'text-green-700', bg: 'bg-green-50' },
+              { label: t('stat_available'), value: stats.available, color: 'text-blue-700', bg: 'bg-blue-50' },
+              { label: t('stat_maintenance'), value: stats.maintenance, color: 'text-yellow-700', bg: 'bg-yellow-50' },
+              { label: t('stat_broken'), value: stats.broken, color: 'text-red-700', bg: 'bg-red-50' },
             ].map(s => (
               <div key={s.label} className={`${s.bg} rounded-2xl p-4 border border-white`}>
                 <p className="text-sm text-slate-500">{s.label}</p>
@@ -286,8 +288,8 @@ export default function InventoryPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <div className="flex border-b border-slate-100">
               {([
-                { key: 'assets', label: 'Danh sách tài sản', icon: Package },
-                { key: 'maintenance', label: 'Nhật ký bảo trì', icon: Wrench },
+                { key: 'assets', label: t('tab_assets'), icon: Package },
+                { key: 'maintenance', label: t('tab_maintenance'), icon: Wrench },
               ] as const).map(({ key, label, icon: Icon }) => (
                 <button
                   key={key}
@@ -314,7 +316,7 @@ export default function InventoryPage() {
                     <input
                       value={search}
                       onChange={e => setSearch(e.target.value)}
-                      placeholder="Tìm theo tên, mã, serial..."
+                      placeholder={t('search_placeholder')}
                       className="w-full pl-9 pr-8 py-2 text-sm border border-slate-200 rounded-xl focus:ring-2 focus:ring-[#b11e29] focus:border-transparent outline-none"
                     />
                     {search && (
@@ -325,21 +327,21 @@ export default function InventoryPage() {
                   </div>
 
                   <SelectFilter value={catFilter} onChange={v => setCatFilter(v as AssetCategory | 'all')}>
-                    <option value="all">Tất cả danh mục</option>
+                    <option value="all">{t('filter_all_categories')}</option>
                     {(Object.keys(CATEGORY_CFG) as AssetCategory[]).map(k => (
-                      <option key={k} value={k}>{CATEGORY_CFG[k].label}</option>
+                      <option key={k} value={k}>{t(CATEGORY_CFG[k].labelKey)}</option>
                     ))}
                   </SelectFilter>
 
                   <SelectFilter value={statusFilter} onChange={v => setStatusFilter(v as AssetStatus | 'all')}>
-                    <option value="all">Tất cả trạng thái</option>
+                    <option value="all">{t('filter_all_statuses')}</option>
                     {(Object.keys(STATUS_CFG) as AssetStatus[]).map(k => (
-                      <option key={k} value={k}>{STATUS_CFG[k].label}</option>
+                      <option key={k} value={k}>{t(STATUS_CFG[k].labelKey)}</option>
                     ))}
                   </SelectFilter>
 
                   <SelectFilter value={buildingFilter} onChange={setBuildingFilter}>
-                    <option value="all">Tất cả tòa nhà</option>
+                    <option value="all">{t('filter_all_buildings')}</option>
                     {mockBuildings.map(b => (
                       <option key={b.id} value={b.id}>{b.name}</option>
                     ))}
@@ -350,7 +352,7 @@ export default function InventoryPage() {
                     className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] hover:bg-[#8f1821] text-white text-sm font-medium rounded-xl transition"
                   >
                     <Plus className="w-4 h-4" />
-                    Thêm tài sản
+                    {t('btn_add_asset')}
                   </button>
                 </div>
 
@@ -358,19 +360,19 @@ export default function InventoryPage() {
                 {assetsLoading ? (
                   <LoadingRows />
                 ) : filteredAssets.length === 0 ? (
-                  <EmptyState message="Không tìm thấy tài sản nào" />
+                  <EmptyState message={t('empty_assets')} />
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                          <th className="px-4 py-3">Mã / Tên</th>
-                          <th className="px-4 py-3">Danh mục</th>
-                          <th className="px-4 py-3">Vị trí</th>
-                          <th className="px-4 py-3">Tình trạng</th>
-                          <th className="px-4 py-3">Trạng thái</th>
-                          <th className="px-4 py-3">Giá mua</th>
-                          <th className="px-4 py-3 text-right">Thao tác</th>
+                          <th className="px-4 py-3">{t('col_code_name')}</th>
+                          <th className="px-4 py-3">{t('col_category')}</th>
+                          <th className="px-4 py-3">{t('col_location')}</th>
+                          <th className="px-4 py-3">{t('col_condition')}</th>
+                          <th className="px-4 py-3">{t('col_status')}</th>
+                          <th className="px-4 py-3">{t('col_purchase_cost')}</th>
+                          <th className="px-4 py-3 text-right">{t('col_actions')}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
@@ -385,7 +387,7 @@ export default function InventoryPage() {
                             </td>
                             <td className="px-4 py-3">
                               <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border font-medium ${CATEGORY_CFG[asset.category].badge}`}>
-                                {CATEGORY_CFG[asset.category].label}
+                                {t(CATEGORY_CFG[asset.category].labelKey)}
                               </span>
                             </td>
                             <td className="px-4 py-3">
@@ -399,13 +401,13 @@ export default function InventoryPage() {
                             </td>
                             <td className="px-4 py-3">
                               <span className={`text-sm font-medium ${CONDITION_CFG[asset.condition].badge}`}>
-                                {CONDITION_CFG[asset.condition].label}
+                                {t(CONDITION_CFG[asset.condition].labelKey)}
                               </span>
                             </td>
                             <td className="px-4 py-3">
                               <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs border font-medium ${STATUS_CFG[asset.status].badge}`}>
                                 <span className={`w-1.5 h-1.5 rounded-full ${STATUS_CFG[asset.status].dot}`} />
-                                {STATUS_CFG[asset.status].label}
+                                {t(STATUS_CFG[asset.status].labelKey)}
                               </span>
                             </td>
                             <td className="px-4 py-3 text-slate-600">
@@ -416,7 +418,7 @@ export default function InventoryPage() {
                                 {['active', 'available'].includes(asset.status) && (
                                   <button
                                     onClick={() => { setReportBrokenAsset(asset); setBrokenReason('') }}
-                                    title="Báo hỏng"
+                                    title={t('tooltip_report_broken')}
                                     className="p-1.5 rounded-lg text-orange-500 hover:bg-orange-50 transition"
                                   >
                                     <AlertTriangle className="w-4 h-4" />
@@ -424,7 +426,7 @@ export default function InventoryPage() {
                                 )}
                                 <button
                                   onClick={() => openMaintForm(asset.id)}
-                                  title="Thêm bảo trì"
+                                  title={t('tooltip_add_maintenance')}
                                   className="p-1.5 rounded-lg text-blue-500 hover:bg-blue-50 transition"
                                 >
                                   <Wrench className="w-4 h-4" />
@@ -457,16 +459,16 @@ export default function InventoryPage() {
               <div>
                 <div className="p-4 border-b border-slate-100 flex flex-wrap gap-3 items-center">
                   <SelectFilter value={mTypeFilter} onChange={v => setMTypeFilter(v as MaintenanceType | 'all')}>
-                    <option value="all">Tất cả loại</option>
+                    <option value="all">{t('filter_all_types')}</option>
                     {(Object.keys(MTYPE_CFG) as MaintenanceType[]).map(k => (
-                      <option key={k} value={k}>{MTYPE_CFG[k].label}</option>
+                      <option key={k} value={k}>{t(MTYPE_CFG[k].labelKey)}</option>
                     ))}
                   </SelectFilter>
 
                   <SelectFilter value={mStatusFilter} onChange={v => setMStatusFilter(v as MaintenanceStatus | 'all')}>
-                    <option value="all">Tất cả trạng thái</option>
+                    <option value="all">{t('filter_all_statuses')}</option>
                     {(Object.keys(MSTATUS_CFG) as MaintenanceStatus[]).map(k => (
-                      <option key={k} value={k}>{MSTATUS_CFG[k].label}</option>
+                      <option key={k} value={k}>{t(MSTATUS_CFG[k].labelKey)}</option>
                     ))}
                   </SelectFilter>
 
@@ -475,27 +477,27 @@ export default function InventoryPage() {
                     className="ml-auto flex items-center gap-2 px-4 py-2 bg-[#b11e29] hover:bg-[#8f1821] text-white text-sm font-medium rounded-xl transition"
                   >
                     <Plus className="w-4 h-4" />
-                    Ghi nhận bảo trì
+                    {t('btn_add_maintenance')}
                   </button>
                 </div>
 
                 {logsLoading ? (
                   <LoadingRows />
                 ) : filteredLogs.length === 0 ? (
-                  <EmptyState message="Chưa có nhật ký bảo trì" />
+                  <EmptyState message={t('empty_maintenance')} />
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="bg-slate-50 text-left text-xs font-medium text-slate-500 uppercase tracking-wide">
-                          <th className="px-4 py-3">Tài sản</th>
-                          <th className="px-4 py-3">Loại</th>
-                          <th className="px-4 py-3">Mô tả</th>
-                          <th className="px-4 py-3">Ngày lên lịch</th>
-                          <th className="px-4 py-3">Ngày HT</th>
-                          <th className="px-4 py-3">Chi phí</th>
-                          <th className="px-4 py-3">Trạng thái</th>
-                          <th className="px-4 py-3 text-right">Thao tác</th>
+                          <th className="px-4 py-3">{t('col_asset')}</th>
+                          <th className="px-4 py-3">{t('col_type')}</th>
+                          <th className="px-4 py-3">{t('col_description')}</th>
+                          <th className="px-4 py-3">{t('col_scheduled_date')}</th>
+                          <th className="px-4 py-3">{t('col_completed_date')}</th>
+                          <th className="px-4 py-3">{t('col_cost')}</th>
+                          <th className="px-4 py-3">{t('col_status')}</th>
+                          <th className="px-4 py-3 text-right">{t('col_actions')}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100">
@@ -507,7 +509,7 @@ export default function InventoryPage() {
                             </td>
                             <td className="px-4 py-3">
                               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs border font-medium ${MTYPE_CFG[log.type].badge}`}>
-                                {MTYPE_CFG[log.type].label}
+                                {t(MTYPE_CFG[log.type].labelKey)}
                               </span>
                             </td>
                             <td className="px-4 py-3 max-w-48">
@@ -519,7 +521,7 @@ export default function InventoryPage() {
                             <td className="px-4 py-3 text-slate-600">{fmt(log.cost)}</td>
                             <td className="px-4 py-3">
                               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${MSTATUS_CFG[log.status].badge}`}>
-                                {MSTATUS_CFG[log.status].label}
+                                {t(MSTATUS_CFG[log.status].labelKey)}
                               </span>
                             </td>
                             <td className="px-4 py-3 text-right">
@@ -532,14 +534,14 @@ export default function InventoryPage() {
                                       setCompleteNotes('')
                                       setCompleteCondition('good')
                                     }}
-                                    title="Hoàn thành"
+                                    title={t('tooltip_complete')}
                                     className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 transition"
                                   >
                                     <CheckCircle2 className="w-4 h-4" />
                                   </button>
                                   <button
                                     onClick={() => cancelLog.mutate(log.id)}
-                                    title="Hủy"
+                                    title={t('tooltip_cancel_log')}
                                     className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 transition"
                                   >
                                     <RotateCcw className="w-4 h-4" />
@@ -561,83 +563,83 @@ export default function InventoryPage() {
 
       {/* ── Modal: Asset Form ── */}
       {showAssetForm && (
-        <Modal title={editingAsset ? 'Sửa thông tin tài sản' : 'Thêm tài sản mới'} onClose={() => setShowAssetForm(false)}>
+        <Modal title={editingAsset ? t('modal_edit_asset') : t('modal_add_asset')} onClose={() => setShowAssetForm(false)}>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Tên tài sản *</label>
-                <input value={fName} onChange={e => setFName(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" placeholder="Dell Monitor 24-inch" />
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_asset_name')} *</label>
+                <input value={fName} onChange={e => setFName(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" placeholder={t('placeholder_asset_name')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Danh mục *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_category')} *</label>
                 <select value={fCat} onChange={e => setFCat(e.target.value as AssetCategory)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent">
                   {(Object.keys(CATEGORY_CFG) as AssetCategory[]).map(k => (
-                    <option key={k} value={k}>{CATEGORY_CFG[k].label}</option>
+                    <option key={k} value={k}>{t(CATEGORY_CFG[k].labelKey)}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Tình trạng *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_condition')} *</label>
                 <select value={fCondition} onChange={e => setFCondition(e.target.value as AssetCondition)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent">
                   {(Object.keys(CONDITION_CFG) as AssetCondition[]).map(k => (
-                    <option key={k} value={k}>{CONDITION_CFG[k].label}</option>
+                    <option key={k} value={k}>{t(CONDITION_CFG[k].labelKey)}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Serial Number</label>
-                <input value={fSerial} onChange={e => setFSerial(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" placeholder="Tùy chọn" />
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_serial_number')}</label>
+                <input value={fSerial} onChange={e => setFSerial(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" placeholder={t('placeholder_serial')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Nhà sản xuất</label>
-                <input value={fMfr} onChange={e => setFMfr(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" placeholder="Dell, Samsung..." />
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_manufacturer')}</label>
+                <input value={fMfr} onChange={e => setFMfr(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" placeholder={t('placeholder_manufacturer')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Model</label>
-                <input value={fModel} onChange={e => setFModel(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" placeholder="U2422H..." />
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_model')}</label>
+                <input value={fModel} onChange={e => setFModel(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" placeholder={t('placeholder_model')} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Giá mua (VND)</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_purchase_cost')}</label>
                 <input type="number" value={fCost} onChange={e => setFCost(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" min={0} />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Tòa nhà *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_building')} *</label>
                 <select value={fBuildingId} onChange={e => { setFBuildingId(e.target.value); setFSpaceId('') }} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent">
-                  <option value="">— Chọn tòa nhà —</option>
+                  <option value="">{t('placeholder_select_building')}</option>
                   {mockBuildings.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Không gian</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_space')}</label>
                 <select value={fSpaceId} onChange={e => setFSpaceId(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" disabled={!fBuildingId}>
-                  <option value="">— Chưa phân bổ —</option>
+                  <option value="">{t('placeholder_select_space')}</option>
                   {buildingSpaces.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Ngày mua</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_purchase_date')}</label>
                 <input type="date" value={fPurchaseDate} onChange={e => setFPurchaseDate(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Bảo hành đến</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_warranty_date')}</label>
                 <input type="date" value={fWarranty} onChange={e => setFWarranty(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" />
               </div>
               <div className="col-span-2">
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Ghi chú</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_notes')}</label>
                 <textarea value={fNotes} onChange={e => setFNotes(e.target.value)} rows={2} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent resize-none" />
               </div>
             </div>
           </div>
           <div className="flex gap-3 mt-6">
             <button onClick={() => setShowAssetForm(false)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 text-sm transition">
-              Hủy
+              {t('btn_cancel')}
             </button>
             <button
               onClick={handleAssetSubmit}
               disabled={!fName || !fBuildingId || createAsset.isPending || updateAsset.isPending}
               className="flex-1 px-4 py-2.5 bg-[#b11e29] hover:bg-[#8f1821] disabled:bg-slate-300 text-white rounded-xl text-sm font-medium transition"
             >
-              {(createAsset.isPending || updateAsset.isPending) ? 'Đang lưu...' : editingAsset ? 'Cập nhật' : 'Thêm tài sản'}
+              {(createAsset.isPending || updateAsset.isPending) ? t('btn_saving') : editingAsset ? t('btn_update') : t('btn_add_asset')}
             </button>
           </div>
         </Modal>
@@ -645,61 +647,61 @@ export default function InventoryPage() {
 
       {/* ── Modal: Maintenance Form ── */}
       {showMaintForm && (
-        <Modal title="Ghi nhận bảo trì" onClose={() => setShowMaintForm(false)}>
+        <Modal title={t('modal_maintenance')} onClose={() => setShowMaintForm(false)}>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Tài sản *</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_asset')} *</label>
               <select value={mAssetId} onChange={e => setMAssetId(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent">
-                <option value="">— Chọn tài sản —</option>
+                <option value="">{t('placeholder_select_asset')}</option>
                 {assets.filter(a => a.status !== 'retired').map(a => (
                   <option key={a.id} value={a.id}>{a.assetCode} – {a.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Loại bảo trì *</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_maintenance_type')} *</label>
               <select value={mType} onChange={e => setMType(e.target.value as MaintenanceType)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent">
-                <option value="routine">Kiểm tra định kỳ</option>
-                <option value="repair">Sửa chữa</option>
-                <option value="inspection">Kiểm tra</option>
+                <option value="routine">{t('mtype_routine_select')}</option>
+                <option value="repair">{t('mtype_repair_select')}</option>
+                <option value="inspection">{t('mtype_inspection_select')}</option>
               </select>
               {mType === 'repair' && (
                 <p className="text-xs text-orange-600 mt-1 flex items-center gap-1">
-                  <AlertTriangle className="w-3.5 h-3.5" /> Asset sẽ chuyển sang trạng thái Đang bảo trì
+                  <AlertTriangle className="w-3.5 h-3.5" /> {t('repair_warning')}
                 </p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Mô tả công việc *</label>
-              <textarea value={mDesc} onChange={e => setMDesc(e.target.value)} rows={2} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent resize-none" placeholder="Mô tả chi tiết công việc cần thực hiện..." />
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_work_description')} *</label>
+              <textarea value={mDesc} onChange={e => setMDesc(e.target.value)} rows={2} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent resize-none" placeholder={t('placeholder_work_desc')} />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Ngày lên lịch</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_scheduled_date')}</label>
                 <input type="date" value={mScheduled} onChange={e => setMScheduled(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1.5">Chi phí (VND) *</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_cost')} *</label>
                 <input type="number" value={mCost} onChange={e => setMCost(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" min={0} />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Nhà thầu / Nhà cung cấp</label>
-              <input value={mVendor} onChange={e => setMVendor(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" placeholder="Tùy chọn" />
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_vendor')}</label>
+              <input value={mVendor} onChange={e => setMVendor(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" placeholder={t('placeholder_vendor')} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Ghi chú kết quả</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_result_notes')}</label>
               <textarea value={mNotes} onChange={e => setMNotes(e.target.value)} rows={2} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent resize-none" />
             </div>
           </div>
           <div className="flex gap-3 mt-6">
-            <button onClick={() => setShowMaintForm(false)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 text-sm transition">Hủy</button>
+            <button onClick={() => setShowMaintForm(false)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 text-sm transition">{t('btn_cancel')}</button>
             <button
               onClick={handleMaintSubmit}
               disabled={!mAssetId || !mDesc || createLog.isPending}
               className="flex-1 px-4 py-2.5 bg-[#b11e29] hover:bg-[#8f1821] disabled:bg-slate-300 text-white rounded-xl text-sm font-medium transition"
             >
-              {createLog.isPending ? 'Đang lưu...' : 'Ghi nhận'}
+              {createLog.isPending ? t('btn_saving') : t('btn_submit_maintenance')}
             </button>
           </div>
         </Modal>
@@ -707,37 +709,37 @@ export default function InventoryPage() {
 
       {/* ── Modal: Complete Maintenance ── */}
       {completingLog && (
-        <Modal title="Hoàn thành bảo trì" onClose={() => setCompletingLog(null)}>
+        <Modal title={t('modal_complete_maintenance')} onClose={() => setCompletingLog(null)}>
           <div className="space-y-4">
             <div className="bg-slate-50 rounded-xl p-3 text-sm">
               <p className="font-medium text-slate-700">{completingLog.assetName}</p>
               <p className="text-slate-500 mt-0.5">{completingLog.description}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Ngày hoàn thành *</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_completed_date')} *</label>
               <input type="date" value={completeDate} onChange={e => setCompleteDate(e.target.value)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Tình trạng asset sau bảo trì</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_condition_after')}</label>
               <select value={completeCondition} onChange={e => setCompleteCondition(e.target.value as AssetCondition)} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent">
                 {(Object.keys(CONDITION_CFG) as AssetCondition[]).map(k => (
-                  <option key={k} value={k}>{CONDITION_CFG[k].label}</option>
+                  <option key={k} value={k}>{t(CONDITION_CFG[k].labelKey)}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Kết quả / Ghi chú</label>
-              <textarea value={completeNotes} onChange={e => setCompleteNotes(e.target.value)} rows={3} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent resize-none" placeholder="Mô tả kết quả bảo trì..." />
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_result')}</label>
+              <textarea value={completeNotes} onChange={e => setCompleteNotes(e.target.value)} rows={3} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent resize-none" placeholder={t('placeholder_complete_result')} />
             </div>
           </div>
           <div className="flex gap-3 mt-6">
-            <button onClick={() => setCompletingLog(null)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 text-sm transition">Hủy</button>
+            <button onClick={() => setCompletingLog(null)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 text-sm transition">{t('btn_cancel')}</button>
             <button
               onClick={handleCompleteLog}
               disabled={!completeDate || completeLog.isPending}
               className="flex-1 px-4 py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-slate-300 text-white rounded-xl text-sm font-medium transition"
             >
-              {completeLog.isPending ? 'Đang lưu...' : 'Xác nhận hoàn thành'}
+              {completeLog.isPending ? t('btn_saving') : t('btn_confirm_complete')}
             </button>
           </div>
         </Modal>
@@ -745,26 +747,26 @@ export default function InventoryPage() {
 
       {/* ── Modal: Report Broken ── */}
       {reportBrokenAsset && (
-        <Modal title="Báo hỏng tài sản" onClose={() => setReportBrokenAsset(null)}>
+        <Modal title={t('modal_report_broken')} onClose={() => setReportBrokenAsset(null)}>
           <div className="space-y-4">
             <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 text-sm">
               <p className="font-medium text-orange-800">{reportBrokenAsset.name}</p>
               <p className="text-orange-600 mt-0.5 text-xs">{reportBrokenAsset.assetCode}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Mô tả sự cố *</label>
-              <textarea value={brokenReason} onChange={e => setBrokenReason(e.target.value)} rows={3} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent resize-none" placeholder="Mô tả chi tiết tình trạng hỏng hóc..." />
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">{t('label_incident_desc')} *</label>
+              <textarea value={brokenReason} onChange={e => setBrokenReason(e.target.value)} rows={3} className="w-full px-3 py-2.5 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent resize-none" placeholder={t('placeholder_broken_desc')} />
             </div>
-            <p className="text-xs text-slate-500">Asset sẽ chuyển sang trạng thái <strong>Hỏng</strong> và một maintenance log sửa chữa được tạo tự động.</p>
+            <p className="text-xs text-slate-500" dangerouslySetInnerHTML={{ __html: t('broken_status_note') }} />
           </div>
           <div className="flex gap-3 mt-6">
-            <button onClick={() => setReportBrokenAsset(null)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 text-sm transition">Hủy</button>
+            <button onClick={() => setReportBrokenAsset(null)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 text-sm transition">{t('btn_cancel')}</button>
             <button
               onClick={handleReportBroken}
               disabled={!brokenReason || updateAsset.isPending}
               className="flex-1 px-4 py-2.5 bg-orange-600 hover:bg-orange-700 disabled:bg-slate-300 text-white rounded-xl text-sm font-medium transition"
             >
-              {updateAsset.isPending ? 'Đang xử lý...' : 'Xác nhận báo hỏng'}
+              {updateAsset.isPending ? t('btn_processing') : t('btn_confirm_broken')}
             </button>
           </div>
         </Modal>
@@ -772,16 +774,16 @@ export default function InventoryPage() {
 
       {/* ── Modal: Delete Confirm ── */}
       {deleteAssetId && (
-        <Modal title="Xác nhận xóa tài sản" onClose={() => setDeleteAssetId(null)}>
-          <p className="text-slate-600 mb-6">Bạn có chắc chắn muốn xóa tài sản này? Hành động này không thể hoàn tác.</p>
+        <Modal title={t('modal_delete_asset')} onClose={() => setDeleteAssetId(null)}>
+          <p className="text-slate-600 mb-6">{t('delete_confirm_message')}</p>
           <div className="flex gap-3">
-            <button onClick={() => setDeleteAssetId(null)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 text-sm transition">Hủy</button>
+            <button onClick={() => setDeleteAssetId(null)} className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-700 rounded-xl hover:bg-slate-50 text-sm transition">{t('btn_cancel')}</button>
             <button
               onClick={() => { deleteAsset.mutate(deleteAssetId); setDeleteAssetId(null) }}
               disabled={deleteAsset.isPending}
               className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-medium transition"
             >
-              Xóa
+              {t('btn_delete')}
             </button>
           </div>
         </Modal>

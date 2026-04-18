@@ -361,7 +361,7 @@ export function TermsFormPage() {
                 <button
                   onClick={handleSubmit}
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 disabled:opacity-50"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#b11e29] rounded-lg hover:bg-[#8f1820] disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   {createMutation.isPending || updateMutation.isPending

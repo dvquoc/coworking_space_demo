@@ -21,6 +21,8 @@
   "tab_cancelled": "Cancelled",
 
   "search_placeholder": "Search code, customer...",
+  "filter_all_sources": "All Sources",
+  "btn_create_invoice": "Create Invoice",
 
   "col_invoice_code": "Invoice Code",
   "col_customer": "Customer",
@@ -91,5 +93,30 @@
   "pay_notes_label": "Notes",
   "pay_notes_placeholder": "Transaction ID, receipt...",
   "pay_success_title": "Payment Recorded!",
-  "pay_success_message": "{{code}} payment status has been updated."
+  "pay_success_message": "{{code}} payment status has been updated.",
+
+  "create_title": "Create New Invoice",
+  "create_source": "Source",
+  "create_customer": "Customer",
+  "create_select_customer": "-- Select customer --",
+  "create_select_booking": "Linked Booking",
+  "create_select_contract": "Linked Contract",
+  "create_pick_customer_first": "-- Select customer first --",
+  "create_select_option": "-- Select --",
+  "create_invoice_type": "Invoice Type",
+  "create_deposit_percent": "Deposit Rate",
+  "create_invoice_date": "Invoice Date",
+  "create_due_date": "Due Date",
+  "create_items_title": "Line Items",
+  "create_add_item": "Add line",
+  "create_item_desc_placeholder": "Service description...",
+  "create_discount": "Discount (₫)",
+  "create_tax_percent": "VAT (%)",
+  "create_deposit_note": "Deposit {{percent}}%",
+  "create_notes_placeholder": "Invoice notes...",
+  "create_submit": "Create & Pay",
+  "create_err_customer": "Please select a customer",
+  "create_err_source": "Please select a linked source",
+  "create_err_due_date": "Please select a due date",
+  "create_err_items": "At least 1 valid line item required"
 }

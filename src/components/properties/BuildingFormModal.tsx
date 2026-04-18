@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useCreateBuilding, useUpdateBuilding } from '../../hooks/useProperties'
 import type { Building, BuildingStatus } from '../../types/property'
 
@@ -10,6 +11,7 @@ interface BuildingFormModalProps {
 }
 
 export function BuildingFormModal({ isOpen, onClose, building }: BuildingFormModalProps) {
+  const { t } = useTranslation('properties')
   const [formData, setFormData] = useState({
     name: '',
     address: '',
@@ -77,7 +79,7 @@ export function BuildingFormModal({ isOpen, onClose, building }: BuildingFormMod
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-slate-200">
           <h2 className="text-xl font-semibold text-slate-900">
-            {building ? 'Edit Building' : 'Add New Building'}
+            {building ? t('modal_edit_building') : t('modal_add_building')}
           </h2>
           <button
             onClick={onClose}
@@ -93,14 +95,14 @@ export function BuildingFormModal({ isOpen, onClose, building }: BuildingFormMod
             {/* Building Name */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Building Name <span className="text-rose-500">*</span>
+                {t('label_building_name')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="e.g., Cobi Building 1"
+                placeholder={t('placeholder_building_name')}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
               />
             </div>
@@ -108,14 +110,14 @@ export function BuildingFormModal({ isOpen, onClose, building }: BuildingFormMod
             {/* Address */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Address <span className="text-rose-500">*</span>
+                {t('label_address')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
                 required
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                placeholder="e.g., 123 Nguyen Trai, District 1, HCMC"
+                placeholder={t('placeholder_address')}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
               />
             </div>
@@ -124,7 +126,7 @@ export function BuildingFormModal({ isOpen, onClose, building }: BuildingFormMod
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Total Floors <span className="text-rose-500">*</span>
+                  {t('label_total_floors')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -139,7 +141,7 @@ export function BuildingFormModal({ isOpen, onClose, building }: BuildingFormMod
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Total Area (m²) <span className="text-rose-500">*</span>
+                  {t('label_total_area')} <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -155,29 +157,29 @@ export function BuildingFormModal({ isOpen, onClose, building }: BuildingFormMod
             {/* Status */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Status <span className="text-rose-500">*</span>
+                {t('label_status')} <span className="text-rose-500">*</span>
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as BuildingStatus })}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="maintenance">Maintenance</option>
+                <option value="active">{t('status_active')}</option>
+                <option value="inactive">{t('status_inactive')}</option>
+                <option value="maintenance">{t('status_maintenance')}</option>
               </select>
             </div>
 
             {/* Image URL */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Image URL (Optional)
+                {t('label_image_url')}
               </label>
               <input
                 type="url"
                 value={formData.imageUrl}
                 onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                placeholder="https://example.com/building-image.jpg"
+                placeholder={t('placeholder_image_url')}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
               />
             </div>
@@ -185,13 +187,13 @@ export function BuildingFormModal({ isOpen, onClose, building }: BuildingFormMod
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Description (Optional)
+                {t('label_description')}
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={4}
-                placeholder="Additional information about this building..."
+                placeholder={t('placeholder_building_desc')}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent resize-none"
               />
             </div>
@@ -204,7 +206,7 @@ export function BuildingFormModal({ isOpen, onClose, building }: BuildingFormMod
               onClick={onClose}
               className="px-5 py-2.5 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-100 transition-colors font-medium"
             >
-              Cancel
+              {t('btn_cancel')}
             </button>
             <button
               type="submit"
@@ -212,10 +214,10 @@ export function BuildingFormModal({ isOpen, onClose, building }: BuildingFormMod
               className="px-5 py-2.5 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {createMutation.isPending || updateMutation.isPending
-                ? 'Saving...'
+                ? t('btn_saving')
                 : building
-                ? 'Update Building'
-                : 'Create Building'}
+                ? t('btn_update_building')
+                : t('btn_create_building')}
             </button>
           </div>
         </form>

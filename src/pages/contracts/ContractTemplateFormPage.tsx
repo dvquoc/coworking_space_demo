@@ -563,7 +563,7 @@ export function ContractTemplateFormPage() {
                 <button
                   type="submit"
                   disabled={createMutation.isPending || updateMutation.isPending}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-sky-600 rounded-lg hover:bg-sky-700 disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#b11e29] rounded-lg hover:bg-[#8f1820] disabled:opacity-50"
                 >
                   <Save className="w-4 h-4" />
                   {createMutation.isPending || updateMutation.isPending

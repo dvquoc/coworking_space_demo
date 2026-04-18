@@ -75,7 +75,7 @@ export function BookingListPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <Header title={t('page_title')} />
+      <Header title={t('page_title')} subtitle={t('page_subtitle_status')}/>
       <div className="flex-1 overflow-auto p-6 space-y-6">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

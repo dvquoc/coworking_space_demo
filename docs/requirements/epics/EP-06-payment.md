@@ -26,9 +26,11 @@ Quản lý hóa đơn thanh toán cho bookings và contracts. Tích hợp VNPay,
 | ID | Tên | Mô tả ngắn | Trạng thái |
 |----|-----|------------|------------|
 | F-42 | Tạo hóa đơn (Invoice Generation) | Auto/manual generate invoices | Draft |
+| F-42B | Tạo hóa đơn thủ công (Manual Invoice Creation) | Tạo hóa đơn mới từ giao diện admin | Draft |
 | F-43 | Payment Gateway Integration | VNPay, MoMo, ZaloPay | Draft |
 | F-44 | Manual payment recording | Ghi nhận cash/bank transfer | Draft |
 | F-45 | Payment tracking | Theo dõi paid/unpaid/overdue | Draft |
+| F-45B | Filter theo nguồn hóa đơn | Lọc danh sách theo nguồn: Đặt chỗ / Hợp đồng / Nạp credit | Draft |
 | F-46 | Receipt generation | Tạo biên lai sau khi thanh toán | Draft |
 | F-46B | Deposit payment flow | Thanh toán đặt cọc (30%, 50%, 100%) | Draft |
 | F-46C | Partial payment tracking | Theo dõi thanh toán một phần (deposit + balance) | Draft |

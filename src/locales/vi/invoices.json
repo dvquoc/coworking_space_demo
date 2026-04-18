@@ -21,6 +21,8 @@
   "tab_cancelled": "Đã hủy",
 
   "search_placeholder": "Tìm mã, khách hàng...",
+  "filter_all_sources": "Tất cả nguồn",
+  "btn_create_invoice": "Tạo hóa đơn",
 
   "col_invoice_code": "Mã hóa đơn",
   "col_customer": "Khách hàng",
@@ -91,5 +93,30 @@
   "pay_notes_label": "Ghi chú",
   "pay_notes_placeholder": "Mã giao dịch, biên lai...",
   "pay_success_title": "Ghi nhận thành công!",
-  "pay_success_message": "{{code}} đã được cập nhật trạng thái thanh toán."
+  "pay_success_message": "{{code}} đã được cập nhật trạng thái thanh toán.",
+
+  "create_title": "Tạo hóa đơn mới",
+  "create_source": "Nguồn",
+  "create_customer": "Khách hàng",
+  "create_select_customer": "-- Chọn khách hàng --",
+  "create_select_booking": "Đặt chỗ liên kết",
+  "create_select_contract": "Hợp đồng liên kết",
+  "create_pick_customer_first": "-- Chọn khách hàng trước --",
+  "create_select_option": "-- Chọn --",
+  "create_invoice_type": "Loại hóa đơn",
+  "create_deposit_percent": "Tỉ lệ đặt cọc",
+  "create_invoice_date": "Ngày hóa đơn",
+  "create_due_date": "Hạn thanh toán",
+  "create_items_title": "Chi tiết dịch vụ",
+  "create_add_item": "Thêm dòng",
+  "create_item_desc_placeholder": "Mô tả dịch vụ...",
+  "create_discount": "Giảm giá (đ)",
+  "create_tax_percent": "VAT (%)",
+  "create_deposit_note": "Đặt cọc {{percent}}%",
+  "create_notes_placeholder": "Ghi chú cho hóa đơn...",
+  "create_submit": "Tạo & Thanh toán",
+  "create_err_customer": "Vui lòng chọn khách hàng",
+  "create_err_source": "Vui lòng chọn nguồn liên kết",
+  "create_err_due_date": "Vui lòng chọn hạn thanh toán",
+  "create_err_items": "Cần ít nhất 1 dòng dịch vụ hợp lệ"
 }
