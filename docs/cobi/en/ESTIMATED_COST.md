@@ -13,11 +13,11 @@
 
 | Phase | Duration | Platform | Cost (VND) |
 |-------|----------|----------|------------|
-| **Phase 1** — Core Operations | 5 months | 🖥️ Web App | **1.25 – 1.50 billion** |
-| **Phase 2** — Expansion & Mobile | 3 months | 📱 Mobile App + Web | **500 – 620 million** |
-| **Phase 3** — Advanced & Finalization | 2 months | 🖥️ Web App | **250 – 330 million** |
+| **Phase 1** — Core Operations | 5 months | 🖥️ Web App | **1.10 – 1.58 billion** |
+| **Phase 2** — Expansion & Mobile | 3 months | 📱 Mobile App + Web | **420 – 580 million** |
+| **Phase 3** — Advanced & Finalization | 2 months | 🖥️ Web App | **150 – 220 million** |
 | | | | |
-| **TOTAL ALL 3 PHASES** | **10 months** | | **2.00 – 2.45 billion** |
+| **TOTAL ALL 3 PHASES** | **10 months** | | **1.67 – 2.38 billion** |
 
 ---
 
@@ -41,12 +41,12 @@
 
 | Item | Estimate (VND) |
 |------|----------------|
-| Software Development (Backend + Frontend) | 950M – 1.15 billion |
-| Payment Integration (VNPay, MoMo, ZaloPay) | 80 – 100M |
-| Infrastructure & DevOps (5 months staging + production) | 50 – 70M |
-| Testing & QA | 120 – 130M |
-| Training & Documentation | 50 – 50M |
-| **Phase 1 Total** | **1.25 – 1.50 billion** |
+| Software Development (Backend + Frontend) | 830M – 1.21 billion |
+| Payment Integration (VNPay, MoMo, ZaloPay) | 70 – 105M |
+| Infrastructure & DevOps (5 months staging + production) | 45 – 75M |
+| Testing & QA | 110 – 140M |
+| Training & Documentation | 45 – 50M |
+| **Phase 1 Total** | **1.10 – 1.58 billion** |
 
 ### Phase 1 Deliverables
 
@@ -78,12 +78,12 @@
 
 | Item | Estimate (VND) |
 |------|----------------|
-| Mobile App Development (iOS + Android) | 200 – 260M |
-| Web Module Development (CRM, Events, Feedback, Access) | 160 – 200M |
-| App Store / Google Play Submission & Fees | 20 – 30M |
-| Testing & QA (Web + Mobile) | 80 – 90M |
-| Training for New Features | 40 – 40M |
-| **Phase 2 Total** | **500 – 620 million** |
+| Mobile App Development (iOS + Android) | 170 – 240M |
+| Web Module Development (CRM, Events, Feedback, Access) | 130 – 190M |
+| App Store / Google Play Submission & Fees | 15 – 30M |
+| Testing & QA (Web + Mobile) | 70 – 85M |
+| Training for New Features | 35 – 35M |
+| **Phase 2 Total** | **420 – 580 million** |
 
 ### Phase 2 Deliverables
 
@@ -112,10 +112,10 @@
 
 | Item | Estimate (VND) |
 |------|----------------|
-| Development (Backend + Frontend) | 170 – 230M |
-| Testing & QA | 50 – 60M |
-| Performance Optimization | 30 – 40M |
-| **Phase 3 Total** | **250 – 330 million** |
+| Development (Backend + Frontend) | 100 – 155M |
+| Testing & QA | 30 – 40M |
+| Performance Optimization | 20 – 25M |
+| **Phase 3 Total** | **150 – 220 million** |
 
 ### Phase 3 Deliverables
 
@@ -171,12 +171,12 @@
 
 | Installment | Rate | Min (VND) | Max (VND) |
 |-------------|------|-----------|-----------|
-| Payment 1 | 30% | 600M | 735M |
-| Payment 2 | 25% | 500M | 612M |
-| Payment 3 | 25% | 500M | 612M |
-| Payment 4 | 10% | 200M | 245M |
-| Payment 5 | 10% | 200M | 245M |
-| **Total** | **100%** | **2.00 billion** | **2.45 billion** |
+| Payment 1 | 30% | 501M | 714M |
+| Payment 2 | 25% | 418M | 595M |
+| Payment 3 | 25% | 418M | 595M |
+| Payment 4 | 10% | 167M | 238M |
+| Payment 5 | 10% | 167M | 238M |
+| **Total** | **100%** | **1.67 billion** | **2.38 billion** |
 
 ---
 

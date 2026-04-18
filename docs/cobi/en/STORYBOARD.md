@@ -8,6 +8,10 @@
 
 ---
 
+> 🖥️ **For a better experience, please view the accompanying DEMO version at**: [https://coworking-space-demo-mu.vercel.app](https://coworking-space-demo-mu.vercel.app)
+
+---
+
 ## 1. System Overview
 
 The system consists of **45+ screens**, divided into **10 functional groups**, serving **6 user roles**:

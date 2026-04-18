@@ -8,6 +8,10 @@
 
 ---
 
+> 🖥️ **Để trải nghiệm tốt hơn, hãy xem phiên bản DEMO được kèm theo tại**: [https://coworking-space-demo-mu.vercel.app](https://coworking-space-demo-mu.vercel.app)
+
+---
+
 ## 1. Tổng quan hệ thống
 
 Hệ thống gồm **45+ màn hình**, chia thành **10 nhóm chức năng** chính, phục vụ **6 vai trò** người dùng:

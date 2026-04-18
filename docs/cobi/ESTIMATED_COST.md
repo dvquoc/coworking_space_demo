@@ -13,11 +13,11 @@
 
 | Giai đoạn | Thời gian | Nền tảng | Báo giá (VNĐ) |
 |-----------|-----------|----------|---------------|
-| **Phase 1** — Vận hành cốt lõi | 5 tháng | 🖥️ Web App | **1.25 – 1.50 tỷ** |
-| **Phase 2** — Mở rộng & Mobile | 3 tháng | 📱 Mobile App + Web | **500 – 620 triệu** |
-| **Phase 3** — Nâng cao & Hoàn thiện | 2 tháng | 🖥️ Web App | **250 – 330 triệu** |
+| **Phase 1** — Vận hành cốt lõi | 5 tháng | 🖥️ Web App | **1.10 – 1.58 tỷ** |
+| **Phase 2** — Mở rộng & Mobile | 3 tháng | 📱 Mobile App + Web | **420 – 580 triệu** |
+| **Phase 3** — Nâng cao & Hoàn thiện | 2 tháng | 🖥️ Web App | **150 – 220 triệu** |
 | | | | |
-| **TỔNG CẢ 3 GIAI ĐOẠN** | **10 tháng** | | **2.00 – 2.45 tỷ** |
+| **TỔNG CẢ 3 GIAI ĐOẠN** | **10 tháng** | | **1.67 – 2.38 tỷ** |
 
 ---
 
@@ -41,12 +41,12 @@
 
 | Hạng mục | Ước tính (VNĐ) |
 |----------|----------------|
-| Phát triển phần mềm (Backend + Frontend) | 950M – 1.15 tỷ |
-| Tích hợp thanh toán (VNPay, MoMo, ZaloPay) | 80 – 100M |
-| Hạ tầng & DevOps (5 tháng staging + production) | 50 – 70M |
-| Testing & QA | 120 – 130M |
-| Đào tạo & Tài liệu | 50 – 50M |
-| **Tổng Phase 1** | **1.25 – 1.50 tỷ** |
+| Phát triển phần mềm (Backend + Frontend) | 830M – 1.21 tỷ |
+| Tích hợp thanh toán (VNPay, MoMo, ZaloPay) | 70 – 105M |
+| Hạ tầng & DevOps (5 tháng staging + production) | 45 – 75M |
+| Testing & QA | 110 – 140M |
+| Đào tạo & Tài liệu | 45 – 50M |
+| **Tổng Phase 1** | **1.10 – 1.58 tỷ** |
 
 ### Bàn giao Phase 1
 
@@ -78,12 +78,12 @@
 
 | Hạng mục | Ước tính (VNĐ) |
 |----------|----------------|
-| Phát triển Mobile App (iOS + Android) | 200 – 260M |
-| Phát triển Web modules (CRM, Events, Feedback, Access) | 160 – 200M |
-| Submit & phí App Store / Google Play | 20 – 30M |
-| Testing & QA (Web + Mobile) | 80 – 90M |
-| Đào tạo tính năng mới | 40 – 40M |
-| **Tổng Phase 2** | **500 – 620 triệu** |
+| Phát triển Mobile App (iOS + Android) | 170 – 240M |
+| Phát triển Web modules (CRM, Events, Feedback, Access) | 130 – 190M |
+| Submit & phí App Store / Google Play | 15 – 30M |
+| Testing & QA (Web + Mobile) | 70 – 85M |
+| Đào tạo tính năng mới | 35 – 35M |
+| **Tổng Phase 2** | **420 – 580 triệu** |
 
 ### Bàn giao Phase 2
 
@@ -112,10 +112,10 @@
 
 | Hạng mục | Ước tính (VNĐ) |
 |----------|----------------|
-| Phát triển (Backend + Frontend) | 170 – 230M |
-| Testing & QA | 50 – 60M |
-| Tối ưu hiệu năng | 30 – 40M |
-| **Tổng Phase 3** | **250 – 330 triệu** |
+| Phát triển (Backend + Frontend) | 100 – 155M |
+| Testing & QA | 30 – 40M |
+| Tối ưu hiệu năng | 20 – 25M |
+| **Tổng Phase 3** | **150 – 220 triệu** |
 
 ### Bàn giao Phase 3
 
@@ -171,12 +171,12 @@
 
 | Đợt | Tỷ lệ | Min (VNĐ) | Max (VNĐ) |
 |-----|--------|-----------|-----------|
-| Đợt 1 | 30% | 600M | 735M |
-| Đợt 2 | 25% | 500M | 612M |
-| Đợt 3 | 25% | 500M | 612M |
-| Đợt 4 | 10% | 200M | 245M |
-| Đợt 5 | 10% | 200M | 245M |
-| **Tổng** | **100%** | **2.00 tỷ** | **2.45 tỷ** |
+| Đợt 1 | 30% | 501M | 714M |
+| Đợt 2 | 25% | 418M | 595M |
+| Đợt 3 | 25% | 418M | 595M |
+| Đợt 4 | 10% | 167M | 238M |
+| Đợt 5 | 10% | 167M | 238M |
+| **Tổng** | **100%** | **1.67 tỷ** | **2.38 tỷ** |
 
 ---
 
