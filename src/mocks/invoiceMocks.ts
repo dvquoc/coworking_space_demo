@@ -29,6 +29,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'staff-001',
     createdAt: '2026-04-17T08:00:00Z',
     updatedAt: '2026-04-17T08:00:00Z',
+    emailStatus: 'sent',
+    zaloStatus: 'not_sent',
+    eInvoiceStatus: 'not_issued',
   },
 
   // 2 – Booking · paid via VNPay
@@ -60,6 +63,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'staff-001',
     createdAt: '2026-04-17T09:00:00Z',
     updatedAt: '2026-04-17T10:30:00Z',
+    emailStatus: 'sent',
+    zaloStatus: 'sent',
+    eInvoiceStatus: 'issued',
   },
 
   // 3 – Contract · overdue
@@ -88,6 +94,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'staff-001',
     createdAt: '2026-04-01T08:00:00Z',
     updatedAt: '2026-04-01T08:00:00Z',
+    emailStatus: 'sent',
+    zaloStatus: 'failed',
+    eInvoiceStatus: 'not_issued',
   },
 
   // 4 – Booking · deposit (partial)
@@ -119,6 +128,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'staff-001',
     createdAt: '2026-04-15T13:00:00Z',
     updatedAt: '2026-04-15T14:00:00Z',
+    emailStatus: 'sent',
+    zaloStatus: 'sent',
+    eInvoiceStatus: 'not_issued',
   },
 
   // 5 – Contract · unpaid · upcoming
@@ -147,6 +159,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'staff-001',
     createdAt: '2026-04-15T09:00:00Z',
     updatedAt: '2026-04-15T09:00:00Z',
+    emailStatus: 'not_sent',
+    zaloStatus: 'not_sent',
+    eInvoiceStatus: 'not_issued',
   },
 
   // 6 – Booking · cancelled
@@ -175,6 +190,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'staff-001',
     createdAt: '2026-04-10T10:00:00Z',
     updatedAt: '2026-04-12T09:00:00Z',
+    emailStatus: 'sent',
+    zaloStatus: 'not_sent',
+    eInvoiceStatus: 'not_applicable',
   },
 
   // 7 – Contract · paid cash
@@ -204,6 +222,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'staff-001',
     createdAt: '2026-03-01T08:00:00Z',
     updatedAt: '2026-03-08T11:00:00Z',
+    emailStatus: 'sent',
+    zaloStatus: 'sent',
+    eInvoiceStatus: 'issued',
   },
 
   // 8 – Booking · overdue
@@ -232,6 +253,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'staff-001',
     createdAt: '2026-04-05T08:00:00Z',
     updatedAt: '2026-04-05T08:00:00Z',
+    emailStatus: 'failed',
+    zaloStatus: 'sent',
+    eInvoiceStatus: 'not_issued',
   },
 
   // 9 – Booking · unpaid
@@ -259,6 +283,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'staff-001',
     createdAt: '2026-04-16T14:00:00Z',
     updatedAt: '2026-04-16T14:00:00Z',
+    emailStatus: 'sent',
+    zaloStatus: 'not_sent',
+    eInvoiceStatus: 'not_issued',
   },
 
   // 10 – Contract · paid bank_transfer
@@ -289,6 +316,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'staff-001',
     createdAt: '2026-03-01T08:00:00Z',
     updatedAt: '2026-03-28T09:00:00Z',
+    emailStatus: 'sent',
+    zaloStatus: 'sent',
+    eInvoiceStatus: 'issued',
   },
 
   // 11 – Credit top-up · paid via VNPay
@@ -320,6 +350,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'system',
     createdAt: '2026-04-10T09:10:00Z',
     updatedAt: '2026-04-10T09:12:00Z',
+    emailStatus: 'sent',
+    zaloStatus: 'sent',
+    eInvoiceStatus: 'not_applicable',
   },
 
   // 12 – Credit top-up · paid via MoMo
@@ -351,6 +384,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'system',
     createdAt: '2026-04-14T14:04:00Z',
     updatedAt: '2026-04-14T14:05:00Z',
+    emailStatus: 'sent',
+    zaloStatus: 'failed',
+    eInvoiceStatus: 'not_applicable',
   },
 
   // 13 – Credit top-up · paid via cash tại quầy
@@ -381,6 +417,9 @@ export const mockInvoices: Invoice[] = [
     createdBy: 'staff-002',
     createdAt: '2026-04-16T10:28:00Z',
     updatedAt: '2026-04-16T10:30:00Z',
+    emailStatus: 'not_sent',
+    zaloStatus: 'sent',
+    eInvoiceStatus: 'not_applicable',
   },
 ]
 

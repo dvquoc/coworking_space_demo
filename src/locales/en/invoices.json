@@ -31,6 +31,8 @@
   "col_due_date": "Due Date",
   "col_total": "Total",
   "col_status": "Status",
+  "col_notification": "Notification",
+  "col_einvoice": "E-Invoice",
   "col_actions": "Actions",
 
   "status_unpaid": "Unpaid",
@@ -82,6 +84,7 @@
   "btn_cancel": "Cancel",
   "btn_confirm": "Confirm",
   "btn_view": "View Details",
+  "btn_print_invoice": "Print Invoice",
 
   "pay_title": "Record Payment",
   "pay_invoice": "Invoice",
@@ -92,6 +95,8 @@
   "pay_method_label": "Payment Method *",
   "pay_notes_label": "Notes",
   "pay_notes_placeholder": "Transaction ID, receipt...",
+  "pay_issue_einvoice": "Issue e-invoice",
+  "pay_receipt_notice": "The receipt will be sent via Zalo and the tenant's email.",
   "pay_success_title": "Payment Recorded!",
   "pay_success_message": "{{code}} payment status has been updated.",
 
@@ -114,9 +119,30 @@
   "create_tax_percent": "VAT (%)",
   "create_deposit_note": "Deposit {{percent}}%",
   "create_notes_placeholder": "Invoice notes...",
-  "create_submit": "Create & Pay",
+  "create_submit": "Create Invoice",
   "create_err_customer": "Please select a customer",
   "create_err_source": "Please select a linked source",
   "create_err_due_date": "Please select a due date",
-  "create_err_items": "At least 1 valid line item required"
+  "create_err_items": "At least 1 valid line item required",
+
+  "qr_title": "Payment Information",
+  "qr_bank_info": "Bank Transfer Details",
+  "qr_bank_name": "Bank",
+  "qr_account_no": "Account No.",
+  "qr_account_name": "Account Name",
+  "qr_amount": "Amount",
+  "qr_transfer_content": "Transfer Content",
+  "qr_copy": "Copy",
+  "qr_copied": "Copied!",
+
+  "notif_email_not_sent": "Email: Not sent",
+  "notif_email_sent": "Email: Sent",
+  "notif_email_failed": "Email: Failed",
+  "notif_zalo_not_sent": "Zalo: Not sent",
+  "notif_zalo_sent": "Zalo: Sent",
+  "notif_zalo_failed": "Zalo: Failed",
+
+  "einvoice_issued": "Issued",
+  "einvoice_not_issued": "Not issued",
+  "einvoice_not_applicable": "N/A"
 }

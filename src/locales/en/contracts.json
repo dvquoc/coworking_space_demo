@@ -258,5 +258,12 @@
   "terms_err_title_required": "Please enter a title",
   "terms_err_usage_required": "Please enter usage rules",
   "terms_err_liability_required": "Please enter liability terms",
-  "terms_err_space_types_required": "Please select at least one space type"
+  "terms_err_space_types_required": "Please select at least one space type",
+
+  "success_title": "Contract Created Successfully!",
+  "success_description": "The electronic contract has been created and signed. What would you like to do next?",
+  "success_prompt": "Choose your next action",
+  "success_view_contract": "View Contract",
+  "success_view_invoices": "View Invoices & Collect Payment",
+  "success_back_to_list": "Back to List"
 }

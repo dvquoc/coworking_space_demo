@@ -31,6 +31,8 @@
   "col_due_date": "Hạn TT",
   "col_total": "Tổng tiền",
   "col_status": "Trạng thái",
+  "col_notification": "Gửi thông báo",
+  "col_einvoice": "Xuất HĐ",
   "col_actions": "Thao tác",
 
   "status_unpaid": "Chưa TT",
@@ -82,6 +84,7 @@
   "btn_cancel": "Hủy",
   "btn_confirm": "Xác nhận",
   "btn_view": "Xem chi tiết",
+  "btn_print_invoice": "In hóa đơn",
 
   "pay_title": "Ghi nhận thanh toán",
   "pay_invoice": "Hóa đơn",
@@ -92,6 +95,8 @@
   "pay_method_label": "Phương thức thanh toán *",
   "pay_notes_label": "Ghi chú",
   "pay_notes_placeholder": "Mã giao dịch, biên lai...",
+  "pay_issue_einvoice": "Xuất hóa đơn điện tử",
+  "pay_receipt_notice": "Phiếu thu sẽ được gửi qua Zalo và email của khách thuê.",
   "pay_success_title": "Ghi nhận thành công!",
   "pay_success_message": "{{code}} đã được cập nhật trạng thái thanh toán.",
 
@@ -114,9 +119,30 @@
   "create_tax_percent": "VAT (%)",
   "create_deposit_note": "Đặt cọc {{percent}}%",
   "create_notes_placeholder": "Ghi chú cho hóa đơn...",
-  "create_submit": "Tạo & Thanh toán",
+  "create_submit": "Tạo hóa đơn",
   "create_err_customer": "Vui lòng chọn khách hàng",
   "create_err_source": "Vui lòng chọn nguồn liên kết",
   "create_err_due_date": "Vui lòng chọn hạn thanh toán",
-  "create_err_items": "Cần ít nhất 1 dòng dịch vụ hợp lệ"
+  "create_err_items": "Cần ít nhất 1 dòng dịch vụ hợp lệ",
+
+  "qr_title": "Thông tin thanh toán",
+  "qr_bank_info": "Thông tin chuyển khoản",
+  "qr_bank_name": "Ngân hàng",
+  "qr_account_no": "Số TK",
+  "qr_account_name": "Chủ TK",
+  "qr_amount": "Số tiền",
+  "qr_transfer_content": "Nội dung chuyển khoản",
+  "qr_copy": "Sao chép",
+  "qr_copied": "Đã sao chép!",
+
+  "notif_email_not_sent": "Email: Chưa gửi",
+  "notif_email_sent": "Email: Đã gửi",
+  "notif_email_failed": "Email: Gửi lỗi",
+  "notif_zalo_not_sent": "Zalo: Chưa gửi",
+  "notif_zalo_sent": "Zalo: Đã gửi",
+  "notif_zalo_failed": "Zalo: Gửi lỗi",
+
+  "einvoice_issued": "Đã xuất HĐ",
+  "einvoice_not_issued": "Chưa xuất HĐ",
+  "einvoice_not_applicable": "Không xuất HĐ"
 }

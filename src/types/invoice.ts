@@ -12,6 +12,10 @@ export type InvoicePaymentMethod =
   | 'bank_transfer'
   | 'credit'
 
+export type NotificationStatus = 'not_sent' | 'sent' | 'failed'
+
+export type EInvoiceStatus = 'issued' | 'not_issued' | 'not_applicable'
+
 export interface InvoiceItem {
   description: string
   quantity: number
@@ -61,4 +65,9 @@ export interface Invoice {
   createdBy: string
   createdAt: string
   updatedAt: string
+
+  // Notification & E-Invoice
+  emailStatus: NotificationStatus
+  zaloStatus: NotificationStatus
+  eInvoiceStatus: EInvoiceStatus
 }

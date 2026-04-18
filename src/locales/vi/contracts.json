@@ -260,5 +260,12 @@
   "terms_err_title_required": "Vui lòng nhập tiêu đề",
   "terms_err_usage_required": "Vui lòng nhập quy định sử dụng",
   "terms_err_liability_required": "Vui lòng nhập trách nhiệm các bên",
-  "terms_err_space_types_required": "Vui lòng chọn ít nhất một loại không gian"
+  "terms_err_space_types_required": "Vui lòng chọn ít nhất một loại không gian",
+
+  "success_title": "Tạo hợp đồng thành công!",
+  "success_description": "Hợp đồng điện tử đã được tạo và ký. Tiếp theo bạn muốn làm gì?",
+  "success_prompt": "Chọn hành động tiếp theo",
+  "success_view_contract": "Xem hợp đồng",
+  "success_view_invoices": "Xem hóa đơn và thu tiền",
+  "success_back_to_list": "Quay lại danh sách"
 }

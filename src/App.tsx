@@ -49,6 +49,7 @@ import {
   ContractListPage,
   ContractDetailsPage,
   ContractFormPage,
+  ContractSuccessPage,
   ContractTemplateListPage,
   ContractTemplateFormPage,
   TermsListPage,
@@ -162,6 +163,7 @@ function App() {
           <Route path="/contracts/new" element={<ContractFormPage />} />
           <Route path="/contracts/:id" element={<ContractDetailsPage />} />
           <Route path="/contracts/:id/edit" element={<ContractFormPage />} />
+          <Route path="/contracts/success" element={<ContractSuccessPage />} />
           
           {/* Contract template routes */}
           <Route path="/contracts/templates" element={<ContractTemplateListPage />} />

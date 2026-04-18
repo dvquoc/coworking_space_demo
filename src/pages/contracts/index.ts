@@ -2,6 +2,7 @@
 export { ContractListPage } from './ContractListPage'
 export { ContractDetailsPage } from './ContractDetailsPage'
 export { ContractFormPage } from './ContractFormPage'
+export { ContractSuccessPage } from './ContractSuccessPage'
 
 // Contract Template Pages
 export { ContractTemplateListPage } from './ContractTemplateListPage'

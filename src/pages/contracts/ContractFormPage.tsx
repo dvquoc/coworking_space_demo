@@ -204,10 +204,11 @@ export function ContractFormPage() {
     try {
       if (isEdit && id) {
         await updateMutation.mutateAsync({ id, ...requestData })
+        navigate('/contracts')
       } else {
-        await createMutation.mutateAsync(requestData)
+        const result = await createMutation.mutateAsync(requestData)
+        navigate(`/contracts/success?id=${result.id}&code=${encodeURIComponent(result.contractCode)}`)
       }
-      navigate('/contracts')
     } catch (error) {
       console.error('Failed to save contract:', error)
     }

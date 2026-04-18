@@ -31,6 +31,8 @@
   "col_due_date": "만기일",
   "col_total": "합계",
   "col_status": "상태",
+  "col_notification": "알림",
+  "col_einvoice": "전자세금계산서",
   "col_actions": "작업",
 
   "status_unpaid": "미결제",
@@ -82,6 +84,7 @@
   "btn_cancel": "취소",
   "btn_confirm": "확인",
   "btn_view": "상세 보기",
+  "btn_print_invoice": "청구서 인쇄",
 
   "pay_title": "결제 기록",
   "pay_invoice": "청구서",
@@ -92,6 +95,8 @@
   "pay_method_label": "결제 방법 *",
   "pay_notes_label": "메모",
   "pay_notes_placeholder": "거래 ID, 영수증...",
+  "pay_issue_einvoice": "전자세금계산서 발행",
+  "pay_receipt_notice": "영수증은 Zalo 및 임차인 이메일로 발송됩니다.",
   "pay_success_title": "결제 기록 완료!",
   "pay_success_message": "{{code}} 결제 상태가 업데이트되었습니다.",
 
@@ -114,9 +119,30 @@
   "create_tax_percent": "부가세 (%)",
   "create_deposit_note": "보증금 {{percent}}%",
   "create_notes_placeholder": "청구서 메모...",
-  "create_submit": "생성 & 결제",
+  "create_submit": "청구서 생성",
   "create_err_customer": "고객을 선택해주세요",
   "create_err_source": "연결 출처를 선택해주세요",
   "create_err_due_date": "만기일을 선택해주세요",
-  "create_err_items": "최소 1개의 유효한 항목이 필요합니다"
+  "create_err_items": "최소 1개의 유효한 항목이 필요합니다",
+
+  "qr_title": "결제 정보",
+  "qr_bank_info": "계좌이체 정보",
+  "qr_bank_name": "은행",
+  "qr_account_no": "계좌번호",
+  "qr_account_name": "예금주",
+  "qr_amount": "금액",
+  "qr_transfer_content": "이체 내용",
+  "qr_copy": "복사",
+  "qr_copied": "복사됨!",
+
+  "notif_email_not_sent": "이메일: 미발송",
+  "notif_email_sent": "이메일: 발송완료",
+  "notif_email_failed": "이메일: 발송실패",
+  "notif_zalo_not_sent": "Zalo: 미발송",
+  "notif_zalo_sent": "Zalo: 발송완료",
+  "notif_zalo_failed": "Zalo: 발송실패",
+
+  "einvoice_issued": "발행완료",
+  "einvoice_not_issued": "미발행",
+  "einvoice_not_applicable": "해당없음"
 }

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import {
   Search, X, CheckCircle2, AlertCircle, XCircle,
   Eye, TrendingUp, LayoutGrid, ChevronLeft, ChevronRight,
-  Plus, Trash2,
+  Plus, Trash2, Copy, Building2, MoreVertical, Printer,
 } from 'lucide-react'
 import Header from '../components/layout/Header'
 import { mockCustomers } from '../mocks/customerMocks'
@@ -11,7 +11,7 @@ import { mockBookings } from '../mocks/bookingMocks'
 import { mockContracts } from '../mocks/contractMocks'
 import type {
   Invoice, InvoicePaymentStatus, InvoicePaymentMethod,
-  InvoiceItem, InvoiceType,
+  InvoiceItem, InvoiceType, NotificationStatus, EInvoiceStatus,
 } from '../types/invoice'
 import { useInvoices, useRecordPayment } from '../hooks/useInvoices'
 
@@ -32,6 +32,18 @@ const S_CFG: Record<InvoicePaymentStatus, { badge: string; dot: string; tab: str
   cancelled: { badge: 'bg-slate-100 text-slate-500 border-slate-200',  dot: 'bg-slate-300',  tab: 'border-slate-400 text-slate-500' },
 }
 
+const NOTIF_CFG: Record<NotificationStatus, string> = {
+  not_sent: 'bg-slate-100 text-slate-500',
+  sent:     'bg-green-50 text-green-600',
+  failed:   'bg-red-50 text-red-600',
+}
+
+const EINVOICE_CFG: Record<EInvoiceStatus, string> = {
+  issued:         'bg-green-50 text-green-600',
+  not_issued:     'bg-amber-50 text-amber-600',
+  not_applicable: 'bg-slate-100 text-slate-400',
+}
+
 const PAYMENT_METHOD_IDS: InvoicePaymentMethod[] = [
   'cash', 'bank_transfer', 'vnpay', 'momo', 'zalopay',
 ]
@@ -45,6 +57,13 @@ const PAGE_SIZE = 8
 
 const EMPTY_ITEM: InvoiceItem = { description: '', quantity: 1, unitPrice: 0, totalPrice: 0 }
 
+const BANK_INFO = {
+  bankId: 'VCB',
+  bankName: 'Vietcombank',
+  accountNo: '1017686865',
+  accountName: 'CONG TY TNHH COWORKING SPACE',
+}
+
 export default function InvoicesPage() {
   const { t } = useTranslation('invoices')
 
@@ -54,10 +73,12 @@ export default function InvoicesPage() {
   const [page, setPage] = useState(1)
   const [detailInv, setDetailInv] = useState<InvoiceWithStatus | null>(null)
   const [payInv, setPayInv] = useState<InvoiceWithStatus | null>(null)
+  const [actionMenu, setActionMenu] = useState<string | null>(null)
 
   const [payAmount, setPayAmount] = useState('')
   const [payMethod, setPayMethod] = useState<InvoicePaymentMethod>('cash')
   const [payNotes, setPayNotes] = useState('')
+  const [payIssueEInvoice, setPayIssueEInvoice] = useState(false)
   const [paySuccess, setPaySuccess] = useState(false)
 
   const [showCreate, setShowCreate] = useState(false)
@@ -72,7 +93,12 @@ export default function InvoicesPage() {
   const [cDiscount, setCDiscount] = useState(0)
   const [cTaxPercent, setCTaxPercent] = useState(10)
   const [cNotes, setCNotes] = useState('')
-  const [cErrors, setCErrors] = useState<Record<string, string>>({})
+  const [cPayMethod, setCPayMethod] = useState<InvoicePaymentMethod>('bank_transfer')
+  const [cErrors, setCErrors] = useState<Record<string, string>>({})  
+
+  // QR payment info modal
+  const [qrInv, setQrInv] = useState<InvoiceWithStatus | null>(null)
+  const [copied, setCopied] = useState(false)
 
   const { data: rawInvoices = [] } = useInvoices()
   const recordPayment = useRecordPayment()
@@ -124,6 +150,7 @@ export default function InvoicesPage() {
     setPayAmount(String(inv.totalAmount - inv.paidAmount))
     setPayMethod('cash')
     setPayNotes('')
+    setPayIssueEInvoice(false)
     setPaySuccess(false)
   }
 
@@ -147,6 +174,7 @@ export default function InvoicesPage() {
     setCDiscount(0)
     setCTaxPercent(10)
     setCNotes('')
+    setCPayMethod('bank_transfer')
     setCErrors({})
     setShowCreate(true)
   }
@@ -270,11 +298,17 @@ export default function InvoicesPage() {
       createdBy: 'staff-001',
       createdAt: now,
       updatedAt: now,
+      emailStatus: 'not_sent',
+      zaloStatus: 'not_sent',
+      eInvoiceStatus: 'not_issued',
       computedStatus: 'unpaid',
     }
 
     setShowCreate(false)
-    openPay(newInvoice)
+    if (cPayMethod === 'bank_transfer') {
+      setCopied(false)
+      setQrInv(newInvoice)
+    }
   }
 
   const STATUS_TABS: Array<{ key: StatusFilter; label: string }> = [
@@ -376,15 +410,17 @@ export default function InvoicesPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-[130px_1fr_130px_100px_100px_120px_130px_80px] gap-3 px-5 py-2.5 bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-400 uppercase tracking-wide">
+            <div className="grid grid-cols-[120px_1fr_110px_90px_90px_110px_120px_100px_120px_70px] gap-2 px-5 py-2.5 bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-400 uppercase tracking-wide">
               <span>{t('col_invoice_code')}</span>
               <span>{t('col_customer')}</span>
               <span>{t('col_source')}</span>
               <span>{t('col_invoice_date')}</span>
               <span>{t('col_due_date')}</span>
               <span className="text-right">{t('col_total')}</span>
+              <span>{t('col_notification')}</span>
+              <span>{t('col_einvoice')}</span>
               <span>{t('col_status')}</span>
-              <span />
+              <span className="text-center">{t('col_actions')}</span>
             </div>
 
             {filtered.length === 0 ? (
@@ -400,7 +436,7 @@ export default function InvoicesPage() {
                   const canPay = inv.computedStatus === 'unpaid' || inv.computedStatus === 'overdue' || inv.computedStatus === 'partial'
                   return (
                     <div key={inv.id}
-                      className={'grid grid-cols-[130px_1fr_130px_100px_100px_120px_130px_80px] gap-3 items-center px-5 py-3.5 hover:bg-slate-50/80 transition-colors ' + (isDue ? 'bg-red-50/20' : '')}>
+                      className={'grid grid-cols-[120px_1fr_110px_90px_90px_110px_120px_100px_120px_70px] gap-2 items-center px-5 py-3.5 hover:bg-slate-50/80 transition-colors ' + (isDue ? 'bg-red-50/20' : '')}>
                       <span className="text-xs font-mono font-semibold text-slate-700">{inv.invoiceCode}</span>
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-slate-700 truncate">{inv.customerName}</p>
@@ -421,20 +457,49 @@ export default function InvoicesPage() {
                           <p className="text-[10px] text-green-600">{t('paid_partial', { amount: fmt(inv.paidAmount) })}</p>
                         )}
                       </div>
+                      <div className="flex flex-col gap-0.5">
+                        <span className={'text-[10px] px-1.5 py-0.5 rounded font-medium ' + NOTIF_CFG[inv.emailStatus]}>
+                          {t('notif_email_' + inv.emailStatus)}
+                        </span>
+                        <span className={'text-[10px] px-1.5 py-0.5 rounded font-medium ' + NOTIF_CFG[inv.zaloStatus]}>
+                          {t('notif_zalo_' + inv.zaloStatus)}
+                        </span>
+                      </div>
+                      <span className={'text-[10px] px-2 py-0.5 rounded-full font-medium ' + EINVOICE_CFG[inv.eInvoiceStatus]}>
+                        {t('einvoice_' + inv.eInvoiceStatus)}
+                      </span>
                       <span className={'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border ' + cfg.badge}>
                         <span className={'w-1.5 h-1.5 rounded-full shrink-0 ' + cfg.dot} />
                         {t('status_' + inv.computedStatus)}
                       </span>
-                      <div className="flex items-center gap-1 justify-end">
-                        <button onClick={() => setDetailInv(inv)}
-                          className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors" title={t('btn_view')}>
-                          <Eye className="w-4 h-4 text-slate-400" />
+                      <div className="relative flex justify-center">
+                        <button onClick={() => setActionMenu(actionMenu === inv.id ? null : inv.id)}
+                          className="p-1.5 hover:bg-slate-100 rounded-lg transition-colors">
+                          <MoreVertical className="w-4 h-4 text-slate-400" />
                         </button>
-                        {canPay && (
-                          <button onClick={() => openPay(inv)}
-                            className="p-1.5 hover:bg-green-50 rounded-lg transition-colors" title={t('btn_record_payment')}>
-                            <CheckCircle2 className="w-4 h-4 text-green-500" />
-                          </button>
+                        {actionMenu === inv.id && (
+                          <>
+                            <div className="fixed inset-0 z-40" onClick={() => setActionMenu(null)} />
+                            <div className="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl border border-slate-100 shadow-lg z-50 py-1 text-sm">
+                              <button onClick={() => { setDetailInv(inv); setActionMenu(null) }}
+                                className="w-full flex items-center justify-start gap-2.5 px-3 py-2 hover:bg-slate-50 text-slate-700 text-left">
+                                <Eye className="w-4 h-4 text-slate-400 shrink-0" />
+                                {t('btn_view')}
+                              </button>
+                              {canPay && (
+                                <button onClick={() => { openPay(inv); setActionMenu(null) }}
+                                  className="w-full flex items-center justify-start gap-2.5 px-3 py-2 hover:bg-slate-50 text-slate-700 text-left">
+                                  <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                                  {t('btn_record_payment')}
+                                </button>
+                              )}
+                              <button onClick={() => setActionMenu(null)}
+                                className="w-full flex items-center justify-start gap-2.5 px-3 py-2 hover:bg-slate-50 text-slate-700 text-left">
+                                <Printer className="w-4 h-4 text-slate-400 shrink-0" />
+                                {t('btn_print_invoice')}
+                              </button>
+                            </div>
+                          </>
                         )}
                       </div>
                     </div>
@@ -624,6 +689,14 @@ export default function InvoicesPage() {
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
                     placeholder={t('pay_notes_placeholder')} value={payNotes} onChange={e => setPayNotes(e.target.value)} />
                 </div>
+                <label className="flex items-center gap-2.5 p-3 rounded-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors">
+                  <input type="checkbox" checked={payIssueEInvoice} onChange={e => setPayIssueEInvoice(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 accent-[#b11e29]" />
+                  <span className="text-sm text-slate-700">{t('pay_issue_einvoice')}</span>
+                </label>
+                <p className="text-xs text-blue-600 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
+                  {t('pay_receipt_notice')}
+                </p>
                 <div className="flex gap-3 pt-1">
                   <button onClick={() => setPayInv(null)}
                     className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-50">
@@ -639,6 +712,84 @@ export default function InvoicesPage() {
           </div>
         </div>
       )}
+
+      {/* ══ Modal: QR Bank Transfer ══ */}
+      {qrInv && (() => {
+        const transferContent = qrInv.invoiceCode + ' ' + qrInv.customerName
+        const qrUrl = 'https://img.vietqr.io/image/' + BANK_INFO.bankId + '-' + BANK_INFO.accountNo + '-compact2.png?amount=' + qrInv.totalAmount + '&addInfo=' + encodeURIComponent(transferContent) + '&accountName=' + encodeURIComponent(BANK_INFO.accountName)
+        return (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
+                <h2 className="font-semibold text-slate-800">{t('qr_title')}</h2>
+                <button onClick={() => setQrInv(null)} className="p-2 hover:bg-slate-100 rounded-lg">
+                  <X className="w-4 h-4 text-slate-500" />
+                </button>
+              </div>
+              <div className="p-6 space-y-5">
+                {/* QR Code */}
+                <div className="flex justify-center">
+                  <div className="bg-white rounded-xl border-2 border-slate-100 p-3">
+                    <img
+                      src={qrUrl}
+                      alt="VietQR"
+                      className="w-56 h-56 object-contain"
+                    />
+                  </div>
+                </div>
+
+                {/* Bank info */}
+                <div className="bg-slate-50 rounded-xl p-4 space-y-2.5">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Building2 className="w-4 h-4 text-slate-500" />
+                    <span className="text-sm font-semibold text-slate-700">{t('qr_bank_info')}</span>
+                  </div>
+                  <div className="grid grid-cols-[100px_1fr] gap-y-2 text-sm">
+                    <span className="text-slate-400">{t('qr_bank_name')}</span>
+                    <span className="font-medium text-slate-700">{BANK_INFO.bankName}</span>
+                    <span className="text-slate-400">{t('qr_account_no')}</span>
+                    <span className="font-mono font-semibold text-slate-800">{BANK_INFO.accountNo}</span>
+                    <span className="text-slate-400">{t('qr_account_name')}</span>
+                    <span className="font-medium text-slate-700">{BANK_INFO.accountName}</span>
+                    <span className="text-slate-400">{t('qr_amount')}</span>
+                    <span className="font-bold text-[#b11e29]">{fmt(qrInv.totalAmount)}</span>
+                  </div>
+                </div>
+
+                {/* Transfer content */}
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">{t('qr_transfer_content')}</label>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 px-3 py-2.5 bg-amber-50 border border-amber-200 rounded-lg font-mono text-sm font-semibold text-slate-800 select-all">
+                      {transferContent}
+                    </div>
+                    <button
+                      onClick={() => { navigator.clipboard.writeText(transferContent); setCopied(true); setTimeout(() => setCopied(false), 2000) }}
+                      className={'p-2.5 rounded-lg border transition-all ' + (copied ? 'bg-green-50 border-green-300 text-green-600' : 'border-slate-200 text-slate-500 hover:bg-slate-50')}
+                      title={t('qr_copy')}
+                    >
+                      {copied ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  {copied && <p className="text-xs text-green-600 mt-1">{t('qr_copied')}</p>}
+                </div>
+
+                {/* Invoice summary */}
+                <div className="bg-slate-50 rounded-xl p-3 text-sm space-y-1">
+                  <div className="flex justify-between text-slate-600"><span>{t('pay_invoice')}</span><span className="font-mono font-medium">{qrInv.invoiceCode}</span></div>
+                  <div className="flex justify-between text-slate-600"><span>{t('pay_customer')}</span><span className="font-medium">{qrInv.customerName}</span></div>
+                </div>
+              </div>
+              <div className="px-6 py-4 border-t border-slate-100 shrink-0">
+                <button onClick={() => setQrInv(null)}
+                  className="w-full py-2.5 bg-[#b11e29] text-white rounded-xl text-sm font-semibold hover:bg-[#8f1820]">
+                  {t('btn_close')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {showCreate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -829,6 +980,21 @@ export default function InvoicesPage() {
                     <span>{t('detail_grand_total')}</span>
                     <span className="text-[#b11e29]">{fmt(cFinalTotal)}</span>
                   </div>
+                </div>
+              </div>
+
+              {/* Payment method */}
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">{t('pay_method_label')}</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {PAYMENT_METHOD_IDS.map(m => (
+                    <label key={m} className={'flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer text-sm transition-all '
+                      + (cPayMethod === m ? 'border-[#b11e29] bg-[#b11e29]/5' : 'border-slate-200 hover:border-slate-300')}>
+                      <input type="radio" name="cpm" value={m} className="accent-[#b11e29]"
+                        checked={cPayMethod === m} onChange={() => setCPayMethod(m)} />
+                      <span className="text-slate-700">{t('method_' + m)}</span>
+                    </label>
+                  ))}
                 </div>
               </div>
 
