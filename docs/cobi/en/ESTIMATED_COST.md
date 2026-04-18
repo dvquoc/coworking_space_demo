@@ -12,13 +12,13 @@
 
 ## 1. Cost Overview
 
-| Phase | Duration | Platform | Cost (VND) |
+| Phase | Duration | Platform | Cost (VNĐ) |
 |-------|----------|----------|------------|
-| **Phase 1** — Core Operations | 5 months | 🖥️ Web App | **1.10 – 1.58 billion** |
-| **Phase 2** — Expansion & Mobile | 3 months | 📱 Mobile App + Web | **420 – 580 million** |
-| **Phase 3** — Advanced & Finalization | 2 months | 🖥️ Web App | **150 – 220 million** |
+| **Phase 1** — Core Operations | 5 months | 🖥️ Web App | **1.10 – 1.58 tỷ** |
+| **Phase 2** — Expansion & Mobile | 3 months | 📱 Mobile App + Web | **420 – 580 triệu** |
+| **Phase 3** — Advanced & Finalization | 2 months | 🖥️ Web App | **150 – 220 triệu** |
 | | | | |
-| **TOTAL ALL 3 PHASES** | **10 months** | | **1.67 – 2.38 billion** |
+| **TOTAL ALL 3 PHASES** | **10 months** | | **1.67 – 2.38 tỷ** |
 
 ---
 
@@ -40,14 +40,14 @@
 
 ### Phase 1 Cost Breakdown
 
-| Item | Estimate (VND) |
+| Item | Estimate (VNĐ) |
 |------|----------------|
-| Software Development (Backend + Frontend) | 830M – 1.21 billion |
+| Software Development (Backend + Frontend) | 830M – 1.21 tỷ |
 | Payment Integration (VNPay, MoMo, ZaloPay) | 70 – 105M |
 | Infrastructure & DevOps (5 months staging + production) | 45 – 75M |
 | Testing & QA | 110 – 140M |
 | Training & Documentation | 45 – 50M |
-| **Phase 1 Total** | **1.10 – 1.58 billion** |
+| **Phase 1 Total** | **1.10 – 1.58 tỷ** |
 
 ### Phase 1 Deliverables
 
@@ -77,14 +77,14 @@
 
 ### Phase 2 Cost Breakdown
 
-| Item | Estimate (VND) |
+| Item | Estimate (VNĐ) |
 |------|----------------|
 | Mobile App Development (iOS + Android) | 170 – 240M |
 | Web Module Development (CRM, Events, Feedback, Access) | 130 – 190M |
 | App Store / Google Play Submission & Fees | 15 – 30M |
 | Testing & QA (Web + Mobile) | 70 – 85M |
 | Training for New Features | 35 – 35M |
-| **Phase 2 Total** | **420 – 580 million** |
+| **Phase 2 Total** | **420 – 580 triệu** |
 
 ### Phase 2 Deliverables
 
@@ -111,12 +111,12 @@
 
 ### Phase 3 Cost Breakdown
 
-| Item | Estimate (VND) |
+| Item | Estimate (VNĐ) |
 |------|----------------|
 | Development (Backend + Frontend) | 100 – 155M |
 | Testing & QA | 30 – 40M |
 | Performance Optimization | 20 – 25M |
-| **Phase 3 Total** | **150 – 220 million** |
+| **Phase 3 Total** | **150 – 220 triệu** |
 
 ### Phase 3 Deliverables
 
@@ -170,14 +170,14 @@
 
 ### Estimated Payment Amounts
 
-| Installment | Rate | Min (VND) | Max (VND) |
+| Installment | Rate | Min (VNĐ) | Max (VNĐ) |
 |-------------|------|-----------|-----------|
 | Payment 1 | 30% | 501M | 714M |
 | Payment 2 | 25% | 418M | 595M |
 | Payment 3 | 25% | 418M | 595M |
 | Payment 4 | 10% | 167M | 238M |
 | Payment 5 | 10% | 167M | 238M |
-| **Total** | **100%** | **1.67 billion** | **2.38 billion** |
+| **Total** | **100%** | **1.67 tỷ** | **2.38 tỷ** |
 
 ---
 
@@ -201,6 +201,6 @@
 
 ---
 
-> **Total Investment**: **2.00 – 2.45 billion VND** for the complete system  
+> **Total Investment**: **2.00 – 2.45 tỷ VNĐ** for the complete system  
 > **Duration**: 10 months (Phase 1 required, Phase 2-3 expansion)  
 > **Warranty**: 6 months free per Phase
