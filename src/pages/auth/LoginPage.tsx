@@ -2,9 +2,27 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { LogIn, Mail, Lock, AlertCircle } from 'lucide-react'
+import { LogIn, Mail, Lock, AlertCircle, Shield, Users } from 'lucide-react'
 import { useLogin, getErrorMessage } from '../../hooks/useAuth'
-import type { LoginRequest } from '../../types/auth'
+import type { LoginRequest, UserRole } from '../../types/auth'
+
+const DEMO_ACCOUNTS: Array<{ email: string; password: string; name: string; role: UserRole; description: string }> = [
+  { email: 'admin@cobi.vn', password: 'password', name: 'Admin User', role: 'admin', description: 'Toàn quyền hệ thống' },
+  { email: 'manager@cobi.vn', password: 'password', name: 'Manager User', role: 'manager', description: 'Quản lý vận hành' },
+  { email: 'sale@cobi.vn', password: 'password', name: 'Sale User', role: 'sale', description: 'Kinh doanh & bán hàng' },
+  { email: 'accountant@cobi.vn', password: 'password', name: 'Accountant User', role: 'accountant', description: 'Kế toán & tài chính' },
+  { email: 'maintenance@cobi.vn', password: 'password', name: 'Maintenance User', role: 'maintenance', description: 'Bảo trì & kỹ thuật' },
+  { email: 'investor@cobi.vn', password: 'password', name: 'Investor User', role: 'investor', description: 'Nhà đầu tư' },
+]
+
+const ROLE_COLORS: Record<UserRole, string> = {
+  admin: 'bg-red-100 text-red-700',
+  manager: 'bg-blue-100 text-blue-700',
+  sale: 'bg-green-100 text-green-700',
+  accountant: 'bg-amber-100 text-amber-700',
+  maintenance: 'bg-slate-100 text-slate-700',
+  investor: 'bg-purple-100 text-purple-700',
+}
 
 interface LoginFormData {
   email: string
@@ -175,6 +193,41 @@ export default function LoginPage() {
             )}
           </button>
         </form>
+      </div>
+
+      {/* Demo Account Picker */}
+      <div className="mt-6">
+        <div className="flex items-center gap-2 mb-3">
+          <Users className="w-4 h-4 text-slate-400" />
+          <p className="text-sm font-medium text-slate-500">Chọn tài khoản demo</p>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {DEMO_ACCOUNTS.map((account) => (
+            <button
+              key={account.email}
+              type="button"
+              onClick={() => {
+                setValue('email', account.email)
+                setValue('password', account.password)
+              }}
+              className="flex items-start gap-3 p-3 bg-white border border-slate-100 rounded-xl hover:border-[#b11e29]/30 hover:bg-[#b11e29]/5 transition-all text-left group shadow-sm"
+            >
+              <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center shrink-0 group-hover:bg-[#b11e29]/10 transition-colors">
+                <Shield className="w-4 h-4 text-slate-500 group-hover:text-[#b11e29] transition-colors" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium text-slate-700 truncate">{account.name}</p>
+                <p className="text-xs text-slate-400 truncate">{account.email}</p>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full uppercase ${ROLE_COLORS[account.role]}`}>
+                    {account.role}
+                  </span>
+                  <span className="text-[10px] text-slate-400">{account.description}</span>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )
