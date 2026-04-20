@@ -32,7 +32,7 @@ export default function AuthLayout() {
         <div>
           <div className="flex items-center gap-3 text-white">
             <Building2 className="w-10 h-10" />
-            <span className="text-2xl font-bold">COBI TOWER</span>
+            <span className="text-2xl font-bold">COBI TOWER</span> 
           </div>
         </div>
 
