@@ -39,6 +39,8 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormData>({
     defaultValues: {
+      email: 'manager@cobi.vn',
+      password: 'password',
       rememberMe: false,
     },
   })

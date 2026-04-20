@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { 
   Users, 
   Plus, 
@@ -22,6 +23,7 @@ import { CustomerFormModal } from '../../components/customers/CustomerFormModal'
 import type { CustomerListItem, CustomerStatus, CustomerType } from '../../types/customer'
 
 export function CustomerListPage() {
+  const { t } = useTranslation('customers')
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   
@@ -88,7 +90,7 @@ export function CustomerListPage() {
   }
 
   const handleSuspendCustomer = async (customer: CustomerListItem) => {
-    const reason = prompt('Nhập lý do tạm ngưng khách hàng:')
+    const reason = prompt(t('confirm_suspend_prompt'))
     if (reason) {
       try {
         await suspendMutation.mutateAsync({ id: customer.id, reason })
@@ -100,7 +102,7 @@ export function CustomerListPage() {
   }
 
   const handleReactivateCustomer = async (customer: CustomerListItem) => {
-    if (confirm('Bạn có chắc muốn kích hoạt lại khách hàng này?')) {
+    if (confirm(t('confirm_reactivate'))) {
       try {
         await reactivateMutation.mutateAsync(customer.id)
       } catch (error) {
@@ -122,9 +124,9 @@ export function CustomerListPage() {
       suspended: 'bg-rose-100 text-rose-700',
     }
     const labels = {
-      active: 'Hoạt động',
-      inactive: 'Không hoạt động',
-      suspended: 'Tạm ngưng',
+      active: t('status_active'),
+      inactive: t('status_inactive'),
+      suspended: t('status_suspended'),
     }
     return (
       <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${styles[status]}`}>
@@ -138,7 +140,7 @@ export function CustomerListPage() {
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
           <Building2 className="w-3 h-3" />
-          Công ty
+          {t('type_company')}
         </span>
       )
     }
@@ -146,14 +148,14 @@ export function CustomerListPage() {
       return (
         <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-700">
           <UserCheck className="w-3 h-3" />
-          TV Công ty
+          {t('type_company_member')}
         </span>
       )
     }
     return (
       <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-slate-100 text-slate-600">
         <User className="w-3 h-3" />
-        Cá nhân
+        {t('type_individual')}
       </span>
     )
   }
@@ -161,8 +163,8 @@ export function CustomerListPage() {
   return (
     <>
       <Header 
-        title="Khách hàng" 
-        subtitle="Quản lý thông tin khách hàng"
+        title={t('page_title')} 
+        subtitle={t('page_subtitle')}
       />
       
       <main className="flex-1 overflow-y-auto p-6">
@@ -172,7 +174,7 @@ export function CustomerListPage() {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600">Tổng khách hàng</p>
+                  <p className="text-sm text-slate-600">{t('stat_total')}</p>
                   <p className="text-2xl font-semibold text-slate-900 mt-1">
                     {stats.total}
                   </p>
@@ -186,7 +188,7 @@ export function CustomerListPage() {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600">Đang hoạt động</p>
+                  <p className="text-sm text-slate-600">{t('stat_active')}</p>
                   <p className="text-2xl font-semibold text-slate-900 mt-1">
                     {stats.active}
                   </p>
@@ -200,7 +202,7 @@ export function CustomerListPage() {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600">Cá nhân</p>
+                  <p className="text-sm text-slate-600">{t('stat_individual')}</p>
                   <p className="text-2xl font-semibold text-slate-900 mt-1">
                     {stats.individual}
                   </p>
@@ -214,7 +216,7 @@ export function CustomerListPage() {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600">Công ty</p>
+                  <p className="text-sm text-slate-600">{t('stat_company')}</p>
                   <p className="text-2xl font-semibold text-slate-900 mt-1">
                     {stats.company}
                   </p>
@@ -228,7 +230,7 @@ export function CustomerListPage() {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600">TV Công ty</p>
+                  <p className="text-sm text-slate-600">{t('stat_company_member')}</p>
                   <p className="text-2xl font-semibold text-slate-900 mt-1">
                     {stats.companyMember}
                   </p>
@@ -242,7 +244,7 @@ export function CustomerListPage() {
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-slate-600">Tổng số dư Credit</p>
+                  <p className="text-sm text-slate-600">{t('stat_total_credit')}</p>
                   <p className="text-2xl font-semibold text-slate-900 mt-1">
                     {new Intl.NumberFormat('vi-VN').format(stats.totalCredit)} Credit
                   </p>
@@ -259,13 +261,13 @@ export function CustomerListPage() {
             {/* Header & Filters */}
             <div className="p-6 border-b border-slate-200">
               <div className="flex items-center justify-between gap-4 mb-4">
-                <h2 className="text-lg font-semibold text-slate-900">Danh sách khách hàng</h2>
+                <h2 className="text-lg font-semibold text-slate-900">{t('list_title')}</h2>
                 <button 
                   onClick={() => setIsModalOpen(true)}
                   className="px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821] transition-colors flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
-                  Thêm khách hàng
+                  {t('btn_add')}
                 </button>
               </div>
 
@@ -275,7 +277,7 @@ export function CustomerListPage() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="text"
-                    placeholder="Tìm kiếm theo tên, email, SĐT..."
+                    placeholder={t('search_placeholder')}
                     value={search}
                     onChange={(e) => updateParams({ search: e.target.value || undefined })}
                     className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
@@ -287,10 +289,10 @@ export function CustomerListPage() {
                   onChange={(e) => updateParams({ status: e.target.value || undefined })}
                   className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
                 >
-                  <option value="">Tất cả trạng thái</option>
-                  <option value="active">Hoạt động</option>
-                  <option value="inactive">Không hoạt động</option>
-                  <option value="suspended">Tạm ngưng</option>
+                  <option value="">{t('filter_all_status')}</option>
+                  <option value="active">{t('status_active')}</option>
+                  <option value="inactive">{t('status_inactive')}</option>
+                  <option value="suspended">{t('status_suspended')}</option>
                 </select>
 
                 <select
@@ -298,10 +300,10 @@ export function CustomerListPage() {
                   onChange={(e) => updateParams({ type: e.target.value || undefined })}
                   className="px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] focus:border-transparent"
                 >
-                  <option value="">Tất cả loại</option>
-                  <option value="individual">Cá nhân</option>
-                  <option value="company">Công ty</option>
-                  <option value="company_member">TV Công ty</option>
+                  <option value="">{t('filter_all_type')}</option>
+                  <option value="individual">{t('type_individual')}</option>
+                  <option value="company">{t('type_company')}</option>
+                  <option value="company_member">{t('type_company_member')}</option>
                 </select>
               </div>
             </div>
@@ -315,13 +317,13 @@ export function CustomerListPage() {
                 </div>
               ) : error ? (
                 <div className="p-12 text-center text-rose-500">
-                  Lỗi: {error.message}
+                  {t('error_prefix')}: {error.message}
                 </div>
               ) : !data || data.items.length === 0 ? (
                 <div className="p-12 text-center text-slate-500">
                   <Users className="w-12 h-12 mx-auto mb-4 text-slate-300" />
-                  <p className="text-lg font-medium">Không tìm thấy khách hàng</p>
-                  <p className="text-sm mt-1">Thêm khách hàng đầu tiên để bắt đầu</p>
+                  <p className="text-lg font-medium">{t('empty_title')}</p>
+                  <p className="text-sm mt-1">{t('empty_subtitle')}</p>
                 </div>
               ) : (
                 <table className="w-full">
@@ -331,22 +333,22 @@ export function CustomerListPage() {
                         Mã KH
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
-                        Thông tin
+                        {t('col_info')}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
-                        Liên hệ
+                        {t('col_contact')}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
-                        Loại
+                        {t('col_type')}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
-                        Tags
+                        {t('col_tags')}
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">
-                        Số dư Credit
+                        {t('col_credit')}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
-                        Trạng thái
+                        {t('col_status')}
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">
                         
@@ -442,26 +444,26 @@ export function CustomerListPage() {
                                   className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                                 >
                                   <Eye className="w-4 h-4" />
-                                  Xem chi tiết
+                                  {t('menu_view')}
                                 </button>
                                 <button
                                   onClick={() => handleEditCustomer(customer)}
                                   className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                                 >
                                   <Edit className="w-4 h-4" />
-                                  Chỉnh sửa
+                                  {t('menu_edit')}
                                 </button>
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation()
                                     // TODO: Open top-up modal
-                                    alert(`Nạp Credit cho ${customer.fullName} - Coming soon`)
+                                    alert(t('menu_topup_coming_soon', { name: customer.fullName }))
                                     setOpenMenuId(null)
                                   }}
                                   className="w-full px-4 py-2 text-left text-sm text-amber-600 hover:bg-amber-50 flex items-center gap-2"
                                 >
                                   <CirclePlus className="w-4 h-4" />
-                                  Nạp Credit
+                                  {t('menu_topup')}
                                 </button>
                                 <hr className="my-1 border-slate-200" />
                                 {customer.status === 'suspended' ? (
@@ -470,7 +472,7 @@ export function CustomerListPage() {
                                     className="w-full px-4 py-2 text-left text-sm text-emerald-600 hover:bg-emerald-50 flex items-center gap-2"
                                   >
                                     <CheckCircle className="w-4 h-4" />
-                                    Kích hoạt lại
+                                    {t('menu_reactivate')}
                                   </button>
                                 ) : (
                                   <button
@@ -478,7 +480,7 @@ export function CustomerListPage() {
                                     className="w-full px-4 py-2 text-left text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-2"
                                   >
                                     <Ban className="w-4 h-4" />
-                                    Tạm ngưng
+                                    {t('menu_suspend')}
                                   </button>
                                 )}
                               </div>
@@ -496,7 +498,7 @@ export function CustomerListPage() {
             {data && data.pagination.totalPages > 1 && (
               <div className="p-4 border-t border-slate-200 flex items-center justify-between">
                 <p className="text-sm text-slate-600">
-                  Hiển thị {(page - 1) * 10 + 1} - {Math.min(page * 10, data.pagination.totalItems)} / {data.pagination.totalItems} khách hàng
+                  {t('pagination_showing', { from: (page - 1) * 10 + 1, to: Math.min(page * 10, data.pagination.totalItems), total: data.pagination.totalItems })}
                 </p>
                 <div className="flex items-center gap-2">
                   <button
@@ -504,7 +506,7 @@ export function CustomerListPage() {
                     disabled={page <= 1}
                     className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
                   >
-                    Trước
+                    {t('pagination_prev')}
                   </button>
                   {Array.from({ length: data.pagination.totalPages }, (_, i) => i + 1).map((p) => (
                     <button
@@ -524,7 +526,7 @@ export function CustomerListPage() {
                     disabled={page >= data.pagination.totalPages}
                     className="px-3 py-1.5 border border-slate-300 rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50"
                   >
-                    Sau
+                    {t('pagination_next')}
                   </button>
                 </div>
               </div>

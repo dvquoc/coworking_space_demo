@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   Plus,
   Search,
@@ -16,6 +17,7 @@ interface EmployeesTabProps {
 }
 
 export function EmployeesTab({ customerId }: EmployeesTabProps) {
+  const { t } = useTranslation('customers')
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all')
   const [isFormOpen, setIsFormOpen] = useState(false)
@@ -55,7 +57,7 @@ export function EmployeesTab({ customerId }: EmployeesTabProps) {
   }
   
   const handleDeactivate = (id: string) => {
-    if (confirm('Bạn có chắc muốn vô hiệu hóa nhân viên này?')) {
+    if (confirm(t('emp_confirm_deactivate'))) {
       deactivateMutation.mutate({ employeeId: id, options: {} })
     }
     setOpenMenuId(null)
@@ -114,13 +116,13 @@ export function EmployeesTab({ customerId }: EmployeesTabProps) {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <div className="text-sm text-slate-600">
-            Tổng: <span className="font-semibold">{stats.total}</span>
+            {t('emp_stat_total')} <span className="font-semibold">{stats.total}</span>
           </div>
           <div className="text-sm text-slate-600">
-            Đang hoạt động: <span className="font-semibold text-emerald-600">{stats.active}</span>
+            {t('emp_stat_active')} <span className="font-semibold text-emerald-600">{stats.active}</span>
           </div>
           <div className="text-sm text-slate-600">
-            Admin: <span className="font-semibold text-purple-600">{stats.admin}</span>
+            {t('emp_stat_admin')} <span className="font-semibold text-purple-600">{stats.admin}</span>
           </div>
         </div>
         
@@ -132,7 +134,7 @@ export function EmployeesTab({ customerId }: EmployeesTabProps) {
           className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821] transition-colors"
         >
           <Plus className="w-4 h-4" />
-          Thêm nhân viên
+          {t('emp_btn_add')}
         </button>
       </div>
       
@@ -142,7 +144,7 @@ export function EmployeesTab({ customerId }: EmployeesTabProps) {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Tìm kiếm nhân viên..."
+            placeholder={t('emp_search_placeholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/20 focus:border-[#b11e29]"
@@ -154,9 +156,9 @@ export function EmployeesTab({ customerId }: EmployeesTabProps) {
           onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
           className="px-4 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/20 focus:border-[#b11e29]"
         >
-          <option value="all">Tất cả trạng thái</option>
-          <option value="active">Đang hoạt động</option>
-          <option value="inactive">Vô hiệu hóa</option>
+          <option value="all">{t('emp_filter_all')}</option>
+          <option value="active">{t('emp_filter_active')}</option>
+          <option value="inactive">{t('emp_filter_inactive')}</option>
         </select>
       </div>
       
@@ -166,8 +168,8 @@ export function EmployeesTab({ customerId }: EmployeesTabProps) {
           <Users className="w-12 h-12 mx-auto text-slate-300 mb-4" />
           <p className="text-slate-600">
             {search || statusFilter !== 'all' 
-              ? 'Không tìm thấy nhân viên phù hợp' 
-              : 'Chưa có nhân viên nào'}
+              ? t('emp_empty_search') 
+              : t('emp_empty')}
           </p>
         </div>
       ) : (
@@ -175,12 +177,12 @@ export function EmployeesTab({ customerId }: EmployeesTabProps) {
           <table className="w-full">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Nhân viên</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Email</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Chức danh</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Vai trò</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Trạng thái</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-slate-600 uppercase">Hành động</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('emp_col_employee')}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('emp_col_email')}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('emp_col_title')}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('emp_col_role')}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('emp_col_status')}</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-slate-600 uppercase">{t('emp_col_action')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -229,7 +231,7 @@ export function EmployeesTab({ customerId }: EmployeesTabProps) {
                               className="w-full px-4 py-2 text-sm text-left text-slate-700 hover:bg-slate-50 flex items-center gap-2"
                             >
                               <Edit className="w-4 h-4" />
-                              Chỉnh sửa
+                              {t('emp_menu_edit')}
                             </button>
                             {employee.status === 'active' ? (
                               <button
@@ -237,7 +239,7 @@ export function EmployeesTab({ customerId }: EmployeesTabProps) {
                                 className="w-full px-4 py-2 text-sm text-left text-rose-600 hover:bg-rose-50 flex items-center gap-2"
                               >
                                 <Ban className="w-4 h-4" />
-                                Vô hiệu hóa
+                                {t('emp_menu_deactivate')}
                               </button>
                             ) : (
                               <button
@@ -245,7 +247,7 @@ export function EmployeesTab({ customerId }: EmployeesTabProps) {
                                 className="w-full px-4 py-2 text-sm text-left text-emerald-600 hover:bg-emerald-50 flex items-center gap-2"
                               >
                                 <CheckCircle className="w-4 h-4" />
-                                Kích hoạt lại
+                                {t('emp_menu_reactivate')}
                               </button>
                             )}
                           </div>
@@ -293,6 +295,7 @@ interface EmployeeFormModalProps {
 type RoleType = 'admin' | 'member' | 'guest'
 
 function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeFormModalProps) {
+  const { t } = useTranslation('customers')
   const [formData, setFormData] = useState({
     firstName: employee?.firstName || '',
     lastName: employee?.lastName || '',
@@ -307,10 +310,10 @@ function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeF
   
   const validate = () => {
     const newErrors: Record<string, string> = {}
-    if (!formData.firstName.trim()) newErrors.firstName = 'Vui lòng nhập họ'
-    if (!formData.lastName.trim()) newErrors.lastName = 'Vui lòng nhập tên'
-    if (!formData.email.trim()) newErrors.email = 'Vui lòng nhập email'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = 'Email không hợp lệ'
+    if (!formData.firstName.trim()) newErrors.firstName = t('emp_err_first_name')
+    if (!formData.lastName.trim()) newErrors.lastName = t('emp_err_last_name')
+    if (!formData.email.trim()) newErrors.email = t('emp_err_email_required')
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = t('emp_err_email_invalid')
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -339,7 +342,7 @@ function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeF
       <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white flex items-center justify-between px-6 py-4 border-b border-slate-200">
           <h2 className="text-lg font-semibold text-slate-900">
-            {employee ? 'Chỉnh sửa nhân viên' : 'Thêm nhân viên mới'}
+            {employee ? t('emp_form_title_edit') : t('emp_form_title_add')}
           </h2>
           <button 
             onClick={onClose}
@@ -354,7 +357,7 @@ function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeF
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Họ <span className="text-rose-500">*</span>
+                {t('emp_form_first_name')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
@@ -371,7 +374,7 @@ function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeF
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Tên <span className="text-rose-500">*</span>
+                {t('emp_form_last_name')} <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
@@ -391,7 +394,7 @@ function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeF
           {/* Email */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Email <span className="text-rose-500">*</span>
+              {t('emp_form_email')} <span className="text-rose-500">*</span>
             </label>
             <input
               type="email"
@@ -410,7 +413,7 @@ function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeF
           {/* Phone */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Số điện thoại
+              {t('emp_form_phone')}
             </label>
             <input
               type="tel"
@@ -425,7 +428,7 @@ function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeF
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Chức danh
+                {t('emp_form_title_field')}
               </label>
               <input
                 type="text"
@@ -437,7 +440,7 @@ function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeF
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">
-                Phòng ban
+                {t('emp_form_department')}
               </label>
               <input
                 type="text"
@@ -452,16 +455,16 @@ function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeF
           {/* Role */}
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">
-              Vai trò
+              {t('emp_form_role')}
             </label>
             <select
               value={formData.role}
               onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value as RoleType }))}
               className="w-full px-4 py-2 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/20 focus:border-[#b11e29]"
             >
-              <option value="admin">Admin - Có quyền quản lý</option>
-              <option value="member">Member - Có quyền đặt chỗ</option>
-              <option value="guest">Guest - Chỉ xem</option>
+              <option value="admin">{t('emp_form_role_admin')}</option>
+              <option value="member">{t('emp_form_role_member')}</option>
+              <option value="guest">{t('emp_form_role_guest')}</option>
             </select>
           </div>
           
@@ -473,7 +476,7 @@ function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeF
               className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors"
               disabled={isLoading}
             >
-              Hủy
+              {t('emp_form_btn_cancel')}
             </button>
             <button
               type="submit"
@@ -483,7 +486,7 @@ function EmployeeFormModal({ employee, onClose, onSubmit, isLoading }: EmployeeF
               {isLoading && (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               )}
-              {employee ? 'Cập nhật' : 'Thêm mới'}
+              {employee ? t('emp_form_btn_update') : t('emp_form_btn_create')}
             </button>
           </div>
         </form>

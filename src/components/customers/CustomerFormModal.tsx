@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { X, User, Building2, UserCheck } from 'lucide-react'
 import { useCreateCustomer, useUpdateCustomer, useCustomer } from '../../hooks/useCustomers'
 import { TagSelect } from './TagChip'
@@ -12,6 +13,7 @@ interface CustomerFormModalProps {
 }
 
 export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormModalProps) {
+  const { t } = useTranslation('customers')
   const isEditing = !!customerId
   
   // Fetch customer data if editing
@@ -85,27 +87,27 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
     
     // Common validations
     if (!formData.email) {
-      newErrors.email = 'Email là bắt buộc'
+      newErrors.email = t('err_email_required')
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Email không hợp lệ'
+      newErrors.email = t('err_email_invalid')
     }
     
     if (!formData.phone) {
-      newErrors.phone = 'Số điện thoại là bắt buộc'
+      newErrors.phone = t('err_phone_required')
     } else if (!/^0[0-9]{9,10}$/.test(formData.phone)) {
-      newErrors.phone = 'Số điện thoại không hợp lệ'
+      newErrors.phone = t('err_phone_invalid')
     }
     
     if (customerType === 'individual' || customerType === 'company_member') {
-      if (!formData.firstName) newErrors.firstName = 'Họ là bắt buộc'
-      if (!formData.lastName) newErrors.lastName = 'Tên là bắt buộc'
+      if (!formData.firstName) newErrors.firstName = t('err_first_name_required')
+      if (!formData.lastName) newErrors.lastName = t('err_last_name_required')
       if (customerType === 'company_member' && !formData.companyId) {
-        newErrors.companyId = 'Vui lòng chọn công ty'
+        newErrors.companyId = t('err_company_required')
       }
     } else {
-      if (!formData.companyName) newErrors.companyName = 'Tên công ty là bắt buộc'
-      if (!formData.taxCode) newErrors.taxCode = 'Mã số thuế là bắt buộc'
-      if (!formData.contactPersonName) newErrors.contactPersonName = 'Tên người liên hệ là bắt buộc'
+      if (!formData.companyName) newErrors.companyName = t('err_company_name_required')
+      if (!formData.taxCode) newErrors.taxCode = t('err_tax_code_required')
+      if (!formData.contactPersonName) newErrors.contactPersonName = t('err_contact_name_required')
     }
     
     setErrors(newErrors)
@@ -150,7 +152,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-slate-200">
             <h2 className="text-xl font-semibold text-slate-900">
-              {isEditing ? 'Chỉnh sửa khách hàng' : 'Thêm khách hàng mới'}
+              {isEditing ? t('form_title_edit') : t('form_title_add')}
             </h2>
             <button
               onClick={onClose}
@@ -167,7 +169,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
               {!isEditing && (
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Loại khách hàng
+                    {t('form_type_label')}
                   </label>
                   <div className="flex gap-3">
                     <button
@@ -180,7 +182,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                       }`}
                     >
                       <User className="w-5 h-5" />
-                      <span className="font-medium">Cá nhân</span>
+                      <span className="font-medium">{t('type_individual')}</span>
                     </button>
                     <button
                       type="button"
@@ -192,7 +194,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                       }`}
                     >
                       <Building2 className="w-5 h-5" />
-                      <span className="font-medium">Công ty</span>
+                      <span className="font-medium">{t('type_company')}</span>
                     </button>
                     <button
                       type="button"
@@ -204,7 +206,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                       }`}
                     >
                       <UserCheck className="w-5 h-5" />
-                      <span className="font-medium text-sm">TV Công ty</span>
+                      <span className="font-medium text-sm">{t('type_company_member')}</span>
                     </button>
                   </div>
                 </div>
@@ -216,7 +218,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Họ và tên đệm <span className="text-rose-500">*</span>
+                        {t('form_first_name')} <span className="text-rose-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -233,7 +235,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Tên <span className="text-rose-500">*</span>
+                        {t('form_last_name')} <span className="text-rose-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -253,7 +255,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Ngày sinh
+                        {t('form_date_of_birth')}
                       </label>
                       <input
                         type="date"
@@ -264,7 +266,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
-                        CCCD/CMND
+                        {t('form_national_id')}
                       </label>
                       <input
                         type="text"
@@ -281,10 +283,10 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
               {/* Company Selector (for company_member) */}
               {customerType === 'company_member' && (
                 <div className="p-4 bg-purple-50 rounded-xl">
-                  <h3 className="font-medium text-purple-900 mb-3">Thuộc công ty</h3>
+                  <h3 className="font-medium text-purple-900 mb-3">{t('form_belongs_to_company')}</h3>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">
-                      Chọn công ty <span className="text-rose-500">*</span>
+                      {t('form_select_company')} <span className="text-rose-500">*</span>
                     </label>
                     <select
                       value={formData.companyId || ''}
@@ -293,7 +295,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                         errors.companyId ? 'border-rose-500' : 'border-slate-300'
                       }`}
                     >
-                      <option value="">-- Chọn công ty --</option>
+                      <option value="">{t('form_select_company_placeholder')}</option>
                       {mockCompanies.filter(c => c.status === 'active').map(company => (
                         <option key={company.id} value={company.id}>
                           {company.companyName} ({company.companyCode})
@@ -311,11 +313,11 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
               {customerType === 'company' && (
                 <>
                   <div className="p-4 bg-blue-50 rounded-xl">
-                    <h3 className="font-medium text-blue-900 mb-3">Thông tin công ty</h3>
+                    <h3 className="font-medium text-blue-900 mb-3">{t('form_company_info')}</h3>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Tên công ty <span className="text-rose-500">*</span>
+                          {t('form_company_name')} <span className="text-rose-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -332,7 +334,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Mã số thuế <span className="text-rose-500">*</span>
+                          {t('form_tax_code')} <span className="text-rose-500">*</span>
                         </label>
                         <input
                           type="text"
@@ -349,7 +351,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Ngành nghề
+                          {t('form_industry')}
                         </label>
                         <input
                           type="text"
@@ -361,21 +363,21 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Quy mô
+                          {t('form_company_size')}
                         </label>
                         <select
                           value={formData.companySize || 'sme'}
                           onChange={(e) => handleChange('companySize', e.target.value as CompanySize)}
                           className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29]"
                         >
-                          <option value="startup">Startup (1-10)</option>
-                          <option value="sme">SME (11-50)</option>
-                          <option value="enterprise">Enterprise (50+)</option>
+                          <option value="startup">{t('form_size_startup')}</option>
+                          <option value="sme">{t('form_size_sme')}</option>
+                          <option value="enterprise">{t('form_size_enterprise')}</option>
                         </select>
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Năm thành lập
+                          {t('form_founded_year')}
                         </label>
                         <input
                           type="number"
@@ -389,7 +391,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                       </div>
                       <div className="col-span-2">
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Địa chỉ ĐKKD
+                          {t('form_registered_address')}
                         </label>
                         <input
                           type="text"
@@ -401,7 +403,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                          Website
+                          {t('form_website')}
                         </label>
                         <input
                           type="url"
@@ -417,7 +419,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Tên người liên hệ <span className="text-rose-500">*</span>
+                        {t('form_contact_name')} <span className="text-rose-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -434,7 +436,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-slate-700 mb-1">
-                        Chức vụ
+                        {t('form_contact_title')}
                       </label>
                       <input
                         type="text"
@@ -452,7 +454,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Email <span className="text-rose-500">*</span>
+                    {t('form_email')} <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="email"
@@ -469,7 +471,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">
-                    Số điện thoại <span className="text-rose-500">*</span>
+                    {t('form_phone')} <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="tel"
@@ -488,7 +490,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
               
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Địa chỉ
+                  {t('form_address')}
                 </label>
                 <input
                   type="text"
@@ -502,7 +504,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
               {/* Tags */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Tags
+                  {t('form_tags')}
                 </label>
                 <TagSelect
                   selectedTags={formData.tags || []}
@@ -513,14 +515,14 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
               {/* Notes */}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Ghi chú
+                  {t('form_notes')}
                 </label>
                 <textarea
                   value={formData.notes || ''}
                   onChange={(e) => handleChange('notes', e.target.value)}
                   rows={3}
                   className="w-full px-4 py-2 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#b11e29] resize-none"
-                  placeholder="Ghi chú về khách hàng..."
+                  placeholder={t('form_notes_placeholder')}
                 />
               </div>
             </div>
@@ -532,7 +534,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                 onClick={onClose}
                 className="px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-xl transition-colors"
               >
-                Hủy
+                {t('form_btn_cancel')}
               </button>
               <button
                 type="submit"
@@ -542,7 +544,7 @@ export function CustomerFormModal({ isOpen, onClose, customerId }: CustomerFormM
                 {isLoading && (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 )}
-                {isEditing ? 'Cập nhật' : 'Tạo khách hàng'}
+                {isEditing ? t('form_btn_update') : t('form_btn_create')}
               </button>
             </div>
           </form>

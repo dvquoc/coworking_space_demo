@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import {
   ChevronLeft,
   Building2,
@@ -33,6 +34,7 @@ import type { CustomerBooking, CustomerContract, CustomerInvoice, CreditRewardSo
 type TabType = 'overview' | 'bookings' | 'contracts' | 'invoices' | 'employees'
 
 export function CustomerDetailsPage() {
+  const { t } = useTranslation('customers')
   const { customerId } = useParams<{ customerId: string }>()
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -66,7 +68,7 @@ export function CustomerDetailsPage() {
   if (isLoading) {
     return (
       <>
-        <Header title="Chi tiết khách hàng" subtitle="Đang tải..." />
+        <Header title={t('detail_title')} subtitle={t('detail_loading')} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-center h-64">
@@ -81,18 +83,18 @@ export function CustomerDetailsPage() {
   if (error || !customer) {
     return (
       <>
-        <Header title="Chi tiết khách hàng" subtitle="Lỗi" />
+        <Header title={t('detail_title')} subtitle={t('detail_error')} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="text-center py-12">
               <AlertCircle className="w-12 h-12 mx-auto text-rose-500 mb-4" />
-              <h2 className="text-xl font-semibold text-slate-900 mb-2">Không tìm thấy khách hàng</h2>
-              <p className="text-slate-600 mb-4">Khách hàng này không tồn tại hoặc đã bị xóa.</p>
+              <h2 className="text-xl font-semibold text-slate-900 mb-2">{t('detail_not_found')}</h2>
+              <p className="text-slate-600 mb-4">{t('detail_not_found_desc')}</p>
               <button
                 onClick={() => navigate('/customers')}
                 className="px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821] transition-colors"
               >
-                Quay lại danh sách
+                {t('detail_back_list')}
               </button>
             </div>
           </div>
@@ -108,9 +110,9 @@ export function CustomerDetailsPage() {
       suspended: 'bg-rose-100 text-rose-700',
     }
     const labels: Record<string, string> = {
-      active: 'Hoạt động',
-      inactive: 'Không hoạt động',
-      suspended: 'Tạm ngưng',
+      active: t('status_active'),
+      inactive: t('status_inactive'),
+      suspended: t('status_suspended'),
     }
     return (
       <span className={`px-3 py-1 text-sm font-medium rounded-full ${styles[status]}`}>
@@ -120,11 +122,11 @@ export function CustomerDetailsPage() {
   }
   
   const tabs = [
-    { id: 'overview', label: 'Tổng quan', icon: TrendingUp },
-    { id: 'bookings', label: 'Đặt chỗ', icon: Calendar },
-    { id: 'contracts', label: 'Hợp đồng', icon: FileText },
-    { id: 'invoices', label: 'Hóa đơn', icon: CreditCard },
-    ...(customer.customerType === 'company' ? [{ id: 'employees', label: 'Nhân viên', icon: Users }] : []),
+    { id: 'overview', label: t('tab_overview'), icon: TrendingUp },
+    { id: 'bookings', label: t('tab_bookings'), icon: Calendar },
+    { id: 'contracts', label: t('tab_contracts'), icon: FileText },
+    { id: 'invoices', label: t('tab_invoices'), icon: CreditCard },
+    ...(customer.customerType === 'company' ? [{ id: 'employees', label: t('tab_employees'), icon: Users }] : []),
   ]
   
   return (
@@ -139,7 +141,7 @@ export function CustomerDetailsPage() {
           <nav className="flex items-center gap-2 text-sm">
             <Link to="/customers" className="text-slate-500 hover:text-slate-700 flex items-center gap-1">
               <ChevronLeft className="w-4 h-4" />
-              Khách hàng
+              {t('detail_breadcrumb')}
             </Link>
             <span className="text-slate-400">/</span>
             <span className="text-slate-900 font-medium">{customer.customerCode}</span>
@@ -150,7 +152,7 @@ export function CustomerDetailsPage() {
             {customer.status === 'suspended' && (
               <div className="mb-4 p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-center gap-3">
                 <Ban className="w-5 h-5 text-rose-600" />
-                <span className="text-rose-700 font-medium">Khách hàng này đang bị tạm ngưng</span>
+                <span className="text-rose-700 font-medium">{t('detail_suspended_warning')}</span>
               </div>
             )}
             <div className="flex items-start justify-between">
@@ -174,12 +176,12 @@ export function CustomerDetailsPage() {
                     {getStatusBadge(customer.status)}
                     {customer.customerType === 'company' && (
                       <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
-                        CÔNG TY
+                        {t('type_company_upper')}
                       </span>
                     )}
                     {customer.customerType === 'company_member' && (
                       <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-purple-100 text-purple-700">
-                        TV CÔNG TY
+                        {t('type_company_member_upper')}
                       </span>
                     )}
                   </div>
@@ -203,17 +205,17 @@ export function CustomerDetailsPage() {
                   className="px-4 py-2 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 transition-colors flex items-center gap-2"
                 >
                   <Edit className="w-4 h-4" />
-                  Chỉnh sửa
+                  {t('detail_btn_edit')}
                 </button>
                 {customer.status === 'suspended' ? (
                   <button className="px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-colors flex items-center gap-2">
                     <CheckCircle className="w-4 h-4" />
-                    Kích hoạt
+                    {t('detail_btn_activate')}
                   </button>
                 ) : (
                   <button className="px-4 py-2 border border-rose-300 text-rose-600 rounded-xl hover:bg-rose-50 transition-colors flex items-center gap-2">
                     <Ban className="w-4 h-4" />
-                    Tạm ngưng
+                    {t('detail_btn_suspend')}
                   </button>
                 )}
               </div>
@@ -235,7 +237,7 @@ export function CustomerDetailsPage() {
                 <div className="flex flex-col items-center bg-white border border-amber-100 rounded-lg px-3 py-2 min-w-[120px]">
                   <div className="flex items-center gap-1 mb-0.5">
                     <Wallet className="w-4 h-4 text-amber-600" />
-                    <span className="text-xs text-amber-700 font-semibold uppercase">Chính</span>
+                    <span className="text-xs text-amber-700 font-semibold uppercase">{t('wallet_main')}</span>
                   </div>
                   <span className="text-lg font-bold text-amber-800">{new Intl.NumberFormat('vi-VN').format(customer.creditBalance || 0)}</span>
                   <span className="text-xs text-slate-400">Credit</span>
@@ -256,28 +258,28 @@ export function CustomerDetailsPage() {
                   className="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-sm font-semibold hover:bg-amber-700 flex items-center gap-1"
                 >
                   <CirclePlus className="w-4 h-4" />
-                  Nạp Credit
+                  {t('wallet_btn_topup')}
                 </button>
                 <button
                   onClick={() => { setGiftAmount(''); setGiftSource('promotion'); setGiftExpiry(''); setGiftDesc(''); setGiftSuccess(false); setShowGift(true) }}
                   className="px-3 py-1.5 border border-purple-300 text-purple-700 rounded-lg text-sm font-semibold hover:bg-purple-50 flex items-center gap-1"
                 >
                   <Gift className="w-4 h-4" />
-                  Tặng Credit
+                  {t('wallet_btn_gift')}
                 </button>
                 <button
                   onClick={() => navigate(`/credits?customerId=${customerId}`)}
                   className="px-3 py-1.5 border border-slate-300 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-50 flex items-center gap-1"
                 >
                   <Clock className="w-4 h-4" />
-                  Xem lịch sử giao dịch
+                  {t('wallet_btn_history')}
                 </button>
               </div>
             </div>
             <div className="flex items-center gap-2 mt-2 ml-1">
-              <span className="text-xs text-slate-500">Quy đổi:</span>
-              <span className="text-xs font-bold text-amber-700">1 Credit = 1 VNĐ</span>
-              <span className="text-xs text-slate-400">(áp dụng cho thanh toán dịch vụ)</span>
+              <span className="text-xs text-slate-500">{t('wallet_exchange_label')}</span>
+              <span className="text-xs font-bold text-amber-700">{t('wallet_exchange_rate')}</span>
+              <span className="text-xs text-slate-400">{t('wallet_exchange_note')}</span>
             </div>
           </div>
              
@@ -338,7 +340,7 @@ export function CustomerDetailsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <h2 className="font-semibold text-slate-800">Nạp Credit</h2>
+              <h2 className="font-semibold text-slate-800">{t('topup_title')}</h2>
               <button onClick={() => setShowTopUp(false)} className="p-2 hover:bg-slate-100 rounded-lg">
                 <X className="w-4 h-4 text-slate-500" />
               </button>
@@ -349,13 +351,13 @@ export function CustomerDetailsPage() {
                 <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
                   <CheckCircle2 className="w-7 h-7 text-green-600" />
                 </div>
-                <p className="font-semibold text-slate-800 text-lg">Nạp thành công!</p>
+                <p className="font-semibold text-slate-800 text-lg">{t('topup_success')}</p>
                 <p className="text-sm text-slate-500 text-center">
                   Đã nạp <strong className="text-amber-700">{Number(topUpAmount).toLocaleString('vi-VN')} Credit</strong> cho <strong>{customer.fullName}</strong>
                 </p>
                 <button onClick={() => setShowTopUp(false)}
                   className="mt-2 px-6 py-2 bg-[#b11e29] text-white rounded-lg text-sm font-medium hover:bg-[#8f1820]">
-                  Đóng
+                  {t('topup_close')}
                 </button>
               </div>
             ) : (
@@ -369,19 +371,19 @@ export function CustomerDetailsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-800">{customer.fullName}</p>
-                    <p className="text-xs text-slate-500">Số dư hiện tại: <span className="font-semibold text-amber-700">{(customer.creditBalance || 0).toLocaleString('vi-VN')} Credit</span></p>
+                    <p className="text-xs text-slate-500">{t('topup_current_balance')} <span className="font-semibold text-amber-700">{(customer.creditBalance || 0).toLocaleString('vi-VN')} Credit</span></p>
                   </div>
                 </div>
 
                 {/* Amount */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-1">Số Credit nạp</label>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">{t('topup_amount_label')}</label>
                   <input
                     type="number"
                     min={100}
                     max={50000}
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
-                    placeholder="Nhập số credit (100 - 50.000)"
+                    placeholder={t('topup_amount_placeholder')}
                     value={topUpAmount}
                     onChange={e => setTopUpAmount(e.target.value)}
                   />
@@ -400,12 +402,12 @@ export function CustomerDetailsPage() {
 
                 {/* Payment method */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-2">Phương thức thanh toán</label>
+                  <label className="block text-sm font-medium text-slate-600 mb-2">{t('topup_method_label')}</label>
                   <div className="grid grid-cols-3 gap-2">
                     {([
-                      ['cash', 'Tiền mặt'],
-                      ['bank_transfer', 'Chuyển khoản'],
-                      ['card', 'Thẻ'],
+                      ['cash', t('topup_method_cash')],
+                      ['bank_transfer', t('topup_method_bank')],
+                      ['card', t('topup_method_card')],
                     ] as const).map(([id, label]) => (
                       <label key={id} className={`flex items-center justify-center gap-1.5 p-2.5 rounded-lg border cursor-pointer text-sm font-medium transition-all
                         ${topUpMethod === id ? 'border-[#b11e29] bg-[#b11e29]/5 text-[#b11e29]' : 'border-slate-200 text-slate-600 hover:border-slate-300'}`}>
@@ -421,12 +423,12 @@ export function CustomerDetailsPage() {
                 <div className="flex gap-3 pt-2">
                   <button onClick={() => setShowTopUp(false)}
                     className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-50">
-                    Hủy
+                    {t('topup_btn_cancel')}
                   </button>
                   <button onClick={() => setTopUpSuccess(true)}
                     disabled={!topUpAmount || Number(topUpAmount) < 100 || Number(topUpAmount) > 50000}
                     className="flex-1 py-2.5 bg-[#b11e29] text-white rounded-xl text-sm font-semibold hover:bg-[#8f1820] disabled:opacity-40 disabled:cursor-not-allowed">
-                    {Number(topUpAmount) >= 100 ? `Nạp ${Number(topUpAmount).toLocaleString('vi-VN')} Credit` : 'Nạp Credit'}
+                    {Number(topUpAmount) >= 100 ? t('topup_btn_submit', { amount: Number(topUpAmount).toLocaleString('vi-VN') }) : t('topup_btn_submit_default')}
                   </button>
                 </div>
               </div>
@@ -440,7 +442,7 @@ export function CustomerDetailsPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <h2 className="font-semibold text-slate-800">Tặng Credit Reward</h2>
+              <h2 className="font-semibold text-slate-800">{t('gift_title')}</h2>
               <button onClick={() => setShowGift(false)} className="p-2 hover:bg-slate-100 rounded-lg">
                 <X className="w-4 h-4 text-slate-500" />
               </button>
@@ -451,13 +453,13 @@ export function CustomerDetailsPage() {
                 <div className="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center">
                   <Gift className="w-7 h-7 text-purple-600" />
                 </div>
-                <p className="font-semibold text-slate-800 text-lg">Tặng thành công!</p>
+                <p className="font-semibold text-slate-800 text-lg">{t('gift_success')}</p>
                 <p className="text-sm text-slate-500 text-center">
                   Đã tặng <strong className="text-purple-700">{Number(giftAmount).toLocaleString('vi-VN')} Credit</strong> reward cho <strong>{customer.fullName}</strong>
                 </p>
                 <button onClick={() => setShowGift(false)}
                   className="mt-2 px-6 py-2 bg-[#b11e29] text-white rounded-lg text-sm font-medium hover:bg-[#8f1820]">
-                  Đóng
+                  {t('gift_close')}
                 </button>
               </div>
             ) : (
@@ -469,18 +471,18 @@ export function CustomerDetailsPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-slate-800">{customer.fullName}</p>
-                    <p className="text-xs text-slate-500">Reward hiện tại: <span className="font-semibold text-purple-700">{(customer.rewardBalance || 0).toLocaleString('vi-VN')} Credit</span></p>
+                    <p className="text-xs text-slate-500">{t('gift_current_reward')} <span className="font-semibold text-purple-700">{(customer.rewardBalance || 0).toLocaleString('vi-VN')} Credit</span></p>
                   </div>
                 </div>
 
                 {/* Amount */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-1">Số Credit tặng</label>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">{t('gift_amount_label')}</label>
                   <input
                     type="number"
                     min={1}
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
-                    placeholder="Nhập số credit reward"
+                    placeholder={t('gift_amount_placeholder')}
                     value={giftAmount}
                     onChange={e => setGiftAmount(e.target.value)}
                   />
@@ -493,14 +495,14 @@ export function CustomerDetailsPage() {
 
                 {/* Source */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-2">Nguồn tặng</label>
+                  <label className="block text-sm font-medium text-slate-600 mb-2">{t('gift_source_label')}</label>
                   <div className="grid grid-cols-3 gap-2">
                     {([
-                      ['promotion', 'Khuyến mãi'],
-                      ['referral', 'Giới thiệu'],
-                      ['birthday', 'Sinh nhật'],
-                      ['loyalty', 'Khách thân thiết'],
-                      ['compensation', 'Bồi thường'],
+                      ['promotion', t('gift_source_promotion')],
+                      ['referral', t('gift_source_referral')],
+                      ['birthday', t('gift_source_birthday')],
+                      ['loyalty', t('gift_source_loyalty')],
+                      ['compensation', t('gift_source_compensation')],
                     ] as [CreditRewardSource, string][]).map(([id, label]) => (
                       <label key={id} className={`flex items-center justify-center p-2 rounded-lg border cursor-pointer text-xs font-medium transition-all
                         ${giftSource === id ? 'border-purple-400 bg-purple-50 text-purple-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'}`}>
@@ -515,7 +517,7 @@ export function CustomerDetailsPage() {
                 {/* Expiry date */}
                 <div>
                   <label className="block text-sm font-medium text-slate-600 mb-1">
-                    Ngày hết hạn <span className="text-rose-500">*</span>
+                    {t('gift_expiry_label')} <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="date"
@@ -526,18 +528,18 @@ export function CustomerDetailsPage() {
                   />
                   {giftExpiry && (
                     <p className="text-xs text-slate-500 mt-1">
-                      Hết hạn sau {Math.ceil((new Date(giftExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} ngày
+                      {t('gift_expiry_days', { days: Math.ceil((new Date(giftExpiry).getTime() - Date.now()) / (1000 * 60 * 60 * 24)) })}
                     </p>
                   )}
                 </div>
 
                 {/* Description */}
                 <div>
-                  <label className="block text-sm font-medium text-slate-600 mb-1">Mô tả</label>
+                  <label className="block text-sm font-medium text-slate-600 mb-1">{t('gift_desc_label')}</label>
                   <textarea
                     rows={2}
                     className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30 resize-none"
-                    placeholder="VD: Thưởng giới thiệu khách hàng mới"
+                    placeholder={t('gift_desc_placeholder')}
                     value={giftDesc}
                     onChange={e => setGiftDesc(e.target.value)}
                   />
@@ -547,12 +549,12 @@ export function CustomerDetailsPage() {
                 <div className="flex gap-3 pt-2">
                   <button onClick={() => setShowGift(false)}
                     className="flex-1 py-2.5 border border-slate-200 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-50">
-                    Hủy
+                    {t('gift_btn_cancel')}
                   </button>
                   <button onClick={() => setGiftSuccess(true)}
                     disabled={!giftAmount || Number(giftAmount) < 1 || !giftExpiry}
                     className="flex-1 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-semibold hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed">
-                    {Number(giftAmount) >= 1 ? `Tặng ${Number(giftAmount).toLocaleString('vi-VN')} Credit` : 'Tặng Credit'}
+                    {Number(giftAmount) >= 1 ? t('gift_btn_submit', { amount: Number(giftAmount).toLocaleString('vi-VN') }) : t('gift_btn_submit_default')}
                   </button>
                 </div>
               </div>
@@ -566,81 +568,82 @@ export function CustomerDetailsPage() {
 
 // Overview Tab Component
 function OverviewTab({ customer }: { customer: NonNullable<ReturnType<typeof useCustomer>['data']> }) {
+  const { t } = useTranslation('customers')
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       {/* Customer Info */}
       <div>
-        <h3 className="font-semibold text-slate-900 mb-4">Thông tin khách hàng</h3>
+        <h3 className="font-semibold text-slate-900 mb-4">{t('overview_customer_info')}</h3>
         <div className="space-y-3">
           {(customer.customerType === 'individual' || customer.customerType === 'company_member') ? (
             <>
-              <InfoRow label="Họ tên" value={customer.fullName} />
+              <InfoRow label={t('info_full_name')} value={customer.fullName} />
               {customer.dateOfBirth && (
-                <InfoRow label="Ngày sinh" value={customer.dateOfBirth} />
+                <InfoRow label={t('info_date_of_birth')} value={customer.dateOfBirth} />
               )}
               {customer.nationalId && (
-                <InfoRow label="CCCD/CMND" value={customer.nationalId} masked />
+                <InfoRow label={t('info_national_id')} value={customer.nationalId} masked />
               )}
               {customer.customerType === 'company_member' && customer.company && (
-                <InfoRow label="Thuộc công ty" value={customer.company.companyName} icon={<Building2 className="w-4 h-4" />} />
+                <InfoRow label={t('info_belongs_to_company')} value={customer.company.companyName} icon={<Building2 className="w-4 h-4" />} />
               )}
             </>
           ) : (
             <>
               {customer.company && (
                 <>
-                  <InfoRow label="Tên công ty" value={customer.company.companyName} />
-                  <InfoRow label="Mã số thuế" value={customer.company.taxCode} />
+                  <InfoRow label={t('info_company_name')} value={customer.company.companyName} />
+                  <InfoRow label={t('info_tax_code')} value={customer.company.taxCode} />
                   {customer.company.industry && (
-                    <InfoRow label="Ngành nghề" value={customer.company.industry} />
+                    <InfoRow label={t('info_industry')} value={customer.company.industry} />
                   )}
                   {customer.company.companySize && (
-                    <InfoRow label="Quy mô" value={
-                      customer.company.companySize === 'startup' ? 'Startup (1-10)' :
-                      customer.company.companySize === 'sme' ? 'SME (11-50)' : 'Enterprise (50+)'
+                    <InfoRow label={t('info_company_size')} value={
+                      customer.company.companySize === 'startup' ? t('info_size_startup') :
+                      customer.company.companySize === 'sme' ? t('info_size_sme') : t('info_size_enterprise')
                     } />
                   )}
                 </>
               )}
               {customer.contactPersonName && (
-                <InfoRow label="Người liên hệ" value={`${customer.contactPersonName}${customer.contactPersonTitle ? ` - ${customer.contactPersonTitle}` : ''}`} />
+                <InfoRow label={t('info_contact_person')} value={`${customer.contactPersonName}${customer.contactPersonTitle ? ` - ${customer.contactPersonTitle}` : ''}`} />
               )}
             </>
           )}
-          <InfoRow label="Email" value={customer.email} type="email" />
-          <InfoRow label="Điện thoại" value={customer.phone} type="phone" />
+          <InfoRow label={t('info_email')} value={customer.email} type="email" />
+          <InfoRow label={t('info_phone')} value={customer.phone} type="phone" />
           {customer.alternativePhone && (
-            <InfoRow label="SĐT phụ" value={customer.alternativePhone} type="phone" />
+            <InfoRow label={t('info_alt_phone')} value={customer.alternativePhone} type="phone" />
           )}
           {customer.address && (
-            <InfoRow label="Địa chỉ" value={customer.address} icon={<MapPin className="w-4 h-4" />} />
+            <InfoRow label={t('info_address')} value={customer.address} icon={<MapPin className="w-4 h-4" />} />
           )}
         </div>
       </div>
       
       {/* Metadata */}
       <div>
-        <h3 className="font-semibold text-slate-900 mb-4">Thông tin bổ sung</h3>
+        <h3 className="font-semibold text-slate-900 mb-4">{t('overview_additional_info')}</h3>
         <div className="space-y-3">
           {customer.accountManagerInfo && (
-            <InfoRow label="Account Manager" value={customer.accountManagerInfo.name} />
+            <InfoRow label={t('info_account_manager')} value={customer.accountManagerInfo.name} />
           )}
           {customer.referredByCustomer && (
             <InfoRow 
-              label="Giới thiệu bởi" 
+              label={t('info_referred_by')} 
               value={`${customer.referredByCustomer.fullName} (${customer.referredByCustomer.customerCode})`} 
             />
           )}
-          <InfoRow label="Ngày tạo" value={new Date(customer.createdAt).toLocaleDateString('vi-VN')} icon={<Clock className="w-4 h-4" />} />
+          <InfoRow label={t('info_created_at')} value={new Date(customer.createdAt).toLocaleDateString('vi-VN')} icon={<Clock className="w-4 h-4" />} />
           {customer.createdByInfo && (
-            <InfoRow label="Người tạo" value={customer.createdByInfo.name} />
+            <InfoRow label={t('info_created_by')} value={customer.createdByInfo.name} />
           )}
         </div>
         
         {/* Notes */}
         {customer.notes && (
           <div className="mt-6">
-            <h3 className="font-semibold text-slate-900 mb-2">Ghi chú</h3>
+            <h3 className="font-semibold text-slate-900 mb-2">{t('overview_notes')}</h3>
             <p className="text-slate-600 p-3 bg-slate-50 rounded-xl">{customer.notes}</p>
           </div>
         )}
@@ -686,6 +689,7 @@ function InfoRow({
 
 // Bookings Tab Component
 function BookingsTab({ bookings }: { bookings: CustomerBooking[] }) {
+  const { t } = useTranslation('customers')
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
       pending: 'bg-amber-100 text-amber-700',
@@ -695,11 +699,11 @@ function BookingsTab({ bookings }: { bookings: CustomerBooking[] }) {
       cancelled: 'bg-rose-100 text-rose-700',
     }
     const labels: Record<string, string> = {
-      pending: 'Chờ xác nhận',
-      confirmed: 'Đã xác nhận',
-      checked_in: 'Đã check-in',
-      completed: 'Hoàn thành',
-      cancelled: 'Đã hủy',
+      pending: t('booking_status_pending'),
+      confirmed: t('booking_status_confirmed'),
+      checked_in: t('booking_status_checked_in'),
+      completed: t('booking_status_completed'),
+      cancelled: t('booking_status_cancelled'),
     }
     return (
       <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${styles[status]}`}>
@@ -712,7 +716,7 @@ function BookingsTab({ bookings }: { bookings: CustomerBooking[] }) {
     return (
       <div className="text-center py-8">
         <Calendar className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-        <p className="text-slate-600">Chưa có booking nào</p>
+        <p className="text-slate-600">{t('booking_empty')}</p>
       </div>
     )
   }
@@ -722,13 +726,13 @@ function BookingsTab({ bookings }: { bookings: CustomerBooking[] }) {
       <table className="w-full">
         <thead className="bg-slate-50 border-b border-slate-200">
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Mã</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Space</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Vị trí</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Ngày</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Giờ</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Trạng thái</th>
-            <th className="px-4 py-3 text-right text-xs font-medium text-slate-600 uppercase">Số tiền</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('booking_col_code')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('booking_col_space')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('booking_col_location')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('booking_col_date')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('booking_col_time')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('booking_col_status')}</th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-slate-600 uppercase">{t('booking_col_amount')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-200">
@@ -753,6 +757,7 @@ function BookingsTab({ bookings }: { bookings: CustomerBooking[] }) {
 
 // Contracts Tab Component
 function ContractsTab({ contracts }: { contracts: CustomerContract[] }) {
+  const { t } = useTranslation('customers')
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
       active: 'bg-emerald-100 text-emerald-700',
@@ -760,9 +765,9 @@ function ContractsTab({ contracts }: { contracts: CustomerContract[] }) {
       terminated: 'bg-rose-100 text-rose-700',
     }
     const labels: Record<string, string> = {
-      active: 'Đang hiệu lực',
-      expired: 'Hết hạn',
-      terminated: 'Đã chấm dứt',
+      active: t('contract_status_active'),
+      expired: t('contract_status_expired'),
+      terminated: t('contract_status_terminated'),
     }
     return (
       <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${styles[status]}`}>
@@ -775,7 +780,7 @@ function ContractsTab({ contracts }: { contracts: CustomerContract[] }) {
     return (
       <div className="text-center py-8">
         <FileText className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-        <p className="text-slate-600">Chưa có hợp đồng nào</p>
+        <p className="text-slate-600">{t('contract_empty')}</p>
       </div>
     )
   }
@@ -785,12 +790,12 @@ function ContractsTab({ contracts }: { contracts: CustomerContract[] }) {
       <table className="w-full">
         <thead className="bg-slate-50 border-b border-slate-200">
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Mã HĐ</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Space</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Bắt đầu</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Kết thúc</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Trạng thái</th>
-            <th className="px-4 py-3 text-right text-xs font-medium text-slate-600 uppercase">Giá/tháng</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('contract_col_code')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('contract_col_space')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('contract_col_start')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('contract_col_end')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('contract_col_status')}</th>
+            <th className="px-4 py-3 text-right text-xs font-medium text-slate-600 uppercase">{t('contract_col_monthly')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-200">
@@ -803,13 +808,13 @@ function ContractsTab({ contracts }: { contracts: CustomerContract[] }) {
                 {contract.endDate}
                 {contract.status === 'active' && contract.daysRemaining <= 30 && (
                   <span className="ml-2 px-1.5 py-0.5 text-xs font-medium rounded bg-amber-100 text-amber-700">
-                    Còn {contract.daysRemaining} ngày
+                    {t('contract_days_remaining', { days: contract.daysRemaining })}
                   </span>
                 )}
               </td>
               <td className="px-4 py-3">{getStatusBadge(contract.status)}</td>
               <td className="px-4 py-3 text-sm text-right font-medium text-slate-900">
-                {(contract.monthlyValue / 1000000).toFixed(0)}M/tháng
+                {t('contract_monthly_short', { amount: (contract.monthlyValue / 1000000).toFixed(0) })}
               </td>
             </tr>
           ))}
@@ -821,6 +826,7 @@ function ContractsTab({ contracts }: { contracts: CustomerContract[] }) {
 
 // Invoices Tab Component
 function InvoicesTab({ invoices }: { invoices: CustomerInvoice[] }) {
+  const { t } = useTranslation('customers')
   const getStatusBadge = (status: string) => {
     const styles: Record<string, string> = {
       draft: 'bg-slate-100 text-slate-600',
@@ -830,11 +836,11 @@ function InvoicesTab({ invoices }: { invoices: CustomerInvoice[] }) {
       cancelled: 'bg-slate-100 text-slate-500',
     }
     const labels: Record<string, string> = {
-      draft: 'Nháp',
-      sent: 'Đã gửi',
-      paid: 'Đã thanh toán',
-      overdue: 'Quá hạn',
-      cancelled: 'Đã hủy',
+      draft: t('invoice_status_draft'),
+      sent: t('invoice_status_sent'),
+      paid: t('invoice_status_paid'),
+      overdue: t('invoice_status_overdue'),
+      cancelled: t('invoice_status_cancelled'),
     }
     return (
       <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${styles[status]}`}>
@@ -855,7 +861,7 @@ function InvoicesTab({ invoices }: { invoices: CustomerInvoice[] }) {
     return (
       <div className="text-center py-8">
         <CreditCard className="w-12 h-12 mx-auto text-slate-300 mb-4" />
-        <p className="text-slate-600">Chưa có hóa đơn nào</p>
+        <p className="text-slate-600">{t('invoice_empty')}</p>
       </div>
     )
   }
@@ -865,15 +871,15 @@ function InvoicesTab({ invoices }: { invoices: CustomerInvoice[] }) {
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="p-4 bg-emerald-50 rounded-xl">
-          <p className="text-sm text-emerald-600 mb-1">Đã thanh toán</p>
+          <p className="text-sm text-emerald-600 mb-1">{t('invoice_summary_paid')}</p>
           <p className="text-xl font-bold text-emerald-700">{(summary.paid / 1000000).toFixed(0)}M</p>
         </div>
         <div className="p-4 bg-amber-50 rounded-xl">
-          <p className="text-sm text-amber-600 mb-1">Còn phải thu</p>
+          <p className="text-sm text-amber-600 mb-1">{t('invoice_summary_outstanding')}</p>
           <p className="text-xl font-bold text-amber-700">{(summary.outstanding / 1000000).toFixed(0)}M</p>
         </div>
         <div className="p-4 bg-rose-50 rounded-xl">
-          <p className="text-sm text-rose-600 mb-1">Quá hạn</p>
+          <p className="text-sm text-rose-600 mb-1">{t('invoice_summary_overdue')}</p>
           <p className="text-xl font-bold text-rose-700">{(summary.overdue / 1000000).toFixed(0)}M</p>
         </div>
       </div>
@@ -882,12 +888,12 @@ function InvoicesTab({ invoices }: { invoices: CustomerInvoice[] }) {
         <table className="w-full">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Mã HĐ</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Mô tả</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Ngày tạo</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Hạn TT</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">Trạng thái</th>
-              <th className="px-4 py-3 text-right text-xs font-medium text-slate-600 uppercase">Số tiền</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('invoice_col_code')}</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('invoice_col_description')}</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('invoice_col_created')}</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('invoice_col_due')}</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase">{t('invoice_col_status')}</th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-slate-600 uppercase">{t('invoice_col_amount')}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">
