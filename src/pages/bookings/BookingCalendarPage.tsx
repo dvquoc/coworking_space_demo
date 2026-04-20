@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   ChevronLeft, ChevronRight, X, Clock, AlertCircle, CheckCircle2,
   Minus, Plus, CreditCard, Banknote, Smartphone, LayoutGrid, User,
-  Landmark, Wallet,
+  Landmark, Wallet, Building2,
 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import Header from '../../components/layout/Header'
@@ -89,36 +89,48 @@ export function BookingCalendarPage() {
   const [sendInvoiceEmail, setSendInvoiceEmail] = useState(true)
   const [paymentSuccess, setPaymentSuccess] = useState(false)
 
-  // Cascading selects
+  // Modal space selection (cascading: building → floor → space)
+  const [modalBuildingId, setModalBuildingId] = useState('')
+  const [modalFloorId, setModalFloorId] = useState('')
+  const [modalSpaceId, setModalSpaceId] = useState('')
+
+  // Cascading selects (filter bar)
   const floors = useMemo(() => mockFloors.filter(f => f.buildingId === buildingId && f.status === 'active'), [buildingId])
   const spaces = useMemo(() => mockSpaces.filter(s => s.floorId === floorId && s.status !== 'maintenance'), [floorId])
-  const selectedSpace = useMemo(() => mockSpaces.find(s => s.id === spaceId), [spaceId])
+
+  // Cascading selects (modal)
+  const modalFloors = useMemo(() => mockFloors.filter(f => f.buildingId === modalBuildingId && f.status === 'active'), [modalBuildingId])
+  const modalSpaces = useMemo(() => mockSpaces.filter(s => s.floorId === modalFloorId && s.status !== 'maintenance'), [modalFloorId])
+  const selectedSpace = useMemo(() => mockSpaces.find(s => s.id === modalSpaceId), [modalSpaceId])
   const pricePerHour = useMemo(() => {
     if (!selectedSpace) return 0
     return mockPricingRules.find(p => p.spaceType === selectedSpace.type)?.pricePerHour ?? 0
   }, [selectedSpace])
 
+  // Filter bar selected space (for calendar dot display)
+  const filterSelectedSpace = useMemo(() => mockSpaces.find(s => s.id === spaceId), [spaceId])
+
   // Bookings filtered by selected space for calendar display
   const bookingsByDate = useMemo(() => {
     const map: Record<string, typeof mockBookingList> = {}
     for (const b of mockBookingList) {
-      if (spaceId && b.spaceName !== selectedSpace?.name) continue
+      if (spaceId && b.spaceName !== filterSelectedSpace?.name) continue
       const key = b.startTime.slice(0, 10)
       if (!map[key]) map[key] = []
       map[key].push(b)
     }
     return map
-  }, [spaceId, selectedSpace])
+  }, [spaceId, filterSelectedSpace])
 
-  // Bookings for selected date (in modal) — filtered by space
+  // Bookings for selected date (in modal) — filtered by modal space
   const dayBookings = useMemo(() => {
     if (!modalDate) return []
     return mockBookingList.filter(b => {
       const dateMatch = b.startTime.slice(0, 10) === modalDate
-      const spaceMatch = !spaceId || b.spaceName === selectedSpace?.name
+      const spaceMatch = !modalSpaceId || b.spaceName === selectedSpace?.name
       return dateMatch && spaceMatch
     })
-  }, [modalDate, spaceId, selectedSpace])
+  }, [modalDate, modalSpaceId, selectedSpace])
 
   // Price calculation
   const duration = calcMins(startTime, endTime)
@@ -159,11 +171,15 @@ export function BookingCalendarPage() {
     setSendInvoiceZalo(true)
     setSendInvoiceEmail(true)
     setPaymentSuccess(false)
+    // Initialize modal space from filter bar
+    setModalBuildingId(buildingId)
+    setModalFloorId(floorId)
+    setModalSpaceId(spaceId)
   }
 
   // Handle booking submit
   const handleBook = () => {
-    if (!spaceId) { setConflict(t('conflict_select_space')); return }
+    if (!modalSpaceId) { setConflict(t('conflict_select_space')); return }
     if (!startTime || !endTime) { setConflict(t('conflict_select_time')); return }
     if (calcMins(startTime, endTime) <= 0) { setConflict(t('conflict_end_after_start')); return }
     const overlapping = dayBookings.find(b => {
@@ -370,13 +386,13 @@ export function BookingCalendarPage() {
                 <div className="w-72 shrink-0 border-r border-slate-100 flex flex-col bg-slate-50 overflow-hidden">
                   <div className="px-4 py-3 border-b border-slate-100 bg-white">
                     <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">{t('calendar_booked')}</p>
-                    {!spaceId && <p className="text-[11px] text-slate-400 mt-0.5">{t('calendar_select_space')}</p>}
+                    {!modalSpaceId && <p className="text-[11px] text-slate-400 mt-0.5">{t('calendar_select_space')}</p>}
                   </div>
                   <div className="flex-1 overflow-auto p-3 space-y-2">
                     {dayBookings.filter(b => b.status !== 'cancelled').length === 0 ? (
                       <div className="flex flex-col items-center justify-center pt-10 gap-2 text-slate-400">
                         <LayoutGrid className="w-8 h-8 opacity-30" />
-                        <p className="text-xs text-center">{spaceId ? t('calendar_no_bookings') : t('calendar_no_data')}</p>
+                        <p className="text-xs text-center">{modalSpaceId ? t('calendar_no_bookings') : t('calendar_no_data')}</p>
                       </div>
                     ) : (
                       dayBookings.filter(b => b.status !== 'cancelled').map(b => (
@@ -453,6 +469,53 @@ export function BookingCalendarPage() {
                             value={customerEmail}
                             onChange={e => setCustomerEmail(e.target.value)}
                           />
+                        </div>
+                      </div>
+
+                      {/* Space selection */}
+                      <div>
+                        <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-700 mb-2">
+                          <Building2 className="w-4 h-4 text-[#b11e29]" /> {t('section_space')}
+                        </label>
+                        <div className="grid grid-cols-3 gap-2">
+                          <div>
+                            <p className="text-xs text-slate-500 mb-1">{t('label_building_short')}</p>
+                            <select
+                              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
+                              value={modalBuildingId}
+                              onChange={e => { setModalBuildingId(e.target.value); setModalFloorId(''); setModalSpaceId('') }}
+                            >
+                              <option value="">{t('placeholder_select_building')}</option>
+                              {mockBuildings.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500 mb-1">{t('label_floor_short')}</p>
+                            <select
+                              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
+                              value={modalFloorId}
+                              onChange={e => { setModalFloorId(e.target.value); setModalSpaceId('') }}
+                              disabled={!modalBuildingId}
+                            >
+                              <option value="">{t('placeholder_select_floor')}</option>
+                              {modalFloors.map(f => <option key={f.id} value={f.id}>{f.floorName || t('floor_label', { number: f.floorNumber })}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500 mb-1">{t('label_space_short')}</p>
+                            <select
+                              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#b11e29]/30"
+                              value={modalSpaceId}
+                              onChange={e => setModalSpaceId(e.target.value)}
+                              disabled={!modalFloorId}
+                            >
+                              <option value="">{t('placeholder_select_space')}</option>
+                              {modalSpaces.map(s => {
+                                const price = mockPricingRules.find(p => p.spaceType === s.type)?.pricePerHour
+                                return <option key={s.id} value={s.id}>{s.name}{price ? ` · ${(price / 1000).toFixed(0)}k/h` : ''}</option>
+                              })}
+                            </select>
+                          </div>
                         </div>
                       </div>
 

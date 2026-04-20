@@ -65,7 +65,7 @@ export function UserMenu() {
                 className="w-full px-4 py-2 text-left text-sm text-rose-600 hover:bg-rose-50 flex items-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
-                Đăng xuất
+                {t('logout')}
               </button>
             </div>
           </>

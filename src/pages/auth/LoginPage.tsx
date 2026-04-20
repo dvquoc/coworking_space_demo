@@ -6,13 +6,13 @@ import { LogIn, Mail, Lock, AlertCircle, Shield, Users } from 'lucide-react'
 import { useLogin, getErrorMessage } from '../../hooks/useAuth'
 import type { LoginRequest, UserRole } from '../../types/auth'
 
-const DEMO_ACCOUNTS: Array<{ email: string; password: string; name: string; role: UserRole; description: string }> = [
-  { email: 'admin@cobi.vn', password: 'password', name: 'Admin User', role: 'admin', description: 'Toàn quyền hệ thống' },
-  { email: 'manager@cobi.vn', password: 'password', name: 'Manager User', role: 'manager', description: 'Quản lý vận hành' },
-  { email: 'sale@cobi.vn', password: 'password', name: 'Sale User', role: 'sale', description: 'Kinh doanh & bán hàng' },
-  { email: 'accountant@cobi.vn', password: 'password', name: 'Accountant User', role: 'accountant', description: 'Kế toán & tài chính' },
-  { email: 'maintenance@cobi.vn', password: 'password', name: 'Maintenance User', role: 'maintenance', description: 'Bảo trì & kỹ thuật' },
-  { email: 'investor@cobi.vn', password: 'password', name: 'Investor User', role: 'investor', description: 'Nhà đầu tư' },
+const DEMO_ACCOUNTS: Array<{ email: string; password: string; nameKey: string; role: UserRole; descKey: string }> = [
+  { email: 'admin@cobi.vn', password: 'password', nameKey: 'demo_role_admin', role: 'admin', descKey: 'demo_desc_admin' },
+  { email: 'manager@cobi.vn', password: 'password', nameKey: 'demo_role_manager', role: 'manager', descKey: 'demo_desc_manager' },
+  { email: 'sale@cobi.vn', password: 'password', nameKey: 'demo_role_sale', role: 'sale', descKey: 'demo_desc_sale' },
+  { email: 'accountant@cobi.vn', password: 'password', nameKey: 'demo_role_accountant', role: 'accountant', descKey: 'demo_desc_accountant' },
+  { email: 'maintenance@cobi.vn', password: 'password', nameKey: 'demo_role_maintenance', role: 'maintenance', descKey: 'demo_desc_maintenance' },
+  { email: 'investor@cobi.vn', password: 'password', nameKey: 'demo_role_investor', role: 'investor', descKey: 'demo_desc_investor' },
 ]
 
 const ROLE_COLORS: Record<UserRole, string> = {
@@ -201,7 +201,7 @@ export default function LoginPage() {
       <div className="mt-6">
         <div className="flex items-center gap-2 mb-3">
           <Users className="w-4 h-4 text-slate-400" />
-          <p className="text-sm font-medium text-slate-500">Chọn tài khoản demo</p>
+          <p className="text-sm font-medium text-slate-500">{t('demo_title')}</p>
         </div>
         <div className="grid grid-cols-2 gap-2">
           {DEMO_ACCOUNTS.map((account) => (
@@ -218,13 +218,13 @@ export default function LoginPage() {
                 <Shield className="w-4 h-4 text-slate-500 group-hover:text-[#b11e29] transition-colors" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-slate-700 truncate">{account.name}</p>
+                <p className="text-sm font-medium text-slate-700 truncate">{t(account.nameKey)}</p>
                 <p className="text-xs text-slate-400 truncate">{account.email}</p>
                 <div className="flex items-center gap-1.5 mt-1">
                   <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full uppercase ${ROLE_COLORS[account.role]}`}>
-                    {account.role}
+                    {t(`demo_role_${account.role}`)}
                   </span>
-                  <span className="text-[10px] text-slate-400">{account.description}</span>
+                  <span className="text-[10px] text-slate-400">{t(account.descKey)}</span>
                 </div>
               </div>
             </button>
