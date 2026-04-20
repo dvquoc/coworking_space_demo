@@ -51,7 +51,7 @@ function detectLanguage(): string {
   if (saved && ['vi', 'en', 'ko'].includes(saved)) return saved
   const browser = navigator.language.split('-')[0]
   if (['vi', 'en', 'ko'].includes(browser)) return browser
-  return 'ko'
+  return 'en'
 }
 
 i18n
@@ -63,7 +63,7 @@ i18n
       ko: { common: koCommon, nav: koNav, auth: koAuth, reports: koReports, dashboard: koDashboard, contracts: koContracts, crm: koCrm, invoices: koInvoices, bookings: koBookings, pricing: koPricing, credit: koCredit, properties: koProperties, inventory: koInventory, customers: koCustomers },
     },
     lng: detectLanguage(),
-    fallbackLng: 'vi',
+    fallbackLng: 'en',
     defaultNS: 'common',
     interpolation: { escapeValue: false },
   })
