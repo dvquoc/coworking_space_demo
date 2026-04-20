@@ -65,7 +65,7 @@ export default function AccountingDashboard() {
   if (isLoading) {
     return (
       <>
-        <Header title="Accounting Dashboard" subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
+        <Header title={t('title_accounting')} subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -85,7 +85,7 @@ export default function AccountingDashboard() {
   if (error || !data) {
     return (
       <>
-        <Header title="Accounting Dashboard" subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
+        <Header title={t('title_accounting')} subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
@@ -106,12 +106,40 @@ export default function AccountingDashboard() {
   return (
     <>
       <Header 
-        title="Accounting Dashboard" 
+        title={t('title_accounting')} 
         subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} 
       />
       
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-7xl mx-auto space-y-6">
+          {/* Quick Actions */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
+            <div className="flex flex-wrap gap-3">
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
+                onClick={() => window.location.href = '/invoices/create'}
+              >
+                <FileText className="w-4 h-4" />
+                {t('btn_create_invoice')}
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700"
+                onClick={() => window.location.href = '/payments/record'}
+              >
+                <DollarSign className="w-4 h-4" />
+                {t('btn_record_payment')}
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
+                onClick={() => window.location.href = '/reports/financial'}
+              >
+                <Download className="w-4 h-4" />
+                {t('btn_export_financial_report')}
+              </button>
+            </div>
+          </div>
+
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard
@@ -216,7 +244,7 @@ export default function AccountingDashboard() {
                       />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => [`${value} hóa đơn`, '']} />
+                  <Tooltip formatter={(value) => [t('invoice_unit', { count: value }), '']} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -249,7 +277,7 @@ export default function AccountingDashboard() {
               <div className="flex gap-2">
                 <button className="flex items-center gap-2 px-3 py-1.5 text-sm bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200">
                   <Download className="w-4 h-4" />
-                  Export
+                  {t('btn_export')}
                 </button>
               </div>
             </div>
@@ -269,7 +297,7 @@ export default function AccountingDashboard() {
                       <th className="text-right text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_amount')}</th>
                       <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_due_date')}</th>
                       <th className="text-left text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_status')}</th>
-                      <th className="text-center text-xs font-medium text-slate-500 uppercase px-4 py-3">Actions</th>
+                      <th className="text-center text-xs font-medium text-slate-500 uppercase px-4 py-3">{t('col_actions')}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
@@ -359,33 +387,6 @@ export default function AccountingDashboard() {
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
-            <div className="flex flex-wrap gap-3">
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
-                onClick={() => window.location.href = '/invoices/create'}
-              >
-                <FileText className="w-4 h-4" />
-                {t('btn_create_invoice')}
-              </button>
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700"
-                onClick={() => window.location.href = '/payments/record'}
-              >
-                <DollarSign className="w-4 h-4" />
-                {t('btn_record_payment')}
-              </button>
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
-                onClick={() => window.location.href = '/reports/financial'}
-              >
-                <Download className="w-4 h-4" />
-                {t('btn_export_financial_report')}
-              </button>
-            </div>
-          </div>
         </div>
       </main>
     </>

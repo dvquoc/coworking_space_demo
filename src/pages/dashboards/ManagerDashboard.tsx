@@ -48,7 +48,7 @@ export default function ManagerDashboard() {
   if (isLoading) {
     return (
       <>
-        <Header title="Manager Dashboard" subtitle={getTodayString()} />
+        <Header title={t('title_manager')} subtitle={getTodayString()} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -68,7 +68,7 @@ export default function ManagerDashboard() {
   if (error || !data) {
     return (
       <>
-        <Header title="Manager Dashboard" subtitle={getTodayString()} />
+        <Header title={t('title_manager')} subtitle={getTodayString()} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
@@ -88,7 +88,7 @@ export default function ManagerDashboard() {
 
   return (
     <>
-      <Header title="Manager Dashboard" subtitle={getTodayString()} />
+      <Header title={t('title_manager')} subtitle={getTodayString()} />
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Quick Actions */}
@@ -170,7 +170,7 @@ export default function ManagerDashboard() {
                   <YAxis tick={{ fontSize: 11, fill: '#64748b' }} />
                   <Tooltip 
                     labelFormatter={(label) => formatDate(label)}
-                    formatter={(value) => [`${value} bookings`]}
+                    formatter={(value) => [t('booking_unit', { count: value })]}
                   />
                   <Line 
                     type="monotone" 
@@ -236,7 +236,7 @@ export default function ManagerDashboard() {
                     <tr>
                       <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">{t('col_time')}</th>
                       <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">{t('col_customer')}</th>
-                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">Space</th>
+                      <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">{t('col_space')}</th>
                       <th className="text-left text-xs font-medium text-slate-500 uppercase px-3 py-2">{t('col_status')}</th>
                     </tr>
                   </thead>

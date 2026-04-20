@@ -55,7 +55,7 @@ export default function InvestorDashboard() {
   if (isLoading) {
     return (
       <>
-        <Header title="Investor Dashboard" subtitle={t('investor_subtitle')} />
+        <Header title={t('title_investor')} subtitle={t('investor_subtitle')} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -75,7 +75,7 @@ export default function InvestorDashboard() {
   if (error || !data) {
     return (
       <>
-        <Header title="Investor Dashboard" subtitle={t('investor_subtitle')} />
+        <Header title={t('title_investor')} subtitle={t('investor_subtitle')} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
@@ -96,7 +96,7 @@ export default function InvestorDashboard() {
   return (
     <>
       <Header 
-        title="Investor Dashboard" 
+        title={t('title_investor')} 
         subtitle={t('investor_subtitle_month', { month: data.period.month, year: data.period.year })} 
       />
       
@@ -143,7 +143,7 @@ export default function InvestorDashboard() {
               iconBgColor="bg-amber-100"
               iconColor="text-amber-600"
               change={data.kpis.profitMarginChange}
-              tooltip="(Revenue - Operating Costs) / Revenue × 100"
+              tooltip={t('tooltip_profit_margin')}
             />
           </div>
 

@@ -32,9 +32,9 @@ export default function AdminDashboard() {
   const { data, isLoading, error } = useAdminDashboard()
 
   const getUptimeBadge = (uptime: number) => {
-    if (uptime >= 99) return { text: 'Excellent', color: 'green' as const }
-    if (uptime >= 95) return { text: 'Good', color: 'yellow' as const }
-    return { text: 'Needs Attention', color: 'red' as const }
+    if (uptime >= 99) return { text: t('badge_excellent'), color: 'green' as const }
+    if (uptime >= 95) return { text: t('badge_good'), color: 'yellow' as const }
+    return { text: t('badge_needs_action'), color: 'red' as const }
   }
 
   const getSeverityIcon = (severity: string) => {
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
   if (isLoading) {
     return (
       <>
-        <Header title="Admin Dashboard" subtitle={t('admin_subtitle')} />
+        <Header title={t('title_admin')} subtitle={t('admin_subtitle')} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -76,7 +76,7 @@ export default function AdminDashboard() {
   if (error || !data) {
     return (
       <>
-        <Header title="Admin Dashboard" subtitle={t('admin_subtitle')} />
+        <Header title={t('title_admin')} subtitle={t('admin_subtitle')} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
@@ -96,10 +96,38 @@ export default function AdminDashboard() {
 
   return (
     <>
-      <Header title="Admin Dashboard" subtitle={t('admin_subtitle')} />
+      <Header title={t('title_admin')} subtitle={t('admin_subtitle')} />
       
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-7xl mx-auto space-y-6">
+          {/* Quick Actions */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
+            <div className="flex flex-wrap gap-3">
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
+                onClick={() => window.location.href = '/admin/users'}
+              >
+                <Users className="w-4 h-4" />
+                {t('btn_manage_users')}
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
+                onClick={() => window.location.href = '/admin/audit-logs'}
+              >
+                <FileText className="w-4 h-4" />
+                {t('btn_audit_logs')}
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
+                onClick={() => window.location.href = '/admin/settings'}
+              >
+                <Settings className="w-4 h-4" />
+                {t('btn_system_settings')}
+              </button>
+            </div>
+          </div>
+
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard
@@ -235,7 +263,7 @@ export default function AdminDashboard() {
                   />
                   <YAxis tick={{ fontSize: 11, fill: '#64748b' }} />
                   <Tooltip 
-                    labelFormatter={(label) => `Ngày ${formatShortDate(label)}`}
+                    labelFormatter={(label) => t('date_prefix', { date: formatShortDate(label) })}
                   />
                   <Legend />
                   <Bar dataKey="success" name={t('login_success')} fill="#10b981" radius={[4, 4, 0, 0]} />
@@ -295,33 +323,6 @@ export default function AdminDashboard() {
             )}
           </div>
 
-          {/* Quick Actions */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
-            <div className="flex flex-wrap gap-3">
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
-                onClick={() => window.location.href = '/admin/users'}
-              >
-                <Users className="w-4 h-4" />
-                {t('btn_manage_users')}
-              </button>
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
-                onClick={() => window.location.href = '/admin/audit-logs'}
-              >
-                <FileText className="w-4 h-4" />
-                {t('btn_audit_logs')}
-              </button>
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
-                onClick={() => window.location.href = '/admin/settings'}
-              >
-                <Settings className="w-4 h-4" />
-                {t('btn_system_settings')}
-              </button>
-            </div>
-          </div>
         </div>
       </main>
     </>

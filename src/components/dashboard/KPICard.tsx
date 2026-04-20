@@ -1,4 +1,5 @@
 import { TrendingUp, TrendingDown } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import type { LucideIcon } from 'lucide-react'
 
 interface KPICardProps {
@@ -32,12 +33,14 @@ export function KPICard({
   iconBgColor = 'bg-slate-100',
   iconColor = 'text-slate-600',
   change,
-  changeLabel = 'vs tháng trước',
+  changeLabel,
   badge,
   onClick,
   tooltip,
 }: KPICardProps) {
+  const { t } = useTranslation('dashboard')
   const isPositiveChange = change !== undefined && change >= 0
+  const resolvedChangeLabel = changeLabel || t('vs_last_month')
   
   return (
     <div 
@@ -68,7 +71,7 @@ export function KPICard({
               <span className={`text-sm font-medium ${isPositiveChange ? 'text-emerald-600' : 'text-rose-600'}`}>
                 {isPositiveChange ? '+' : ''}{change}%
               </span>
-              <span className="text-xs text-slate-400">{changeLabel}</span>
+              <span className="text-xs text-slate-400">{resolvedChangeLabel}</span>
             </div>
           )}
         </div>

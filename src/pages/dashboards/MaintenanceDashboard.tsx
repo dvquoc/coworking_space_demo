@@ -67,7 +67,7 @@ export default function MaintenanceDashboard() {
   if (isLoading) {
     return (
       <>
-        <Header title="Maintenance Dashboard" subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
+        <Header title={t('title_maintenance')} subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -87,7 +87,7 @@ export default function MaintenanceDashboard() {
   if (error || !data) {
     return (
       <>
-        <Header title="Maintenance Dashboard" subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
+        <Header title={t('title_maintenance')} subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
@@ -123,12 +123,39 @@ export default function MaintenanceDashboard() {
   return (
     <>
       <Header 
-        title="Maintenance Dashboard" 
+        title={t('title_maintenance')} 
         subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} 
       />
       
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-7xl mx-auto space-y-6">
+          {/* Quick Actions */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
+            <div className="flex flex-wrap gap-3">
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
+                onClick={() => window.location.href = '/assets/maintenance/create'}
+              >
+                <Plus className="w-4 h-4" />
+                {t('btn_record_maintenance')}
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-xl hover:bg-amber-700"
+              >
+                <AlertTriangle className="w-4 h-4" />
+                {t('btn_report_broken')}
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
+                onClick={() => window.location.href = '/assets'}
+              >
+                <List className="w-4 h-4" />
+                {t('btn_view_assets')}
+              </button>
+            </div>
+          </div>
+
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard
@@ -177,7 +204,7 @@ export default function MaintenanceDashboard() {
                 </h3>
                 <div className="flex gap-2">
                   <button className="px-3 py-1 text-sm bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200">
-                    All
+                    {t('filter_all')}
                   </button>
                   <button className="px-3 py-1 text-sm text-slate-500 hover:bg-slate-100 rounded-lg">
                     {t('filter_today')}
@@ -226,7 +253,7 @@ export default function MaintenanceDashboard() {
                               <p className="font-medium text-slate-900">{task.name}</p>
                               {task.priority === 'critical' && (
                                 <span className="px-2 py-0.5 bg-rose-100 text-rose-700 text-xs font-medium rounded-full">
-                                  Critical
+                                  {t('label_critical')}
                                 </span>
                               )}
                             </div>
@@ -377,32 +404,6 @@ export default function MaintenanceDashboard() {
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
-            <div className="flex flex-wrap gap-3">
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
-                onClick={() => window.location.href = '/assets/maintenance/create'}
-              >
-                <Plus className="w-4 h-4" />
-                {t('btn_record_maintenance')}
-              </button>
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-xl hover:bg-amber-700"
-              >
-                <AlertTriangle className="w-4 h-4" />
-                {t('btn_report_broken')}
-              </button>
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
-                onClick={() => window.location.href = '/assets'}
-              >
-                <List className="w-4 h-4" />
-                {t('btn_view_assets')}
-              </button>
-            </div>
-          </div>
         </div>
       </main>
     </>

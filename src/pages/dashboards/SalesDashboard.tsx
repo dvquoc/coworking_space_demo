@@ -60,15 +60,15 @@ const getLeadStatusLabel = (status: string, t: (key: string) => string) => {
     case 'tour_scheduled': return t('lead_status_tour_scheduled')
     case 'proposal_sent': return t('lead_status_proposal_sent')
     case 'closed_won': return t('lead_status_closed_won')
-    case 'closed_lost': return 'Lost'
+    case 'closed_lost': return t('lead_status_lost')
     default: return status
   }
 }
 
 const getActivityTypeLabel = (type: string, t: (key: string) => string) => {
   switch (type) {
-    case 'tour': return '🏢 Tour'
-    case 'meeting': return '👥 Meeting'
+    case 'tour': return t('activity_type_tour')
+    case 'meeting': return t('activity_type_meeting')
     case 'call': return t('activity_type_call')
     default: return type
   }
@@ -86,7 +86,7 @@ export default function SalesDashboard() {
   if (isLoading) {
     return (
       <>
-        <Header title="Sales Dashboard" subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
+        <Header title={t('title_sales')} subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -106,7 +106,7 @@ export default function SalesDashboard() {
   if (error || !data) {
     return (
       <>
-        <Header title="Sales Dashboard" subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
+        <Header title={t('title_sales')} subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} />
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-7xl mx-auto">
             <div className="bg-rose-50 border border-rose-200 rounded-2xl p-6 text-center">
@@ -127,12 +127,40 @@ export default function SalesDashboard() {
   return (
     <>
       <Header 
-        title="Sales Dashboard" 
+        title={t('title_sales')} 
         subtitle={t('greeting', { name: user?.name || t('you'), date: getTodayString() })} 
       />
       
       <main className="flex-1 overflow-y-auto p-6">
         <div className="max-w-7xl mx-auto space-y-6">
+          {/* Quick Actions */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
+            <div className="flex flex-wrap gap-3">
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
+                onClick={() => window.location.href = '/leads/create'}
+              >
+                <Plus className="w-4 h-4" />
+                {t('btn_add_lead')}
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700"
+                onClick={() => window.location.href = '/tours/schedule'}
+              >
+                <Calendar className="w-4 h-4" />
+                {t('btn_schedule_tour')}
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
+                onClick={() => window.location.href = '/leads'}
+              >
+                <Users className="w-4 h-4" />
+                {t('btn_manage_leads')}
+              </button>
+            </div>
+          </div>
+
           {/* KPI Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <KPICard
@@ -145,7 +173,7 @@ export default function SalesDashboard() {
             />
             
             <KPICard
-              title="Conversion Rate"
+              title={t('kpi_conversion_rate')}
               value={`${data.kpis.conversionRate}%`}
               icon={TrendingUp}
               iconBgColor="bg-emerald-100"
@@ -176,7 +204,7 @@ export default function SalesDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Lead Funnel */}
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-              <h3 className="text-lg font-semibold text-slate-900 mb-4">Lead Funnel</h3>
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('section_lead_funnel')}</h3>
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart 
                   data={data.charts.leadFunnel} 
@@ -218,7 +246,7 @@ export default function SalesDashboard() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis tickFormatter={(value) => `${Number(value)}%`} />
-                  <Tooltip formatter={(value) => [`${Number(value)}%`, 'Conversion Rate']} />
+                  <Tooltip formatter={(value) => [`${Number(value)}%`, t('conversion_rate_label')]} />
                   <Line 
                     type="monotone" 
                     dataKey="rate" 
@@ -258,7 +286,7 @@ export default function SalesDashboard() {
                         <div className="flex items-center gap-2">
                           <p className="font-medium text-slate-900">{lead.name}</p>
                           {lead.isStale && (
-                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-xs rounded">Stale</span>
+                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-xs rounded">{t('label_stale')}</span>
                           )}
                         </div>
                         <p className="text-sm text-slate-500">{lead.company || t('individual_customer')}</p>
@@ -371,33 +399,7 @@ export default function SalesDashboard() {
             )}
           </div>
 
-          {/* Quick Actions */}
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
-            <h3 className="text-lg font-semibold text-slate-900 mb-4">{t('quick_actions')}</h3>
-            <div className="flex flex-wrap gap-3">
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-[#b11e29] text-white rounded-xl hover:bg-[#8f1821]"
-                onClick={() => window.location.href = '/leads/create'}
-              >
-                <Plus className="w-4 h-4" />
-                {t('btn_add_lead')}
-              </button>
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700"
-                onClick={() => window.location.href = '/tours/schedule'}
-              >
-                <Calendar className="w-4 h-4" />
-                {t('btn_schedule_tour')}
-              </button>
-              <button 
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50"
-                onClick={() => window.location.href = '/leads'}
-              >
-                <Users className="w-4 h-4" />
-                {t('btn_manage_leads')}
-              </button>
-            </div>
-          </div>
+
         </div>
       </main>
     </>
