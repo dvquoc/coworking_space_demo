@@ -2,9 +2,28 @@ import { Outlet } from 'react-router-dom'
 import { Building2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { LanguageSwitcher } from '../LanguageSwitcher'
+import { useState, useEffect, useCallback } from 'react'
+
+const HEADLINE_KEYS = ['layout_headline', 'layout_headline_2', 'layout_headline_3'] as const
+const ROTATE_INTERVAL = 4000
 
 export default function AuthLayout() {
-const { t } = useTranslation('auth')
+  const { t } = useTranslation('auth')
+  const [activeIndex, setActiveIndex] = useState(0)
+  const [isVisible, setIsVisible] = useState(true)
+
+  const rotateHeadline = useCallback(() => {
+    setIsVisible(false)
+    setTimeout(() => {
+      setActiveIndex(prev => (prev + 1) % HEADLINE_KEYS.length)
+      setIsVisible(true)
+    }, 500)
+  }, [])
+
+  useEffect(() => {
+    const timer = setInterval(rotateHeadline, ROTATE_INTERVAL)
+    return () => clearInterval(timer)
+  }, [rotateHeadline])
 
   return (
     <div className="min-h-screen flex">
@@ -18,8 +37,12 @@ const { t } = useTranslation('auth')
         </div>
 
         <div className="text-white">
-          <h1 className="text-4xl font-bold mb-4">
-            {t('layout_headline')}
+          <h1
+            className={`text-4xl font-bold mb-4 transition-all duration-500 ${
+              isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
+            }`}
+          >
+            {t(HEADLINE_KEYS[activeIndex])}
           </h1>
           <p className="text-lg text-white/90">
             {t('layout_subheadline')}
